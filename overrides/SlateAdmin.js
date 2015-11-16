@@ -7,10 +7,5 @@ Ext.define('SlateSbg.overrides.SlateAdmin', {
     initControllers: function() {
         this.callParent();
         this.getController('Slate.sbg.Controller');
-    },
-
-    launch: function() {
-        this.callParent();
-        console.info('SlateAdmin override loaded');
     }
 });
