@@ -11,6 +11,10 @@ Ext.define('Slate.sbg.Controller', {
         'worksheets.Manager@Slate.sbg.view'
     ],
 
+    stores: [
+        'StandardsWorksheets@Slate.sbg.store'
+    ],
+
     refs: {
         settingsNavPanel: 'settings-navpanel',
         manager: {
@@ -18,6 +22,12 @@ Ext.define('Slate.sbg.Controller', {
             autoCreate: true,
 
             xtype: 'sbg-worksheets-manager'
+        }
+    },
+
+    control: {
+        manager: {
+            activate: 'onManagerActivate'
         }
     },
 
@@ -50,5 +60,11 @@ Ext.define('Slate.sbg.Controller', {
         me.application.getController('Viewport').loadCard(me.getManager());
 
         Ext.resumeLayouts(true);
+    },
+
+
+    // event handlers
+    onManagerActivate: function() {
+        this.getStandardsWorksheetsStore().load()
     }
 });

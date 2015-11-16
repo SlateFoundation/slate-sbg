@@ -2,26 +2,26 @@
 Ext.define('Slate.sbg.view.worksheets.Manager', {
     extend: 'Ext.Container',
     xtype: 'sbg-worksheets-manager',
-    // requires: [
-    //     'SlateAdmin.view.sbg.worksheets.Grid',
-    //     'SlateAdmin.view.sbg.worksheets.Editor'
-    // ],
+    requires: [
+        'Slate.sbg.view.worksheets.Grid',
+        'Slate.sbg.view.worksheets.Editor'
+    ],
 
-    html: 'Worksheets manager'
-    // componentCls: 'sbg-worksheets-manager',
-    // layout: 'border',
+
+    componentCls: 'sbg-worksheets-manager',
+    layout: 'border',
     // worksheet: null,
-    // items: [{
-    //     region: 'west',
-    //     split: true,
-    //     xtype: 'sbg-worksheets-grid',
-    //     autoScroll: true,
-    //     width: 500
-    // },{
-    //     region: 'center',
-    //     xtype: 'sbg-worksheets-editor',
-    //     flex: 1
-    // }],
+    items: [{
+        region: 'west',
+        split: true,
+        xtype: 'sbg-worksheets-grid',
+        autoScroll: true,
+        width: 500
+    },{
+        region: 'center',
+        xtype: 'sbg-worksheets-editor',
+        flex: 1
+    }],
 
 
     // //helper functions
