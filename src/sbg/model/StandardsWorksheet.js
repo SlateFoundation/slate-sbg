@@ -3,8 +3,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
     extend: 'Ext.data.Model',
     requires: [
         'Ext.data.validator.Presence',
-        'Ext.data.identifier.Negative',
-        'SlateAdmin.proxy.Records'
+        'Ext.data.identifier.Negative'
     ],
 
     idProperty: 'ID',

@@ -2,8 +2,7 @@
 Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
     extend: 'Ext.data.Model',
     requires: [
-        'Ext.data.identifier.Negative',
-        'SlateAdmin.proxy.Records'
+        'Ext.data.identifier.Negative'
     ],
 
 
