@@ -66,6 +66,10 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         store: {
             '#StandardsWorksheets': {
                 update: 'onWorksheetUpdate'
+            },
+            '#StandardsWorksheetPrompts': {
+                add: 'onWorksheetPromptAdd',
+                update: 'onWorksheetPromptUpdate'
             }
         }
     },
@@ -182,6 +186,14 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         }
     },
 
+    onWorksheetPromptAdd: function() {
+        this.syncFormButtons();
+    },
+
+    onWorksheetPromptUpdate: function() {
+        this.syncFormButtons();
+    },
+
     onRevertBtnClick: function() {
         var grid = this.getGrid(),
             form = this.getForm(),
@@ -204,9 +216,11 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     },
 
     onSaveBtnClick: function() {
-        var managerCt = this.getManagerCt(),
-            form = this.getForm(),
-            worksheet = form.getRecord();
+        var me = this,
+            managerCt = me.getManagerCt(),
+            form = me.getForm(),
+            worksheet = form.getRecord(),
+            promptsStore = me.getStandardsWorksheetPromptsStore();
 
         form.updateRecord(worksheet);
 
@@ -230,6 +244,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         var promptsGrid = this.getPromptsGrid(),
             promptsStore = promptsGrid.getStore(),
             prompt = promptsStore.add({
+                WorksheetID: this.getForm().getRecord().getId(),
                 Position: promptsStore.getCount() + 1
             })[0];
 
@@ -241,9 +256,18 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     syncFormButtons: function() {
         var me = this,
             form = me.getForm(),
-            isDirty = form.isDirty();
+            promptsStore = me.getStandardsWorksheetPromptsStore(),
+            isDirty = form.isDirty(),
+            promptInvalid = false;
+
+        promptsStore.each(function(prompt) {
+            if (!prompt.isValid()) {
+                promptInvalid = true;
+                return false;
+            }
+        });
 
         me.getRevertBtn().setDisabled(!isDirty && !form.getRecord().phantom);
-        me.getSaveBtn().setDisabled(!isDirty || !form.isValid());
+        me.getSaveBtn().setDisabled(!isDirty || !form.isValid() || promptInvalid);
     }
 });
