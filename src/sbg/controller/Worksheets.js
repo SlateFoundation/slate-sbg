@@ -234,16 +234,26 @@ Ext.define('Slate.sbg.controller.Worksheets', {
 
         form.updateRecord(worksheet);
 
-        if (!worksheet.dirty) {
+        if (
+            !worksheet.dirty &&
+            !promptsStore.getNewRecords().length &&
+            !promptsStore.getUpdatedRecords().length &&
+            !promptsStore.getRemovedRecords().length
+        ) {
             return;
         }
 
         managerCt.setLoading('Saving worksheet&hellip;');
         worksheet.save({
             callback: function(report, operation, success) {
-                managerCt.setLoading(false);
-
-                if (!success) {
+                if (success) {
+                    promptsStore.sync({
+                        callback: function(batch, options) {
+                            managerCt.setLoading(false);
+                        }
+                    });
+                } else {
+                    managerCt.setLoading(false);
                     Ext.Msg.alert('Failed to save worksheet', 'This worksheet failed to save to the server:<br><br>' + (operation.getError() || 'Unknown reason, try again or contact support'));
                 }
             }
