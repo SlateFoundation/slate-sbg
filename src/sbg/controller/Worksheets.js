@@ -48,6 +48,14 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         }
     },
 
+    listen: {
+        store: {
+            '#StandardsWorksheets': {
+                update: 'onWorksheetUpdate'
+            }
+        }
+    },
+
 
     // controller template methods
     init: function() {
@@ -121,6 +129,15 @@ Ext.define('Slate.sbg.controller.Worksheets', {
 
     onFieldDirtyChange: function(field, dirty) {
         this.syncFormButtons();
+    },
+
+    onWorksheetUpdate: function(worksheetsStore, worksheet, operation) {
+        var form = this.getForm();
+
+        // reload record into form after commit to server
+        if (operation == 'commit' && form.getRecord() === worksheet) {
+            form.loadRecord(worksheet);
+        }
     },
 
 
