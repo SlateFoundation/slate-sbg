@@ -17,11 +17,6 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
         text: 'Create Worksheet',
         glyph: 0xf055 // fa-plus-circle
     }],
-    plugins: [{
-        ptype: 'cellediting',
-        pluginId: 'cellediting',
-        clicksToEdit: 2
-    }],
 
     hideHeaders: true,
     store: 'StandardsWorksheets',
@@ -30,9 +25,6 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
 
         text: 'Title',
         dataIndex: 'Title',
-        editor: {
-            xtype: 'textfield',
-            allowBlank: false
-        }
+        emptyCellText: 'Untitled worksheet'
     }]
 });

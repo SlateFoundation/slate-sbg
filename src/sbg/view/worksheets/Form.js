@@ -3,7 +3,7 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
     extend: 'Ext.form.Panel',
     xtype: 'sbg-worksheets-form',
     requires: [
-        'Ext.form.field.Display',
+        'Ext.form.field.Text',
         'Ext.form.field.TextArea',
         'Slate.sbg.view.worksheets.PromptsGrid'
     ],
@@ -21,9 +21,10 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
         anchor: '100%'
     },
     items: [{
-        xtype: 'displayfield',
+        xtype: 'textfield',
         name: 'Title',
-        fieldLabel: 'Title'
+        fieldLabel: 'Title',
+        allowBlank: false
     },{
         xtype: 'textareafield',
         name: 'Description',

@@ -27,6 +27,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         },
         grid: 'sbg-worksheets-grid',
         form: 'sbg-worksheets-form',
+        titleField: 'sbg-worksheets-form field[name=Title]',
         saveBtn: 'sbg-worksheets-form button#saveBtn',
         revertBtn: 'sbg-worksheets-form button#revertBtn'
     },
@@ -88,7 +89,8 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         var grid = this.getGrid(),
             worksheet = grid.getStore().add({})[0];
 
-        grid.getPlugin('cellediting').startEdit(worksheet, 0);
+        grid.setSelection(worksheet);
+        this.getTitleField().focus();
     },
 
     onGridBeforeSelect: function(selModel, worksheet) {
