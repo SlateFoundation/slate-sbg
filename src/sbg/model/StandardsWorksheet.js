@@ -59,7 +59,6 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
     proxy: {
         type: 'slaterecords',
         url: '/sbg/worksheets',
-        include: ['TotalPrompts'],
         limitParam: null,
         startParam: null
     }
