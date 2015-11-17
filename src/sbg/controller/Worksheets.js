@@ -25,7 +25,9 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             xtype: 'sbg-worksheets-manager'
         },
         grid: 'sbg-worksheets-grid',
-        form: 'sbg-worksheets-form'
+        form: 'sbg-worksheets-form',
+        saveBtn: 'sbg-worksheets-form button#saveBtn',
+        revertBtn: 'sbg-worksheets-form button#revertBtn'
     },
 
     control: {
@@ -38,6 +40,9 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         grid: {
             beforeselect: 'onGridBeforeSelect',
             select: 'onGridSelect'
+        },
+        'sbg-worksheets-form field': {
+            dirtychange: 'onFieldDirtyChange'
         }
     },
 
@@ -107,7 +112,22 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     onGridSelect: function(selModel, worksheet) {
         var form = this.getForm();
 
-        form.loadRecord(worksheet);
         form.enable();
+        form.loadRecord(worksheet);
+    },
+
+    onFieldDirtyChange: function(field, dirty) {
+        this.syncFormButtons();
+    },
+
+
+    // controller methods
+    syncFormButtons: function() {
+        var me = this,
+            form = me.getForm(),
+            isDirty = form.isDirty();
+
+        me.getRevertBtn().setDisabled(!isDirty);
+        me.getSaveBtn().setDisabled(!isDirty || !form.isValid());
     }
 });

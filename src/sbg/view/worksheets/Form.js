@@ -13,6 +13,8 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
     componentCls: 'sbg-standards-worksheets-editor',
     bodyPadding: 10,
 
+    trackResetOnLoad: true,
+
     defaults: {
         labelWidth: 70,
         labelAlign: 'right',
@@ -32,5 +34,26 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
     // },{
     //     xtype: 'sbg-standards-worksheets-promptsgrid',
     //     flex: 1
+    }],
+
+    buttons: [{
+        itemId: 'revertBtn',
+
+        text: 'Revert Changes',
+        cls: 'glyph-danger',
+        glyph: 0xf057 // fa-times-circle
+    },{
+        xtype: 'tbfill'
+    },{
+        itemId: 'addPromptBtn',
+
+        text: 'Add Prompt',
+        glyph: 0xf055, // fa-plus-circle
+    },{
+        itemId: 'saveBtn',
+
+        text: 'Save Changes',
+        cls: 'glyph-success',
+        glyph: 0xf058 // fa-check-circle
     }]
 });
