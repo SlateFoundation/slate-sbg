@@ -139,10 +139,20 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     },
 
     onGridSelect: function(selModel, worksheet) {
-        var form = this.getForm();
+        var form = this.getForm(),
+            promptsStore = this.getStandardsWorksheetPromptsStore();
 
+        promptsStore.removeAll();
         form.enable();
         form.loadRecord(worksheet);
+
+        if (!worksheet.phantom) {
+            promptsStore.load({
+                params: {
+                    worksheet: worksheet.getId()
+                }
+            });
+        }
     },
 
     onFieldDirtyChange: function(field, dirty) {
