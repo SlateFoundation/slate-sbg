@@ -267,7 +267,22 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             form = me.getForm(),
             worksheet = form.getRecord(),
             worksheetWasPhantom = worksheet.phantom,
-            promptsStore = me.getStandardsWorksheetPromptsStore();
+            promptsStore = me.getStandardsWorksheetPromptsStore(),
+            doSavePrompts = function() {
+                var worksheetId = worksheet.getId();
+
+                if (worksheetWasPhantom) {
+                    promptsStore.each(function(prompt) {
+                        prompt.set('WorksheetID', worksheetId);
+                    });
+                }
+
+                promptsStore.sync({
+                    callback: function(batch, options) {
+                        managerCt.setLoading(false);
+                    }
+                });
+            };
 
         form.updateRecord(worksheet);
 
@@ -276,28 +291,21 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         }
 
         managerCt.setLoading('Saving worksheet&hellip;');
-        worksheet.save({
-            callback: function(report, operation, success) {
-                var worksheetId = worksheet.getId();
 
-                if (success) {
-                    if (worksheetWasPhantom) {
-                        promptsStore.each(function(prompt) {
-                            prompt.set('WorksheetID', worksheetId);
-                        });
+        if (worksheet.dirty) {
+            worksheet.save({
+                callback: function(report, operation, success) {
+                    if (success) {
+                        doSavePrompts();
+                    } else {
+                        managerCt.setLoading(false);
+                        Ext.Msg.alert('Failed to save worksheet', 'This worksheet failed to save to the server:<br><br>' + (operation.getError() || 'Unknown reason, try again or contact support'));
                     }
-
-                    promptsStore.sync({
-                        callback: function(batch, options) {
-                            managerCt.setLoading(false);
-                        }
-                    });
-                } else {
-                    managerCt.setLoading(false);
-                    Ext.Msg.alert('Failed to save worksheet', 'This worksheet failed to save to the server:<br><br>' + (operation.getError() || 'Unknown reason, try again or contact support'));
                 }
-            }
-        });
+            });
+        } else {
+            doSavePrompts();
+        }
     },
 
     onAddPromptBtnClick: function() {
