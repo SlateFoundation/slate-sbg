@@ -127,13 +127,13 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             form = me.getForm(),
             loadedWorksheet = form.getRecord();
 
-        if (loadedWorksheet && form.isDirty()) {
+        if (loadedWorksheet && (form.isDirty() || me.isPromptsStoreDirty())) {
             Ext.Msg.confirm('Unsaved Changes', 'You have unsaved changes to this worksheet.<br/><br/>Do you want to continue without saving them?', function (btn) {
                 if (btn != 'yes') {
                     return;
                 }
 
-                form.reset();
+                me.revertChanges();
                 selModel.select([worksheet]);
             });
 
@@ -234,8 +234,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
                 return;
             }
 
-            form.reset();
-            me.getStandardsWorksheetPromptsStore().rejectChanges();
+            me.revertChanges();
 
             if (worksheet.phantom) {
                 form.disable();
@@ -304,6 +303,11 @@ Ext.define('Slate.sbg.controller.Worksheets', {
 
         me.getRevertBtn().setDisabled(!formDirty && !form.getRecord().phantom && !promptsDirty);
         me.getSaveBtn().setDisabled((!formDirty && !promptsDirty) || !form.isValid() || !me.isPromptsStoreValid());
+    },
+
+    revertChanges: function() {
+        this.getForm().reset();
+        this.getStandardsWorksheetPromptsStore().rejectChanges();
     },
 
     isPromptsStoreValid: function() {
