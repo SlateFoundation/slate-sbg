@@ -12,6 +12,7 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
     title: 'Selected Worksheet',
     componentCls: 'sbg-standards-worksheets-editor',
     bodyPadding: 10,
+    scrollable: 'vertical',
 
     trackResetOnLoad: true,
 

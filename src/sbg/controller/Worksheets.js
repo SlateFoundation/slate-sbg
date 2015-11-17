@@ -28,6 +28,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         grid: 'sbg-worksheets-grid',
         form: 'sbg-worksheets-form',
         titleField: 'sbg-worksheets-form field[name=Title]',
+        promptsGrid: 'sbg-worksheets-promptsgrid',
         revertBtn: 'sbg-worksheets-form button#revertBtn',
         saveBtn: 'sbg-worksheets-form button#saveBtn'
     },
@@ -46,14 +47,14 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         'sbg-worksheets-form field': {
             dirtychange: 'onFieldDirtyChange'
         },
-        'sbg-worksheets-manager button#addPromptBtn': {
-
-        },
         revertBtn: {
             click: 'onRevertBtnClick'
         },
         saveBtn: {
             click: 'onSaveBtnClick'
+        },
+        'sbg-worksheets-manager button#addPromptBtn': {
+            click: 'onAddPromptBtnClick'
         }
     },
 
@@ -191,6 +192,13 @@ Ext.define('Slate.sbg.controller.Worksheets', {
                 }
             }
         });
+    },
+
+    onAddPromptBtnClick: function() {
+        var promptsGrid = this.getPromptsGrid(),
+            prompt = promptsGrid.getStore().add({})[0];
+
+        promptsGrid.getPlugin('cellediting').startEdit(prompt, 0);
     },
 
 
