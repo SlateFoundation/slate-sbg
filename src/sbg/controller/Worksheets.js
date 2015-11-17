@@ -36,6 +36,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             click: 'onCreateWorksheetBtnClick'
         },
         grid: {
+            beforeselect: 'onGridBeforeSelect',
             select: 'onGridSelect'
         }
     },
@@ -82,6 +83,25 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             worksheet = grid.getStore().add({})[0];
 
         grid.getPlugin('cellediting').startEdit(worksheet, 0);
+    },
+
+    onGridBeforeSelect: function(selModel, worksheet) {
+        var me = this,
+            form = me.getForm(),
+            loadedWorksheet = form.getRecord();
+
+        if (loadedWorksheet && form.isDirty()) {
+            Ext.Msg.confirm('Unsaved Changes', 'You have unsaved changes to this worksheet.<br/><br/>Do you want to continue without saving them?', function (btn) {
+                if (btn != 'yes') {
+                    return;
+                }
+
+                form.reset();
+                selModel.select([worksheet]);
+            });
+
+            return false;
+        }
     },
 
     onGridSelect: function(selModel, worksheet) {
