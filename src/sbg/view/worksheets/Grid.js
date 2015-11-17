@@ -7,13 +7,15 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
         'Ext.form.field.Text'
     ],
 
+    title: 'Available Worksheets',
     componentCls: 'sbg-worksheets-grid',
     bbar: [{
         flex: 1,
         itemId: 'createWorksheetBtn',
 
         xtype: 'button',
-        text: 'Create Worksheet'
+        text: 'Create Worksheet',
+        glyph: 0xf055 // fa-plus-circle
     }],
     plugins: [{
         ptype: 'cellediting',
@@ -21,6 +23,7 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
         clicksToEdit: 2
     }],
 
+    hideHeaders: true,
     store: 'StandardsWorksheets',
     columns: [{
         flex: 1,
