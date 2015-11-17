@@ -224,8 +224,9 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     },
 
     onRevertBtnClick: function() {
-        var grid = this.getGrid(),
-            form = this.getForm(),
+        var me = this,
+            grid = me.getGrid(),
+            form = me.getForm(),
             worksheet = form.getRecord();
 
         Ext.Msg.confirm('Discard Changes', 'Are you sure you want to discard all changes to this worksheet?', function (btn) {
@@ -234,13 +235,12 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             }
 
             form.reset();
+            me.getStandardsWorksheetPromptsStore().rejectChanges();
 
             if (worksheet.phantom) {
                 form.disable();
                 grid.getStore().remove(worksheet);
             }
-
-            // TODO: revert prompts store
         });
     },
 
