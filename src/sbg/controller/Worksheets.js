@@ -28,8 +28,8 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         grid: 'sbg-worksheets-grid',
         form: 'sbg-worksheets-form',
         titleField: 'sbg-worksheets-form field[name=Title]',
-        saveBtn: 'sbg-worksheets-form button#saveBtn',
-        revertBtn: 'sbg-worksheets-form button#revertBtn'
+        revertBtn: 'sbg-worksheets-form button#revertBtn',
+        saveBtn: 'sbg-worksheets-form button#saveBtn'
     },
 
     control: {
@@ -45,6 +45,15 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         },
         'sbg-worksheets-form field': {
             dirtychange: 'onFieldDirtyChange'
+        },
+        'sbg-worksheets-manager button#addPromptBtn': {
+
+        },
+        revertBtn: {
+            click: 'onRevertBtnClick'
+        },
+        saveBtn: {
+            click: 'onSaveBtnClick'
         }
     },
 
@@ -140,6 +149,50 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         }
     },
 
+    onRevertBtnClick: function() {
+        var grid = this.getGrid(),
+            form = this.getForm(),
+            worksheet = form.getRecord();
+
+        Ext.Msg.confirm('Discard Changes', 'Are you sure you want to discard all changes to this worksheet?', function (btn) {
+            if (btn != 'yes') {
+                return;
+            }
+
+            form.reset();
+
+            if (worksheet.phantom) {
+                form.disable();
+                grid.getStore().remove(worksheet);
+            }
+
+            // TODO: revert prompts store
+        });
+    },
+
+    onSaveBtnClick: function() {
+        var managerCt = this.getManagerCt(),
+            form = this.getForm(),
+            worksheet = form.getRecord();
+
+        form.updateRecord(worksheet);
+
+        if (!worksheet.dirty) {
+            return;
+        }
+
+        managerCt.setLoading('Saving worksheet&hellip;');
+        worksheet.save({
+            callback: function(report, operation, success) {
+                managerCt.setLoading(false);
+
+                if (!success) {
+                    Ext.Msg.alert('Failed to save worksheet', 'This worksheet failed to save to the server:<br><br>' + (operation.getError() || 'Unknown reason, try again or contact support'));
+                }
+            }
+        });
+    },
+
 
     // controller methods
     syncFormButtons: function() {
@@ -147,7 +200,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             form = me.getForm(),
             isDirty = form.isDirty();
 
-        me.getRevertBtn().setDisabled(!isDirty);
+        me.getRevertBtn().setDisabled(!isDirty && !form.getRecord().phantom);
         me.getSaveBtn().setDisabled(!isDirty || !form.isValid());
     }
 });
