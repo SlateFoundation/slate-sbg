@@ -1,4 +1,4 @@
-Ext.define('Slate.sbg.Controller', {
+Ext.define('Slate.sbg.controller.Worksheets', {
     extend: 'Ext.app.Controller',
 
 
@@ -17,17 +17,22 @@ Ext.define('Slate.sbg.Controller', {
 
     refs: {
         settingsNavPanel: 'settings-navpanel',
-        manager: {
+
+        managerCt: {
             selector: 'sbg-worksheets-manager',
             autoCreate: true,
 
             xtype: 'sbg-worksheets-manager'
-        }
+        },
+        grid: 'sbg-worksheets-grid'
     },
 
     control: {
-        manager: {
-            activate: 'onManagerActivate'
+        managerCt: {
+            activate: 'onManagerCtActivate'
+        },
+        'sbg-worksheets-manager button#createWorksheetBtn': {
+            click: 'onCreateWorksheetBtnClick'
         }
     },
 
@@ -57,14 +62,21 @@ Ext.define('Slate.sbg.Controller', {
         navPanel.expand(false);
         Ext.util.History.resumeState(false); // false to discard any changes to state
 
-        me.application.getController('Viewport').loadCard(me.getManager());
+        me.application.getController('Viewport').loadCard(me.getManagerCt());
 
         Ext.resumeLayouts(true);
     },
 
 
     // event handlers
-    onManagerActivate: function() {
-        this.getStandardsWorksheetsStore().load()
+    onManagerCtActivate: function() {
+        this.getStandardsWorksheetsStore().load();
+    },
+
+    onCreateWorksheetBtnClick: function() {
+        var grid = this.getGrid(),
+            worksheet = grid.getStore().add({})[0];
+
+        grid.getPlugin('cellediting').startEdit(worksheet, 0);
     }
 });

@@ -17,6 +17,7 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
     }],
     plugins: [{
         ptype: 'cellediting',
+        pluginId: 'cellediting',
         clicksToEdit: 2
     }],
 

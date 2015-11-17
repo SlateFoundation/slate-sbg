@@ -1,11 +1,11 @@
 Ext.define('SlateSbg.overrides.SlateAdmin', {
     override: 'SlateAdmin.Application',
     requires: [
-        'Slate.sbg.Controller'
+        'Slate.sbg.controller.Worksheets'
     ],
 
     initControllers: function() {
         this.callParent();
-        this.getController('Slate.sbg.Controller');
+        this.getController('Slate.sbg.controller.Worksheets');
     }
 });
