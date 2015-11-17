@@ -49,7 +49,8 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         },
         promptsGrid: {
             upclick: 'onPromptGridUpClick',
-            downclick: 'onPromptGridDownClick'
+            downclick: 'onPromptGridDownClick',
+            deleteclick: 'onPromptDeleteClick'
         },
         revertBtn: {
             click: 'onRevertBtnClick'
@@ -69,7 +70,9 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             },
             '#StandardsWorksheetPrompts': {
                 add: 'onWorksheetPromptAdd',
-                update: 'onWorksheetPromptUpdate'
+                update: 'onWorksheetPromptUpdate',
+                remove: 'onWorksheetPromptRemove',
+                write: 'onWorksheetPromptsStoreWrite'
             }
         }
     },
@@ -187,6 +190,10 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         promptsStore.endUpdate();
     },
 
+    onPromptDeleteClick: function(promptsGrid, prompt) {
+        promptsGrid.getStore().remove(prompt);
+    },
+
     onWorksheetUpdate: function(worksheetsStore, worksheet, operation) {
         var form = this.getForm();
 
@@ -201,6 +208,14 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     },
 
     onWorksheetPromptUpdate: function() {
+        this.syncFormButtons();
+    },
+
+    onWorksheetPromptRemove: function() {
+        this.syncFormButtons();
+    },
+
+    onWorksheetPromptsStoreWrite: function() {
         this.syncFormButtons();
     },
 
@@ -229,17 +244,11 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         var me = this,
             managerCt = me.getManagerCt(),
             form = me.getForm(),
-            worksheet = form.getRecord(),
-            promptsStore = me.getStandardsWorksheetPromptsStore();
+            worksheet = form.getRecord();
 
         form.updateRecord(worksheet);
 
-        if (
-            !worksheet.dirty &&
-            !promptsStore.getNewRecords().length &&
-            !promptsStore.getUpdatedRecords().length &&
-            !promptsStore.getRemovedRecords().length
-        ) {
+        if (!worksheet.dirty && !me.isPromptsStoreDirty()) {
             return;
         }
 
@@ -247,7 +256,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         worksheet.save({
             callback: function(report, operation, success) {
                 if (success) {
-                    promptsStore.sync({
+                    me.getStandardsWorksheetPromptsStore().sync({
                         callback: function(batch, options) {
                             managerCt.setLoading(false);
                         }
@@ -276,22 +285,33 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     syncFormButtons: function() {
         var me = this,
             form = me.getForm(),
-            promptsStore = me.getStandardsWorksheetPromptsStore(),
-            isDirty = form.isDirty(),
-            promptInvalid = false,
-            promptDirty = false;
+            formDirty = form.isDirty(),
+            promptsDirty = me.isPromptsStoreDirty();
 
-        promptsStore.each(function(prompt) {
+        me.getRevertBtn().setDisabled(!formDirty && !form.getRecord().phantom && !promptsDirty);
+        me.getSaveBtn().setDisabled((!formDirty && !promptsDirty) || !form.isValid() || !me.isPromptsStoreValid());
+    },
+
+    isPromptsStoreValid: function() {
+        var isValid = true;
+
+        this.getStandardsWorksheetPromptsStore().each(function(prompt) {
             if (!prompt.isValid()) {
-                promptInvalid = true;
-            }
-
-            if (prompt.dirty) {
-                promptDirty = true;
+                isValid = false;
+                return false;
             }
         });
 
-        me.getRevertBtn().setDisabled(!isDirty && !form.getRecord().phantom && !promptDirty);
-        me.getSaveBtn().setDisabled((!isDirty && !promptDirty) || !form.isValid() || promptInvalid );
+        return isValid;
+    },
+
+    isPromptsStoreDirty: function() {
+        var promptsStore = this.getStandardsWorksheetPromptsStore();
+
+        return (
+            promptsStore.getNewRecords().length ||
+            promptsStore.getUpdatedRecords().length ||
+            promptsStore.getRemovedRecords().length
+        );
     }
 });
