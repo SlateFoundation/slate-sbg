@@ -18,8 +18,5 @@
     },
     "output": "${package.dir}/build",
     "local": true,
-    "requires": [
-        "jarvus-apikit",
-        "emergence-apikit"
-    ]
+    "requires": []
 }
