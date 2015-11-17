@@ -248,7 +248,9 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         var me = this,
             managerCt = me.getManagerCt(),
             form = me.getForm(),
-            worksheet = form.getRecord();
+            worksheet = form.getRecord(),
+            worksheetWasPhantom = worksheet.phantom,
+            promptsStore = me.getStandardsWorksheetPromptsStore();
 
         form.updateRecord(worksheet);
 
@@ -259,8 +261,16 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         managerCt.setLoading('Saving worksheet&hellip;');
         worksheet.save({
             callback: function(report, operation, success) {
+                var worksheetId = worksheet.getId();
+
                 if (success) {
-                    me.getStandardsWorksheetPromptsStore().sync({
+                    if (worksheetWasPhantom) {
+                        promptsStore.each(function(prompt) {
+                            prompt.set('WorksheetID', worksheetId);
+                        });
+                    }
+
+                    promptsStore.sync({
                         callback: function(batch, options) {
                             managerCt.setLoading(false);
                         }
