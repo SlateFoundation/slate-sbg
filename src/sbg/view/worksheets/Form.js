@@ -5,7 +5,7 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
     requires: [
         'Ext.form.field.Display',
         'Ext.form.field.TextArea',
-    //     'SlateAdmin.view.sbg.standards.worksheets.PromptsGrid'
+        'Slate.sbg.view.worksheets.PromptsGrid'
     ],
 
     disabled: true,
@@ -31,9 +31,8 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
         fieldLabel: 'Description',
         emptyText: 'Optional explanation of worksheet for parents and students',
         grow: true
-    // },{
-    //     xtype: 'sbg-standards-worksheets-promptsgrid',
-    //     flex: 1
+    },{
+        xtype: 'sbg-worksheets-promptsgrid'
     }],
 
     buttons: [{

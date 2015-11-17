@@ -12,7 +12,8 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     ],
 
     stores: [
-        'StandardsWorksheets@Slate.sbg.store'
+        'StandardsWorksheets@Slate.sbg.store',
+        'StandardsWorksheetPrompts@Slate.sbg.store'
     ],
 
     refs: {
