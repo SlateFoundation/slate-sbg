@@ -47,6 +47,10 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         'sbg-worksheets-form field': {
             dirtychange: 'onFieldDirtyChange'
         },
+        promptsGrid: {
+            upclick: 'onPromptGridUpClick',
+            downclick: 'onPromptGridDownClick'
+        },
         revertBtn: {
             click: 'onRevertBtnClick'
         },
@@ -139,6 +143,34 @@ Ext.define('Slate.sbg.controller.Worksheets', {
 
     onFieldDirtyChange: function(field, dirty) {
         this.syncFormButtons();
+    },
+
+    onPromptGridUpClick: function(promptsGrid, prompt, item, rowIndex) {
+        var promptsStore = promptsGrid.getStore(),
+            previousPrompt = promptsStore.getAt(rowIndex - 1);
+
+        if (!previousPrompt) {
+            return;
+        }
+
+        promptsStore.beginUpdate();
+        previousPrompt.set('Position', rowIndex + 1);
+        prompt.set('Position', rowIndex);
+        promptsStore.endUpdate();
+    },
+
+    onPromptGridDownClick: function(promptsGrid, prompt, item, rowIndex) {
+        var promptsStore = promptsGrid.getStore(),
+            nextPrompt = promptsStore.getAt(rowIndex + 1);
+
+        if (!nextPrompt) {
+            return;
+        }
+
+        promptsStore.beginUpdate();
+        prompt.set('Position', rowIndex + 2);
+        nextPrompt.set('Position', rowIndex + 1);
+        promptsStore.endUpdate();
     },
 
     onWorksheetUpdate: function(worksheetsStore, worksheet, operation) {

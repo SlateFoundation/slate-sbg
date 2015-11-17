@@ -4,7 +4,6 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
     xtype: 'sbg-worksheets-promptsgrid',
     requires: [
         'Ext.grid.plugin.CellEditing',
-        'Ext.grid.column.Template',
         'Ext.form.field.Text',
         'Ext.grid.column.Action'
     ],
@@ -25,16 +24,15 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
     plugins: [{
         ptype: 'cellediting',
         pluginId: 'cellediting',
-        clicksToEdit: 2
+        clicksToEdit: 1
     }],
 
     hideHeaders: true,
     store: 'StandardsWorksheetPrompts',
     columns: [{
-        xtype: 'templatecolumn',
         text: 'Position',
         width: 40,
-        tpl: '{Position}.'
+        dataIndex: 'Position'
     },{
         flex: 1,
 
