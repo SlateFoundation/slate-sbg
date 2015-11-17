@@ -13,27 +13,42 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
     fields: [
         {
             name: 'ID',
-            type: 'integer',
-            useNull: true
+            type: 'int',
+            allowNull: true
+        },
+        {
+            name: 'Class',
+            type: 'string',
+            defaultValue: 'Slate\\SBG\\Worksheet'
         },
         {
             name: 'Created',
             type: 'date',
             dateFormat: 'timestamp',
-            useNull: true
+            allowNull: true
         },
         {
             name: 'CreatorID',
-            type: 'integer',
-            useNull: true
+            type: 'int',
+            allowNull: true
         },
-        'Title',
-        'Handle',
-        'Description',
-        'Status',
         {
-            name: 'TotalPrompts',
-            type: 'integer'
+            name: 'Title',
+            type: 'string'
+        },
+        {
+            name: 'Handle',
+            type: 'string'
+        },
+        {
+            name: 'Status',
+            type: 'string',
+            defaultValue: 'Live'
+        },
+        {
+            name: 'Description',
+            type: 'string',
+            allowNull: true
         }
     ],
     validators: {
