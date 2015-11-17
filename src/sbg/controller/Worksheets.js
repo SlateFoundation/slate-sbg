@@ -258,16 +258,20 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             form = me.getForm(),
             promptsStore = me.getStandardsWorksheetPromptsStore(),
             isDirty = form.isDirty(),
-            promptInvalid = false;
+            promptInvalid = false,
+            promptDirty = false;
 
         promptsStore.each(function(prompt) {
             if (!prompt.isValid()) {
                 promptInvalid = true;
-                return false;
+            }
+
+            if (prompt.dirty) {
+                promptDirty = true;
             }
         });
 
-        me.getRevertBtn().setDisabled(!isDirty && !form.getRecord().phantom);
-        me.getSaveBtn().setDisabled(!isDirty || !form.isValid() || promptInvalid);
+        me.getRevertBtn().setDisabled(!isDirty && !form.getRecord().phantom && !promptDirty);
+        me.getSaveBtn().setDisabled((!isDirty && !promptDirty) || !form.isValid() || promptInvalid );
     }
 });
