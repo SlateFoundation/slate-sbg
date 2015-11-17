@@ -4,7 +4,8 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
     xtype: 'sbg-worksheets-grid',
     requires: [
         'Ext.grid.plugin.CellEditing',
-        'Ext.form.field.Text'
+        'Ext.form.field.Text',
+        'Ext.grid.column.Action'
     ],
 
     title: 'Available Worksheets',
@@ -26,5 +27,14 @@ Ext.define('Slate.sbg.view.worksheets.Grid', {
         text: 'Title',
         dataIndex: 'Title',
         emptyCellText: 'Untitled worksheet'
+    },{
+        xtype: 'actioncolumn',
+        width: 20,
+        items: [{
+            action: 'delete',
+            iconCls: 'prompt-delete glyph-danger',
+            glyph: 0xf056, // fa-minus-circle
+            tooltip: 'Delete prompt'
+        }]
     }]
 });

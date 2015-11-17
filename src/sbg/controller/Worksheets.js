@@ -42,7 +42,8 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         },
         grid: {
             beforeselect: 'onGridBeforeSelect',
-            select: 'onGridSelect'
+            select: 'onGridSelect',
+            deleteclick: 'onWorksheetDeleteClick'
         },
         'sbg-worksheets-form field': {
             dirtychange: 'onFieldDirtyChange'
@@ -160,6 +161,23 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         }
 
         me.syncFormButtons();
+    },
+
+    onWorksheetDeleteClick: function(grid, worksheet) {
+        Ext.Msg.confirm(
+            'Delete Worksheet',
+            Ext.String.format(
+                'Are you sure you want to delete the worksheet <strong>"{0}"</strong> and all of its prompts?',
+                worksheet.get('Title')
+            ),
+            function (btn) {
+                if (btn != 'yes') {
+                    return;
+                }
+
+                worksheet.erase();
+            }
+        );
     },
 
     onFieldDirtyChange: function(field, dirty) {
