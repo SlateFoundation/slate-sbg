@@ -212,8 +212,16 @@ Ext.define('Slate.sbg.controller.Worksheets', {
         promptsStore.endUpdate();
     },
 
-    onPromptDeleteClick: function(promptsGrid, prompt) {
-        promptsGrid.getStore().remove(prompt);
+    onPromptDeleteClick: function(promptsGrid, prompt, item, rowIndex) {
+        var promptsStore = promptsGrid.getStore();
+
+        promptsStore.remove(prompt);
+
+        promptsStore.each(function(otherPrompt, otherRowIndex) {
+            if (otherRowIndex >= rowIndex) {
+                otherPrompt.set('Position', otherRowIndex + 1);
+            }
+        });
     },
 
     onWorksheetUpdate: function(worksheetsStore, worksheet, operation) {
