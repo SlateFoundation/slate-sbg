@@ -47,8 +47,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
         },
         {
             name: 'Description',
-            type: 'string',
-            allowNull: true
+            type: 'string'
         }
     ],
 
