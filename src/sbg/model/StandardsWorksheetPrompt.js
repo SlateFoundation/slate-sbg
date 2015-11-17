@@ -40,7 +40,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
         {
             name: 'Position',
             type: 'int',
-            defaultValue: 0
+            defaultValue: 1
         },
         {
             name: 'Prompt',

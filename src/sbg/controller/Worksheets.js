@@ -196,9 +196,12 @@ Ext.define('Slate.sbg.controller.Worksheets', {
 
     onAddPromptBtnClick: function() {
         var promptsGrid = this.getPromptsGrid(),
-            prompt = promptsGrid.getStore().add({})[0];
+            promptsStore = promptsGrid.getStore(),
+            prompt = promptsStore.add({
+                Position: promptsStore.getCount() + 1
+            })[0];
 
-        promptsGrid.getPlugin('cellediting').startEdit(prompt, 0);
+        promptsGrid.getPlugin('cellediting').startEdit(prompt, 1);
     },
 
 

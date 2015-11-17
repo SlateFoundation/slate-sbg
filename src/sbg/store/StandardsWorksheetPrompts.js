@@ -4,5 +4,8 @@ Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {
 
     model: 'Slate.sbg.model.StandardsWorksheetPrompt',
     pageSize: false,
-    autoSync: false
+    autoSync: false,
+    sorters: [{
+        property: 'Position'
+    }]
 });

@@ -4,6 +4,7 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
     xtype: 'sbg-worksheets-promptsgrid',
     requires: [
         'Ext.grid.plugin.CellEditing',
+        'Ext.grid.column.Template',
         'Ext.form.field.Text',
         'Ext.grid.column.Action'
     ],
@@ -30,6 +31,11 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
     hideHeaders: true,
     store: 'StandardsWorksheetPrompts',
     columns: [{
+        xtype: 'templatecolumn',
+        text: 'Position',
+        width: 40,
+        tpl: '{Position}.'
+    },{
         flex: 1,
 
         text: 'Prompt',
@@ -42,8 +48,16 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
         }
     },{
         xtype: 'actioncolumn',
-        width: 30,
+        width: 50,
         items: [{
+            action: 'up',
+            glyph: 0xf062, // fa-arrow-up
+            tooltip: 'Move prompt up'
+        },{
+            action: 'down',
+            glyph: 0xf063, // fa-arrow-down
+            tooltip: 'Move prompt down'
+        },{
             action: 'delete',
             iconCls: 'prompt-delete glyph-danger',
             glyph: 0xf056, // fa-minus-circle
