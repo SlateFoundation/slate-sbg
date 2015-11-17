@@ -43,7 +43,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
         {
             name: 'Status',
             type: 'string',
-            defaultValue: 'Live'
+            defaultValue: 'published'
         },
         {
             name: 'Description',
@@ -51,9 +51,11 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
             allowNull: true
         }
     ],
+
     validators: {
         Title: 'presence'
     },
+
     proxy: {
         type: 'slaterecords',
         url: '/sbg/worksheets',
