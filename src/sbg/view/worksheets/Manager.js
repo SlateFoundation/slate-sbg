@@ -4,7 +4,7 @@ Ext.define('Slate.sbg.view.worksheets.Manager', {
     xtype: 'sbg-worksheets-manager',
     requires: [
         'Slate.sbg.view.worksheets.Grid',
-        'Slate.sbg.view.worksheets.Editor'
+        'Slate.sbg.view.worksheets.Form'
     ],
 
 
@@ -19,7 +19,7 @@ Ext.define('Slate.sbg.view.worksheets.Manager', {
         width: 500
     },{
         region: 'center',
-        xtype: 'sbg-worksheets-editor',
+        xtype: 'sbg-worksheets-form',
         flex: 1
     }],
 
