@@ -142,20 +142,24 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     },
 
     onGridSelect: function(selModel, worksheet) {
-        var form = this.getForm(),
-            promptsStore = this.getStandardsWorksheetPromptsStore();
+        var me = this,
+            form = me.getForm(),
+            promptsStore = me.getStandardsWorksheetPromptsStore();
 
-        promptsStore.removeAll();
         form.enable();
         form.loadRecord(worksheet);
 
-        if (!worksheet.phantom) {
+        if (worksheet.phantom) {
+            promptsStore.loadRecords([]);
+        } else {
             promptsStore.load({
                 params: {
                     worksheet: worksheet.getId()
                 }
             });
         }
+
+        me.syncFormButtons();
     },
 
     onFieldDirtyChange: function(field, dirty) {
