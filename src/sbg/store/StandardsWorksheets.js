@@ -4,5 +4,5 @@ Ext.define('Slate.sbg.store.StandardsWorksheets', {
 
     model: 'Slate.sbg.model.StandardsWorksheet',
     pageSize: false,
-    autoSync: true
+    autoSync: false
 });
