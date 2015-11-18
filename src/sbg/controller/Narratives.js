@@ -39,6 +39,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
         },
         controller: {
             '#progress.Narratives': {
+                reportload: 'onReportLoad',
                 beforereportsave: 'onBeforeReportSave'
             }
         }
@@ -176,11 +177,26 @@ Ext.define('Slate.sbg.controller.Narratives', {
         });
     },
 
+    onReportLoad: function(report) {
+        var promptsFieldset = this.getPromptsFieldset(),
+            promptComponents = promptsFieldset.items.getRange(),
+            len = promptComponents.length,
+            i = 0, promptComponent,
+            worksheetData = report.get('SbgWorksheet'),
+            gradesData = (worksheetData && worksheetData.worksheet_id == this.getWorksheet() && worksheetData.grades) || {};
+
+        for (; i < len; i++) {
+            promptComponent = promptComponents[i];
+
+            promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+        }
+    },
+
     onBeforeReportSave: function(report) {
         var promptsFieldset = this.getPromptsFieldset(),
             promptComponents = promptsFieldset.items.getRange(),
             len = promptComponents.length,
-            i = 0, promptComponent, prompt,
+            i = 0, promptComponent,
             worksheetData = {
                 worksheet_id: this.getWorksheet(),
                 grades: {}

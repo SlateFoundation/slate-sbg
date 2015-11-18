@@ -54,10 +54,11 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
     },
 
     setGrade: function(grade) {
-        var combo = me.combo;
+        var combo = this.combo;
 
         if (combo) {
             combo.setValue(grade);
+            combo.resetOriginalValue();
         }
     }
 });
