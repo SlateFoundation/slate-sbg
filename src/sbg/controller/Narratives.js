@@ -36,6 +36,11 @@ Ext.define('Slate.sbg.controller.Narratives', {
                 load: 'onSectionsLoad',
                 update: 'onSectionUpdate'
             }
+        },
+        controller: {
+            '#progress.Narratives': {
+                beforereportsave: 'onBeforeReportSave'
+            }
         }
     },
 
@@ -169,5 +174,25 @@ Ext.define('Slate.sbg.controller.Narratives', {
                 me.setWorksheet(worksheetId);
             }
         });
+    },
+
+    onBeforeReportSave: function(report) {
+        var promptsFieldset = this.getPromptsFieldset(),
+            promptComponents = promptsFieldset.items.getRange(),
+            len = promptComponents.length,
+            i = 0, promptComponent, prompt,
+            worksheetData = {
+                worksheet_id: this.getWorksheet(),
+                grades: {}
+            },
+            gradesData = worksheetData.grades;
+
+        for (; i < len; i++) {
+            promptComponent = promptComponents[i];
+
+            gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
+        }
+
+        report.set('SbgWorksheet', worksheetData);
     }
 });

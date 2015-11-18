@@ -17,6 +17,7 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
             xtype: 'combobox',
             width: 50,
 
+            submitValue: false,
             store: ['1', '2', '3', '4', 'N/A'],
             queryMode: 'local',
             forceSelection: true,
@@ -48,13 +49,15 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
         combo.setValue(grade || null);
     },
 
-    updatePrompt: function(prompt) {
-        if (this.rendered) {
-            debugger;
-        }
+    getGrade: function() {
+        return this.combo ? this.combo.getValue() : this.callParent();
     },
 
     setGrade: function(grade) {
-        debugger;
+        var combo = me.combo;
+
+        if (combo) {
+            combo.setValue(grade);
+        }
     }
 });
