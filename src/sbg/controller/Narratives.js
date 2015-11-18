@@ -22,6 +22,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
     listen: {
         store: {
             '#progress.narratives.Sections': {
+                load: 'onSectionsLoad',
                 update: 'onSectionUpdate'
             }
         }
@@ -43,29 +44,64 @@ Ext.define('Slate.sbg.controller.Narratives', {
         }
     },
 
+    onSectionsLoad: function(sectionsStore) {
+        var me = this,
+            sectionsView = me.getSectionsGrid().getView(),
+            assignmentsStore = me.getStandardsWorksheetAssignmentsStore();
+
+        assignmentsStore.getProxy().setExtraParam('term', me.getTermSelector().getValue());
+
+        sectionsView.setLoading('Loading SBG assignments&hellip;');
+
+        assignmentsStore.load({
+            callback: function(assignments) {
+                var len = assignments.length,
+                    i = 0, assignment, section;
+
+                sectionsStore.beginUpdate();
+
+                for (; i < len; i++) {
+                    assignment = assignments[i];
+                    section = sectionsStore.getById(assignment.get('CourseSectionID'));
+                    section.set({
+                        WorksheetID: assignment.get('WorksheetID'),
+                        worksheetAssignment: assignment
+                    }, { dirty: false });
+                }
+
+                sectionsStore.endUpdate();
+
+                sectionsView.setLoading(false);
+
+                // restore original loading text
+                sectionsView.loadMask.msg = sectionsView.loadingText;
+            }
+        });
+    },
+
     onSectionUpdate: function(sectionsStore, section, operation, modifiedFieldNames) {
         if (operation != 'edit' || modifiedFieldNames.indexOf('WorksheetID') == -1) {
             return;
         }
 
-        var worksheetAssignment = section.get('worksheetAssignment'),
+        var assignment = section.get('worksheetAssignment'),
             worksheetId = section.get('WorksheetID');
 
-        if (worksheetAssignment) {
-            worksheetAssignment.set('WorksheetID', worksheetId);
+        if (assignment) {
+            assignment.set('WorksheetID', worksheetId);
         } else {
-            worksheetAssignment = this.getStandardsWorksheetAssignmentsStore().add({
+            assignment = this.getStandardsWorksheetAssignmentsStore().add({
                 TermID: this.getTermSelector().getSelection().getId(),
                 CourseSectionID: section.getId(),
                 WorksheetID: worksheetId
             })[0];
         }
 
-        worksheetAssignment.save({
+        assignment.save({
             success: function() {
                 section.set({
                     WorksheetID: worksheetId,
-                    worksheetAssignment: worksheetAssignment
+                    worksheetAssignment: assignment
                 }, { dirty: false });
                 section.commit();
             }
