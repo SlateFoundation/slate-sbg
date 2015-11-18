@@ -2,6 +2,10 @@ Ext.define('Slate.sbg.controller.Narratives', {
     extend: 'Ext.app.Controller',
 
 
+    config: {
+        worksheet: null
+    },
+
     // controller config
     stores: [
         'StandardsWorksheets@Slate.sbg.store',
@@ -42,20 +46,11 @@ Ext.define('Slate.sbg.controller.Narratives', {
     },
 
 
-    // event handlers
-    onSectionsGridBoxReady: function(sectionsGrid) {
-        var worksheetsStore = this.getStandardsWorksheetsStore();
-
-        if (!worksheetsStore.isLoaded()) {
-            worksheetsStore.load();
-        }
-    },
-
-    onSectionsGridSelect: function(sectionsGrid, section) {
+    // config handlers
+    updateWorksheet: function(worksheetId) {
         var me = this,
             promptsFieldset = me.getPromptsFieldset(),
-            promptsStore = me.getStandardsWorksheetPromptsStore(),
-            worksheetId = section.get('WorksheetID');
+            promptsStore = me.getStandardsWorksheetPromptsStore();
 
         promptsFieldset.hide();
 
@@ -93,6 +88,20 @@ Ext.define('Slate.sbg.controller.Narratives', {
         } else {
             promptsStore.loadRecords([]);
         }
+    },
+
+
+    // event handlers
+    onSectionsGridBoxReady: function(sectionsGrid) {
+        var worksheetsStore = this.getStandardsWorksheetsStore();
+
+        if (!worksheetsStore.isLoaded()) {
+            worksheetsStore.load();
+        }
+    },
+
+    onSectionsGridSelect: function(sectionsGrid, section) {
+        this.setWorksheet(section.get('WorksheetID'));
     },
 
     onSectionsLoad: function(sectionsStore) {
@@ -135,14 +144,15 @@ Ext.define('Slate.sbg.controller.Narratives', {
             return;
         }
 
-        var assignment = section.get('worksheetAssignment'),
+        var me = this,
+            assignment = section.get('worksheetAssignment'),
             worksheetId = section.get('WorksheetID');
 
         if (assignment) {
             assignment.set('WorksheetID', worksheetId);
         } else {
-            assignment = this.getStandardsWorksheetAssignmentsStore().add({
-                TermID: this.getTermSelector().getSelection().getId(),
+            assignment = me.getStandardsWorksheetAssignmentsStore().add({
+                TermID: me.getTermSelector().getSelection().getId(),
                 CourseSectionID: section.getId(),
                 WorksheetID: worksheetId
             })[0];
@@ -155,6 +165,8 @@ Ext.define('Slate.sbg.controller.Narratives', {
                     worksheetAssignment: assignment
                 }, { dirty: false });
                 section.commit();
+
+                me.setWorksheet(worksheetId);
             }
         });
     }
