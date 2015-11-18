@@ -13,11 +13,11 @@ Ext.define('SlateSbg.overrides.SlateAdmin', {
         me.columns = me.columns.concat({
             text: 'Worksheet',
             dataIndex: 'WorksheetID',
-            emptyCellText: '[Click to enable SBG]',
+            emptyCellText: '[Double-click to enable SBG]',
             width: 200,
             editor: {
                 xtype: 'combo',
-                allowBlank: false,
+                allowBlank: true,
                 emptyText: 'Select worksheet',
 
                 store: 'StandardsWorksheets',
@@ -47,7 +47,7 @@ Ext.define('SlateSbg.overrides.SlateAdmin', {
 
         me.plugins = (me.plugins || []).concat({
             ptype: 'cellediting',
-            clicksToEdit: 1
+            clicksToEdit: 2
         });
 
         me.callParent(arguments);
