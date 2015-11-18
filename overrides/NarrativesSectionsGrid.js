@@ -12,8 +12,8 @@ Ext.define('SlateSbg.overrides.SlateAdmin', {
 
         me.columns = me.columns.concat({
             text: 'Worksheet',
-            dataIndex: 'worksheet',
-            emptyCellText: 'Click to enable SBG',
+            dataIndex: 'WorksheetID',
+            emptyCellText: '[Click to enable SBG]',
             width: 200,
             editor: {
                 xtype: 'combo',
