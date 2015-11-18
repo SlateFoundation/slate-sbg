@@ -5,17 +5,24 @@ Ext.define('Slate.sbg.controller.Narratives', {
     // controller config
     stores: [
         'StandardsWorksheets@Slate.sbg.store',
-        'StandardsWorksheetAssignments@Slate.sbg.store'
+        'StandardsWorksheetAssignments@Slate.sbg.store',
+        'StandardsWorksheetPrompts@Slate.sbg.store'
+    ],
+
+    views: [
+        'WorksheetPrompt@Slate.sbg.widget'
     ],
 
     refs: {
         sectionsGrid: 'progress-narratives-sectionsgrid',
-        termSelector: 'progress-narratives-sectionsgrid #termSelector'
+        termSelector: 'progress-narratives-sectionsgrid #termSelector',
+        promptsFieldset: 'progress-narratives-editorform #sbgPromptsFieldset'
     },
 
     control: {
         sectionsGrid: {
-            boxready: 'onSectionsGridBoxReady'
+            boxready: 'onSectionsGridBoxReady',
+            select: 'onSectionsGridSelect'
         }
     },
 
@@ -41,6 +48,50 @@ Ext.define('Slate.sbg.controller.Narratives', {
 
         if (!worksheetsStore.isLoaded()) {
             worksheetsStore.load();
+        }
+    },
+
+    onSectionsGridSelect: function(sectionsGrid, section) {
+        var me = this,
+            promptsFieldset = me.getPromptsFieldset(),
+            promptsStore = me.getStandardsWorksheetPromptsStore(),
+            worksheetId = section.get('WorksheetID');
+
+        promptsFieldset.hide();
+
+        if (worksheetId) {
+            promptsStore.getProxy().setExtraParam('worksheet', worksheetId);
+
+            promptsStore.load({
+                callback: function(prompts) {
+                    var len = prompts.length,
+                        i = 0, prompt,
+                        promptComponents = [];
+
+                    for (; i < len; i++) {
+                        prompt = prompts[i];
+
+                        promptComponents.push({
+                            prompt: prompt
+                        });
+                    }
+
+                    if (!promptComponents.length) {
+                        promptComponents.push({
+                            xtype: 'component',
+                            html: 'Selected worksheet contains no prompts'
+                        });
+                    }
+
+                    Ext.suspendLayouts();
+                    promptsFieldset.removeAll();
+                    promptsFieldset.add(promptComponents);
+                    promptsFieldset.show();
+                    Ext.resumeLayouts(true);
+                }
+            });
+        } else {
+            promptsStore.loadRecords([]);
         }
     },
 

@@ -1,0 +1,60 @@
+/*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext,SlateAdmin*/
+Ext.define('Slate.sbg.widget.WorksheetPrompt', {
+    extend: 'Ext.container.Container',
+    xtype: 'sbg-worksheets-prompt',
+    requires: [
+        'Ext.form.field.ComboBox'
+    ],
+
+    config: {
+        prompt: null,
+        grade: null
+    },
+
+    layout: 'hbox',
+    items: [
+        {
+            xtype: 'combobox',
+            width: 50,
+
+            store: ['1', '2', '3', '4', 'N/A'],
+            queryMode: 'local',
+            forceSelection: true,
+            autoSelect: true
+        },
+        {
+            itemId: 'promptCmp',
+            flex: 1,
+
+            xtype: 'component',
+            tpl: '{Prompt}'
+        }
+    ],
+
+    initComponent: function() {
+        var me = this,
+            combo, promptCmp,
+            prompt, grade;
+
+        me.callParent(arguments);
+
+        combo = me.combo = me.down('combobox');
+        promptCmp = me.promptCmp = me.down('#promptCmp');
+
+        if (prompt = me.getPrompt()) {
+            promptCmp.update(prompt.getData());
+        }
+
+        combo.setValue(grade || null);
+    },
+
+    updatePrompt: function(prompt) {
+        if (this.rendered) {
+            debugger;
+        }
+    },
+
+    setGrade: function(grade) {
+        debugger;
+    }
+});
