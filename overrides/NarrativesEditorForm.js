@@ -21,5 +21,36 @@ Ext.define('SlateSbg.overrides.SlateAdmin', {
         }]);
 
         me.callParent(arguments);
+
+        me.sbgPromptsFieldset = me.down('#sbgPromptsFieldset');
+    },
+
+    getSbgGrades: function() {
+        var promptComponents = this.sbgPromptsFieldset.items.getRange(),
+            len = promptComponents.length,
+            i = 0, promptComponent,
+            gradesData = {};
+
+        for (; i < len; i++) {
+            promptComponent = promptComponents[i];
+
+            gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
+        }
+
+        return gradesData;
+    },
+
+    setSbgGrades: function(gradesData) {
+        var promptComponents = this.sbgPromptsFieldset.items.getRange(),
+            len = promptComponents.length,
+            i = 0, promptComponent;
+
+        gradesData = gradesData || {};
+
+        for (; i < len; i++) {
+            promptComponent = promptComponents[i];
+
+            promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+        }
     }
 });

@@ -20,6 +20,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
     refs: {
         sectionsGrid: 'progress-narratives-sectionsgrid',
         termSelector: 'progress-narratives-sectionsgrid #termSelector',
+        editorForm: 'progress-narratives-editorform',
         promptsFieldset: 'progress-narratives-editorform #sbgPromptsFieldset'
     },
 
@@ -40,7 +41,8 @@ Ext.define('Slate.sbg.controller.Narratives', {
         controller: {
             '#progress.Narratives': {
                 reportload: 'onReportLoad',
-                beforereportsave: 'onBeforeReportSave'
+                beforereportsave: 'onBeforeReportSave',
+                reportsave: 'onReportSave'
             }
         }
     },
@@ -172,37 +174,29 @@ Ext.define('Slate.sbg.controller.Narratives', {
     },
 
     onReportLoad: function(report) {
-        var promptsFieldset = this.getPromptsFieldset(),
-            promptComponents = promptsFieldset.items.getRange(),
-            len = promptComponents.length,
-            i = 0, promptComponent,
-            worksheetData = report.get('SbgWorksheet'),
-            gradesData = (worksheetData && worksheetData.worksheet_id == this.getWorksheet() && worksheetData.grades) || {};
+        var worksheetData = report.get('SbgWorksheet');
 
-        for (; i < len; i++) {
-            promptComponent = promptComponents[i];
-
-            promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
-        }
+        this.getEditorForm().setSbgGrades(
+            worksheetData &&
+            worksheetData.worksheet_id == this.getWorksheet() &&
+            worksheetData.grades
+        );
     },
 
     onBeforeReportSave: function(report) {
-        var promptsFieldset = this.getPromptsFieldset(),
-            promptComponents = promptsFieldset.items.getRange(),
-            len = promptComponents.length,
-            i = 0, promptComponent,
-            worksheetData = {
-                worksheet_id: this.getWorksheet(),
-                grades: {}
-            },
-            gradesData = worksheetData.grades;
+        report.set('SbgWorksheet', {
+            worksheet_id: this.getWorksheet(),
+            grades: this.getEditorForm().getSbgGrades()
+        });
+    },
 
-        for (; i < len; i++) {
-            promptComponent = promptComponents[i];
+    onReportSave: function(report) {
+        var worksheetData = report.get('SbgWorksheet');
 
-            gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
-        }
-
-        report.set('SbgWorksheet', worksheetData);
+        this.getEditorForm().setSbgGrades(
+            worksheetData &&
+            worksheetData.worksheet_id == this.getWorksheet() &&
+            worksheetData.grades
+        );
     }
 });
