@@ -1,4 +1,4 @@
-Ext.define('SlateSbg.overrides.SlateAdmin', {
+Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
     override: 'SlateAdmin.view.progress.narratives.SectionsGrid',
     requires: [
         'Ext.grid.plugin.CellEditing',

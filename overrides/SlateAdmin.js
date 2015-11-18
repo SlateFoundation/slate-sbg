@@ -1,4 +1,4 @@
-Ext.define('SlateSbg.overrides.SlateAdmin', {
+Ext.define('Slate.sbg.overrides.SlateAdmin', {
     override: 'SlateAdmin.Application',
     requires: [
         'Slate.sbg.controller.Worksheets',

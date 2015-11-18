@@ -1,4 +1,4 @@
-Ext.define('SlateSbg.overrides.SlateAdmin', {
+Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
     override: 'SlateAdmin.view.progress.narratives.EditorForm',
     requires: [
         'Ext.form.FieldSet',
