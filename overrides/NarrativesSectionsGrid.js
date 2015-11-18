@@ -29,6 +29,19 @@ Ext.define('SlateSbg.overrides.SlateAdmin', {
                 typeAhead: true,
                 forceSelection: true,
                 selectOnFocus: true,
+            },
+            renderer: function(worksheetId, metaData, section) {
+                if (!worksheetId) {
+                    return null;
+                }
+
+                var worksheet = Ext.getStore('StandardsWorksheets').getById(worksheetId);
+
+                if (!worksheet) {
+                    return '[Deleted Worksheet]';
+                }
+
+                return worksheet.get('Title');
             }
         });
 
