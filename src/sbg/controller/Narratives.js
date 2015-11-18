@@ -46,12 +46,6 @@ Ext.define('Slate.sbg.controller.Narratives', {
     },
 
 
-    // controller template methods
-    onLaunch: function() {
-        //debugger;
-    },
-
-
     // config handlers
     updateWorksheet: function(worksheetId) {
         var me = this,
