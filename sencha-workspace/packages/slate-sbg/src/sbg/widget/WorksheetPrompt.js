@@ -15,10 +15,10 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
     items: [
         {
             xtype: 'combobox',
-            width: 50,
+            width: 75,
 
             submitValue: false,
-            store: ['1', '2', '3', '4', 'N/A'],
+            store: 'StandardsWorksheetPromptOptions',
             queryMode: 'local',
             forceSelection: true,
             autoSelect: true

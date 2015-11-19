@@ -11,7 +11,8 @@ Ext.define('Slate.sbg.controller.Narratives', {
     stores: [
         'StandardsWorksheets@Slate.sbg.store',
         'StandardsWorksheetAssignments@Slate.sbg.store',
-        'StandardsWorksheetPrompts@Slate.sbg.store'
+        'StandardsWorksheetPrompts@Slate.sbg.store',
+        'StandardsWorksheetPromptOptions@Slate.sbg.store'
     ],
 
     views: [
