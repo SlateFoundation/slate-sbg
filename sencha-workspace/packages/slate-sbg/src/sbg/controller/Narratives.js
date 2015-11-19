@@ -1,3 +1,4 @@
+/* global Ext */
 Ext.define('Slate.sbg.controller.Narratives', {
     extend: 'Ext.app.Controller',
 
@@ -111,7 +112,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
             sectionsView = me.getSectionsGrid().getView(),
             assignmentsStore = me.getStandardsWorksheetAssignmentsStore();
 
-        assignmentsStore.getProxy().setExtraParam('term', me.getTermSelector().getValue());
+        assignmentsStore.getProxy().setExtraParams(sectionsStore.getProxy().getExtraParams());
 
         sectionsView.setLoading('Loading SBG assignments&hellip;');
 
