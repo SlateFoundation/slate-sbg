@@ -99,6 +99,8 @@ Ext.define('Slate.sbg.controller.Narratives', {
     onSectionsGridBoxReady: function(sectionsGrid) {
         var worksheetsStore = this.getStandardsWorksheetsStore();
 
+        this.setWorksheet(null);
+
         if (!worksheetsStore.isLoaded()) {
             worksheetsStore.load();
         }
