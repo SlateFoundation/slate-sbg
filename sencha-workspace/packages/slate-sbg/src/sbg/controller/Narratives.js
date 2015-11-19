@@ -110,24 +110,23 @@ Ext.define('Slate.sbg.controller.Narratives', {
     onSectionsLoad: function(sectionsStore) {
         var me = this,
             sectionsView = me.getSectionsGrid().getView(),
-            assignmentsStore = me.getStandardsWorksheetAssignmentsStore();
-
-        assignmentsStore.getProxy().setExtraParams(sectionsStore.getProxy().getExtraParams());
-
-        sectionsView.setLoading('Loading SBG assignments&hellip;');
-
-        assignmentsStore.load({
-            callback: function(assignments) {
-                var len = assignments.length,
-                    i = 0, assignment, section;
+            worksheetsStore = me.getStandardsWorksheetsStore(),
+            assignmentsStore = me.getStandardsWorksheetAssignmentsStore(),
+            finishLoadAssignments = function() {
+                var assignments = assignmentsStore.getRange(),
+                    len = assignments.length,
+                    i = 0, assignment, worksheetId, section;
 
                 sectionsStore.beginUpdate();
 
                 for (; i < len; i++) {
                     assignment = assignments[i];
+                    worksheetId = assignment.get('WorksheetID');
+
                     if (section = sectionsStore.getById(assignment.get('CourseSectionID'))) {
                         section.set({
-                            WorksheetID: assignment.get('WorksheetID'),
+                            WorksheetID: worksheetId,
+                            worksheet: worksheetsStore.getById(worksheetId),
                             worksheetAssignment: assignment
                         }, { dirty: false });
                     }
@@ -139,6 +138,19 @@ Ext.define('Slate.sbg.controller.Narratives', {
 
                 // restore original loading text
                 sectionsView.loadMask.msg = sectionsView.loadingText;
+            };
+
+        assignmentsStore.getProxy().setExtraParams(sectionsStore.getProxy().getExtraParams());
+
+        sectionsView.setLoading('Loading SBG assignments&hellip;');
+
+        assignmentsStore.load({
+            callback: function() {
+                if (worksheetsStore.isLoading()) {
+                    worksheetsStore.on('load', finishLoadAssignments, me, { single: true });
+                } else {
+                    finishLoadAssignments();
+                }
             }
         });
     },

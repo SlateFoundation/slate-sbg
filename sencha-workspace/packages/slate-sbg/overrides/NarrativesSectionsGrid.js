@@ -35,7 +35,7 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
                     return null;
                 }
 
-                var worksheet = Ext.getStore('StandardsWorksheets').getById(worksheetId);
+                var worksheet = section.get('worksheet');
 
                 if (!worksheet) {
                     return '[Deleted Worksheet]';
