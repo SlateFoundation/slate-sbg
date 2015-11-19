@@ -125,11 +125,12 @@ Ext.define('Slate.sbg.controller.Narratives', {
 
                 for (; i < len; i++) {
                     assignment = assignments[i];
-                    section = sectionsStore.getById(assignment.get('CourseSectionID'));
-                    section.set({
-                        WorksheetID: assignment.get('WorksheetID'),
-                        worksheetAssignment: assignment
-                    }, { dirty: false });
+                    if (section = sectionsStore.getById(assignment.get('CourseSectionID'))) {
+                        section.set({
+                            WorksheetID: assignment.get('WorksheetID'),
+                            worksheetAssignment: assignment
+                        }, { dirty: false });
+                    }
                 }
 
                 sectionsStore.endUpdate();
