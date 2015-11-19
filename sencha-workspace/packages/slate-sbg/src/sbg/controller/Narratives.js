@@ -160,6 +160,10 @@ Ext.define('Slate.sbg.controller.Narratives', {
             })[0];
         }
 
+        if (!assignment.dirty) {
+            return;
+        }
+
         assignment.save({
             success: function() {
                 section.set({
