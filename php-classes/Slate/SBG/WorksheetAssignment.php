@@ -20,10 +20,6 @@ class WorksheetAssignment extends \ActiveRecord
         'WorksheetID' => [
             'type' => 'uint',
             'notnull' => false
-        ],
-        'Description' => [
-            'type' => 'clob',
-            'notnull' => false
         ]
     ];
 
