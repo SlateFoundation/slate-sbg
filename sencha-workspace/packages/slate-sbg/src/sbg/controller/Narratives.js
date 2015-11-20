@@ -185,6 +185,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
             success: function() {
                 section.set({
                     WorksheetID: worksheetId,
+                    worksheet: me.getStandardsWorksheetsStore().getById(worksheetId),
                     worksheetAssignment: assignment
                 }, { dirty: false });
                 section.commit();
