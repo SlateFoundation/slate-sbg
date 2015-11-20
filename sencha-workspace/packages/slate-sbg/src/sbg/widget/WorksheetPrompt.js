@@ -15,13 +15,14 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
     items: [
         {
             xtype: 'combobox',
-            width: 75,
+            width: 60,
 
             submitValue: false,
             store: 'StandardsWorksheetPromptOptions',
             queryMode: 'local',
             forceSelection: true,
-            autoSelect: true
+            autoSelect: true,
+            matchFieldWidth: false
         },
         {
             itemId: 'promptCmp',
