@@ -276,6 +276,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
             worksheet = form.getRecord(),
             worksheetWasPhantom = worksheet.phantom,
             promptsStore = me.getStandardsWorksheetPromptsStore(),
+            isPromptsStoreDirty = me.isPromptsStoreDirty(),
             doSavePrompts = function() {
                 var worksheetId = worksheet.getId();
 
@@ -285,16 +286,20 @@ Ext.define('Slate.sbg.controller.Worksheets', {
                     });
                 }
 
-                promptsStore.sync({
-                    callback: function(batch, options) {
-                        managerCt.setLoading(false);
-                    }
-                });
+                if (isPromptsStoreDirty) {
+                    promptsStore.sync({
+                        callback: function(batch, options) {
+                            managerCt.setLoading(false);
+                        }
+                    });
+                } else {
+                    managerCt.setLoading(false);
+                }
             };
 
         form.updateRecord(worksheet);
 
-        if (!worksheet.dirty && !me.isPromptsStoreDirty()) {
+        if (!worksheet.dirty && !isPromptsStoreDirty) {
             return;
         }
 
