@@ -6,14 +6,16 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
     ],
 
     width: 300,
+    worksheetColumnTitle: 'Worksheet',
+    emptyWorksheetText: '<em>Double-click to select</em>',
 
     initComponent: function() {
         var me = this;
 
         me.columns = me.columns.concat({
-            text: 'Worksheet',
+            text: me.worksheetColumnTitle,
             dataIndex: 'WorksheetID',
-            emptyCellText: '[Double-click to enable SBG]',
+            emptyCellText: me.emptyWorksheetText,
             width: 200,
             editor: {
                 xtype: 'combo',
@@ -35,7 +37,7 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
                     return null;
                 }
 
-                var worksheet = Ext.getStore('StandardsWorksheets').getById(worksheetId);
+                var worksheet = section.get('worksheet');
 
                 if (!worksheet) {
                     return '[Deleted Worksheet]';

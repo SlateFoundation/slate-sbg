@@ -44,11 +44,6 @@ Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
             name: 'WorksheetID',
             type: 'int',
             allowNull: true
-        },
-        {
-            name: 'Description',
-            type: 'string',
-            allowNull: true
         }
     ],
 

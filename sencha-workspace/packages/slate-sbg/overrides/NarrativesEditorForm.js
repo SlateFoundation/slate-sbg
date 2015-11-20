@@ -47,7 +47,9 @@ Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
         for (; i < len; i++) {
             promptComponent = promptComponents[i];
 
-            promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+            if (promptComponent.isXType('sbg-worksheets-prompt')) {
+                promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+            }
         }
     }
 });
