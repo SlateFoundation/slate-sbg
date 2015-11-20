@@ -14,18 +14,13 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
     items: [
         {
             xtype: 'combobox',
-            width: 50,
+            width: 60,
             submitValue: false,
-            store: [
-                '1',
-                '2',
-                '3',
-                '4',
-                'N/A'
-            ],
+            store: 'StandardsWorksheetPromptOptions',
             queryMode: 'local',
             forceSelection: true,
-            autoSelect: true
+            autoSelect: true,
+            matchFieldWidth: false
         },
         {
             itemId: 'promptCmp',
@@ -97,7 +92,9 @@ Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
         gradesData = gradesData || {};
         for (; i < len; i++) {
             promptComponent = promptComponents[i];
-            promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+            if (promptComponent.isXType('sbg-worksheets-prompt')) {
+                promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+            }
         }
     }
 });
@@ -119,12 +116,14 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
         'Ext.form.field.ComboBox'
     ],
     width: 300,
+    worksheetColumnTitle: 'Worksheet',
+    emptyWorksheetText: '<em>Double-click to select</em>',
     initComponent: function() {
         var me = this;
         me.columns = me.columns.concat({
-            text: 'Worksheet',
+            text: me.worksheetColumnTitle,
             dataIndex: 'WorksheetID',
-            emptyCellText: '[Double-click to enable SBG]',
+            emptyCellText: me.emptyWorksheetText,
             width: 200,
             editor: {
                 xtype: 'combo',
@@ -143,7 +142,7 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
                 if (!worksheetId) {
                     return null;
                 }
-                var worksheet = Ext.getStore('StandardsWorksheets').getById(worksheetId);
+                var worksheet = section.get('worksheet');
                 if (!worksheet) {
                     return '[Deleted Worksheet]';
                 }
@@ -873,11 +872,6 @@ Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
             name: 'WorksheetID',
             type: 'int',
             allowNull: true
-        },
-        {
-            name: 'Description',
-            type: 'string',
-            allowNull: true
         }
     ],
     proxy: {
@@ -897,6 +891,41 @@ Ext.define('Slate.sbg.store.StandardsWorksheetAssignments', {
     autoSync: false
 });
 
+/*jslint browser: true, undef: true, white: false, laxbreak: true */
+/*global Ext*/
+Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {
+    extend: 'Ext.data.Store',
+    config: {
+        fields: [
+            'id',
+            'text'
+        ],
+        data: [
+            {
+                id: 0,
+                text: 'N/A'
+            },
+            {
+                id: 1,
+                text: '1'
+            },
+            {
+                id: 2,
+                text: '2'
+            },
+            {
+                id: 3,
+                text: '3'
+            },
+            {
+                id: 4,
+                text: '4'
+            }
+        ]
+    }
+});
+
+/* global Ext */
 Ext.define('Slate.sbg.controller.Narratives', {
     extend: 'Ext.app.Controller',
     config: {
@@ -906,7 +935,8 @@ Ext.define('Slate.sbg.controller.Narratives', {
     stores: [
         'StandardsWorksheets@Slate.sbg.store',
         'StandardsWorksheetAssignments@Slate.sbg.store',
-        'StandardsWorksheetPrompts@Slate.sbg.store'
+        'StandardsWorksheetPrompts@Slate.sbg.store',
+        'StandardsWorksheetPromptOptions@Slate.sbg.store'
     ],
     views: [
         'WorksheetPrompt@Slate.sbg.widget'
@@ -978,6 +1008,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
     // event handlers
     onSectionsGridBoxReady: function(sectionsGrid) {
         var worksheetsStore = this.getStandardsWorksheetsStore();
+        this.setWorksheet(null);
         if (!worksheetsStore.isLoaded()) {
             worksheetsStore.load();
         }
@@ -988,29 +1019,43 @@ Ext.define('Slate.sbg.controller.Narratives', {
     onSectionsLoad: function(sectionsStore) {
         var me = this,
             sectionsView = me.getSectionsGrid().getView(),
-            assignmentsStore = me.getStandardsWorksheetAssignmentsStore();
-        assignmentsStore.getProxy().setExtraParam('term', me.getTermSelector().getValue());
-        sectionsView.setLoading('Loading SBG assignments&hellip;');
-        assignmentsStore.load({
-            callback: function(assignments) {
-                var len = assignments.length,
+            worksheetsStore = me.getStandardsWorksheetsStore(),
+            assignmentsStore = me.getStandardsWorksheetAssignmentsStore(),
+            finishLoadAssignments = function() {
+                var assignments = assignmentsStore.getRange(),
+                    len = assignments.length,
                     i = 0,
-                    assignment, section;
+                    assignment, worksheetId, section;
                 sectionsStore.beginUpdate();
                 for (; i < len; i++) {
                     assignment = assignments[i];
-                    section = sectionsStore.getById(assignment.get('CourseSectionID'));
-                    section.set({
-                        WorksheetID: assignment.get('WorksheetID'),
-                        worksheetAssignment: assignment
-                    }, {
-                        dirty: false
-                    });
+                    worksheetId = assignment.get('WorksheetID');
+                    if (section = sectionsStore.getById(assignment.get('CourseSectionID'))) {
+                        section.set({
+                            WorksheetID: worksheetId,
+                            worksheet: worksheetsStore.getById(worksheetId),
+                            worksheetAssignment: assignment
+                        }, {
+                            dirty: false
+                        });
+                    }
                 }
                 sectionsStore.endUpdate();
                 sectionsView.setLoading(false);
                 // restore original loading text
                 sectionsView.loadMask.msg = sectionsView.loadingText;
+            };
+        assignmentsStore.getProxy().setExtraParams(sectionsStore.getProxy().getExtraParams());
+        sectionsView.setLoading('Loading SBG assignments&hellip;');
+        assignmentsStore.load({
+            callback: function() {
+                if (worksheetsStore.isLoading()) {
+                    worksheetsStore.on('load', finishLoadAssignments, me, {
+                        single: true
+                    });
+                } else {
+                    finishLoadAssignments();
+                }
             }
         });
     },
@@ -1029,6 +1074,9 @@ Ext.define('Slate.sbg.controller.Narratives', {
                 CourseSectionID: section.getId(),
                 WorksheetID: worksheetId
             })[0];
+        }
+        if (!assignment.dirty) {
+            return;
         }
         assignment.save({
             success: function() {
