@@ -1080,7 +1080,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
                 WorksheetID: worksheetId
             })[0];
         }
-        if (!assignment.dirty) {
+        if (!assignment.dirty && !assignment.phantom) {
             return;
         }
         assignment.save({
