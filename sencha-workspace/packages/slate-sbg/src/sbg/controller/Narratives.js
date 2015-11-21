@@ -177,7 +177,7 @@ Ext.define('Slate.sbg.controller.Narratives', {
             })[0];
         }
 
-        if (!assignment.dirty) {
+        if (!assignment.dirty && !assignment.phantom) {
             return;
         }
 
