@@ -32,6 +32,11 @@ class Worksheet extends \ActiveRecord
             'type' => 'one-many',
             'class' => WorksheetPrompt::class,
             'order' => 'Position'
+        ],
+        'PromptsByID' => [
+            'type' => 'one-many',
+            'class' => WorksheetPrompt::class,
+            'indexField' => 'ID'
         ]
     ];
 
