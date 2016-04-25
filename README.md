@@ -13,3 +13,9 @@ Generic standards-based grading capabilities for Slate
 9. Check out major version build branch with `git checkout builds/v1`
 10. Merge latest build into major version build branch with `git merge --strategy-option theirs builds/vX.Y.Z`
 11. Push major build branch to server with `git push origin builds/v1`
+
+
+## Installation Process
+1. Copy [sample `slate-sbg.php` git config script](https://github.com/SlateFoundation/slate-sbg/blob/master/php-config/Git.config.d/slate-sbg.php) into site
+2. Visit `/git/status` and initialize the `slate-sbg` layer
+3. Return to `/git/status` and click <kbd>Disk → VFS</kbd> for the `slate-sbg` layer
