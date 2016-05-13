@@ -4,7 +4,7 @@ namespace Slate\SBG;
 
 use HandleBehavior;
 
-class Worksheet extends \ActiveRecord
+class Worksheet extends \VersionedRecord
 {
     // ActiveRecord configuration
     public static $tableName = 'sbg_worksheets';

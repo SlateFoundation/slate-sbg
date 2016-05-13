@@ -2,7 +2,7 @@
 
 namespace Slate\SBG;
 
-class WorksheetPrompt extends \ActiveRecord
+class WorksheetPrompt extends \VersionedRecord
 {
     // ActiveRecord configuration
     public static $tableName = 'sbg_worksheet_prompts';
