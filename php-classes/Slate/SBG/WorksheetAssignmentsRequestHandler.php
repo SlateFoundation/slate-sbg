@@ -43,7 +43,7 @@ class WorksheetAssignmentsRequestHandler extends \RecordsRequestHandler
                     $EnrolledUser->ID
                 ]
             );
-            
+
             $conditions[] = sprintf('CourseSectionID IN (%s)', count($enrolledSectionIds) ? join(',', $enrolledSectionIds) : '0');
         }
 
