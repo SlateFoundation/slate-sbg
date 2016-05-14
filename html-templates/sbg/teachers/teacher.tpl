@@ -14,7 +14,7 @@
             padding: 0;
             position: absolute;
             width: 1px;
-        }   
+        }
 
         .checkbox-field {
             margin-top: .3333em;
@@ -87,7 +87,7 @@
         td {
             background: #f5f5f5;
         }
-        
+
         td,
         th {
             background: white;
@@ -143,7 +143,7 @@
             background: #888;
             border-top: 2px solid #888;
             padding-left: 2em;
-        }            
+        }
 
         .bool-mark {
             border: 1px solid rgba(0, 0, 0, 0.3333);
@@ -170,13 +170,13 @@
         td.standards-grid-standard-row {
             padding: 0;
         }
-        
+
         .standards-grid-standard-header {
             font-size: small;
             line-height: 1.25;
             padding: 1em;
         }
-        
+
         .standards-grid-section-header {
             border-bottom: 1px solid white;
             font-size: small;
@@ -230,7 +230,7 @@
             }, $this->scope['data'])
         ));
 
-        // collect all grades
+        // collect all reports
         $termIds = array_map(function($Term) {
             return $Term->ID;
         }, $this->scope['worksheetTerms']);
@@ -239,22 +239,34 @@
             return $CourseSection->ID;
         }, $this->scope['worksheetCourseSections']);
 
-        $this->scope['grades'] = Slate\Standards\PromptGrade::getAllByWhere([
+        $this->scope['reports'] = DB::allRecords(
+            'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s) AND Status = "published"',
+            [
+                Slate\Progress\Narratives\Report::$tableName,
+                implode(',', $termIds),
+                implode(',', $courseSectionIds)
+            ]
+        );
+
+        /*Slate\Progress\Narratives\Report::getAllByWhere([
             'TermID IN ('.implode(',', $termIds).')',
             'CourseSectionID IN ('.implode(',', $courseSectionIds).')'
-        ]);
+        ])*/;
+
     ?>
 
     <script type="text/javascript">
         var SiteEnvironment = SiteEnvironment || { };
         SiteEnvironment.user = {$.User->getData()|json_encode};
+
+        SiteEnvironment.standardsWorksheetAssignments = {JSON::translateObjects($data)|json_encode};
         SiteEnvironment.standardsTerm = {JSON::translateObjects($Term)|json_encode};
         SiteEnvironment.standardsTeacher = {JSON::translateObjects($Teacher)|json_encode};
+
         SiteEnvironment.standardsWorksheets = {JSON::translateObjects($worksheets, false, 'Prompts')|json_encode};
         SiteEnvironment.standardsWorksheetTerms = {JSON::translateObjects($worksheetTerms)|json_encode};
         SiteEnvironment.standardsWorksheetCourseSections = {JSON::translateObjects($worksheetCourseSections)|json_encode};
-        SiteEnvironment.standardsGrades = {JSON::translateObjects($grades)|json_encode};
-        SiteEnvironment.standardsWorksheetAssignments = {JSON::translateObjects($data)|json_encode};
+        SiteEnvironment.standardsReports = {JSON::translateObjects($reports)|json_encode};
     </script>
 
     {$dwoo.parent}
