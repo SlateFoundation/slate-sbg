@@ -2,6 +2,7 @@
     "name": "slate-sbg",
     "type": "code",
     "framework": "ext",
+    "toolkit": "classic",
     "creator": "anonymous",
     "summary": "Short summary",
     "detailedDescription": "Long description of package",
