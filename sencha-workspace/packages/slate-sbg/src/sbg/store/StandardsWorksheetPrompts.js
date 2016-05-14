@@ -2,10 +2,14 @@
 Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {
     extend: 'Ext.data.Store',
 
+
     model: 'Slate.sbg.model.StandardsWorksheetPrompt',
-    pageSize: false,
-    autoSync: false,
-    sorters: [{
-        property: 'Position'
-    }]
+
+    config: {
+        pageSize: false,
+        autoSync: false,
+        sorters: [{
+            property: 'Position'
+        }]
+    }
 });

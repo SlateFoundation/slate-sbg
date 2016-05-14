@@ -2,7 +2,11 @@
 Ext.define('Slate.sbg.store.StandardsWorksheetAssignments', {
     extend: 'Ext.data.Store',
 
+
     model: 'Slate.sbg.model.StandardsWorksheetAssignment',
-    pageSize: false,
-    autoSync: false
+
+    config: {
+        pageSize: false,
+        autoSync: false
+    }
 });

@@ -1,3 +1,50 @@
+Ext.define('Slate.sbg.overrides.TermReport', {
+    override: 'Slate.model.TermReport'
+}, function(Report) {
+    Report.addFields([
+        {
+            name: 'SbgWorksheet',
+            convert: function(v) {
+                return typeof v == 'string' ? Ext.decode(v, true) || null : v;
+            }
+        }
+    ]);
+});
+
+/*jslint browser: true, undef: true, white: false, laxbreak: true */
+/*global Ext*/
+Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {
+    extend: 'Ext.data.Store',
+    config: {
+        fields: [
+            'id',
+            'text'
+        ],
+        data: [
+            {
+                id: 0,
+                text: 'N/A'
+            },
+            {
+                id: 1,
+                text: '1'
+            },
+            {
+                id: 2,
+                text: '2'
+            },
+            {
+                id: 3,
+                text: '3'
+            },
+            {
+                id: 4,
+                text: '4'
+            }
+        ]
+    }
+});
+
 /*jslint browser: true, undef: true, white: false, laxbreak: true */
 /*global Ext,SlateAdmin*/
 Ext.define('Slate.sbg.widget.WorksheetPrompt', {
@@ -16,7 +63,9 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
             xtype: 'combobox',
             width: 60,
             submitValue: false,
-            store: 'StandardsWorksheetPromptOptions',
+            store: {
+                xclass: 'Slate.sbg.store.StandardsWorksheetPromptOptions'
+            },
             valueField: 'id',
             displayField: 'text',
             queryMode: 'local',
@@ -101,16 +150,6 @@ Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
     }
 });
 
-Ext.define('Slate.sbg.overrides.NarrativesReport', {
-    override: 'SlateAdmin.model.progress.narratives.Report'
-}, function(Report) {
-    Report.addFields([
-        {
-            name: 'SbgWorksheet'
-        }
-    ]);
-});
-
 Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
     override: 'SlateAdmin.view.progress.narratives.SectionsGrid',
     requires: [
@@ -164,9 +203,11 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
 Ext.define('Slate.sbg.model.StandardsWorksheet', {
     extend: 'Ext.data.Model',
     requires: [
+        'Slate.proxy.Records',
         'Ext.data.validator.Presence',
         'Ext.data.identifier.Negative'
     ],
+    // model config
     idProperty: 'ID',
     identifier: 'negative',
     fields: [
@@ -213,7 +254,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
         Title: 'presence'
     },
     proxy: {
-        type: 'slaterecords',
+        type: 'slate-records',
         url: '/sbg/worksheets',
         limitParam: null,
         startParam: null
@@ -225,8 +266,10 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
 Ext.define('Slate.sbg.store.StandardsWorksheets', {
     extend: 'Ext.data.Store',
     model: 'Slate.sbg.model.StandardsWorksheet',
-    pageSize: false,
-    autoSync: false
+    config: {
+        pageSize: false,
+        autoSync: false
+    }
 });
 
 /*jslint browser: true, undef: true */
@@ -234,6 +277,7 @@ Ext.define('Slate.sbg.store.StandardsWorksheets', {
 Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
     extend: 'Ext.data.Model',
     requires: [
+        'Slate.proxy.Records',
         'Ext.data.identifier.Negative'
     ],
     // model config
@@ -284,7 +328,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
         Prompt: 'presence'
     },
     proxy: {
-        type: 'slaterecords',
+        type: 'slate-records',
         url: '/sbg/worksheet-prompts',
         limitParam: null,
         startParam: null
@@ -296,13 +340,15 @@ Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
 Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {
     extend: 'Ext.data.Store',
     model: 'Slate.sbg.model.StandardsWorksheetPrompt',
-    pageSize: false,
-    autoSync: false,
-    sorters: [
-        {
-            property: 'Position'
-        }
-    ]
+    config: {
+        pageSize: false,
+        autoSync: false,
+        sorters: [
+            {
+                property: 'Position'
+            }
+        ]
+    }
 });
 
 /*jslint browser: true, undef: true, white: false, laxbreak: true */
@@ -840,6 +886,7 @@ Ext.define('Slate.sbg.controller.Worksheets', {
 Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
     extend: 'Ext.data.Model',
     requires: [
+        'Slate.proxy.Records',
         'Ext.data.identifier.Negative'
     ],
     // model config
@@ -882,7 +929,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
         }
     ],
     proxy: {
-        type: 'slaterecords',
+        type: 'slate-records',
         url: '/sbg/worksheet-assignments',
         limitParam: null,
         startParam: null
@@ -894,41 +941,9 @@ Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
 Ext.define('Slate.sbg.store.StandardsWorksheetAssignments', {
     extend: 'Ext.data.Store',
     model: 'Slate.sbg.model.StandardsWorksheetAssignment',
-    pageSize: false,
-    autoSync: false
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext*/
-Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {
-    extend: 'Ext.data.Store',
     config: {
-        fields: [
-            'id',
-            'text'
-        ],
-        data: [
-            {
-                id: 0,
-                text: 'N/A'
-            },
-            {
-                id: 1,
-                text: '1'
-            },
-            {
-                id: 2,
-                text: '2'
-            },
-            {
-                id: 3,
-                text: '3'
-            },
-            {
-                id: 4,
-                text: '4'
-            }
-        ]
+        pageSize: false,
+        autoSync: false
     }
 });
 

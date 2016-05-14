@@ -2,6 +2,7 @@
 Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
     extend: 'Ext.data.Model',
     requires: [
+        'Slate.proxy.Records',
         'Ext.data.identifier.Negative'
     ],
 
@@ -48,7 +49,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
     ],
 
     proxy: {
-        type: 'slaterecords',
+        type: 'slate-records',
         url: '/sbg/worksheet-assignments',
         limitParam: null,
         startParam: null

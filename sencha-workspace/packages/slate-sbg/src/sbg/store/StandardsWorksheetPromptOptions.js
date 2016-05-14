@@ -2,6 +2,7 @@
 Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {
     extend: 'Ext.data.Store',
 
+
     config: {
         fields: ['id', 'text'],
         data: [
