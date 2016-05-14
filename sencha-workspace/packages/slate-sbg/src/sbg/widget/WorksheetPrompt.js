@@ -18,7 +18,7 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
             width: 60,
 
             submitValue: false,
-            store: 'StandardsWorksheetPromptOptions',
+            store: {xclass: 'Slate.sbg.store.StandardsWorksheetPromptOptions'},
             valueField: 'id',
             displayField: 'text',
             queryMode: 'local',

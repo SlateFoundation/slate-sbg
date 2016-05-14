@@ -2,6 +2,7 @@
 Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
     extend: 'Ext.data.Model',
     requires: [
+        'Slate.proxy.Records',
         'Ext.data.identifier.Negative'
     ],
 
@@ -57,7 +58,7 @@ Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
     },
 
     proxy: {
-        type: 'slaterecords',
+        type: 'slate-records',
         url: '/sbg/worksheet-prompts',
         limitParam: null,
         startParam: null

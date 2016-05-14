@@ -5,7 +5,7 @@ namespace Slate\SBG;
 use Slate\Term;
 use Slate\Courses\Section;
 
-class WorksheetAssignment extends \ActiveRecord
+class WorksheetAssignment extends \VersionedRecord
 {
     // ActiveRecord configuration
     public static $tableName = 'sbg_worksheet_assignments';
