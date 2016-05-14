@@ -5,7 +5,6 @@ Ext.define('Slate.sbg.overrides.TermReport', {
         {
             name: 'SbgWorksheet',
             convert: function(v) {
-                debugger;
                 return typeof v == 'string' ? Ext.decode(v, true) || null : v;
             }
         }
