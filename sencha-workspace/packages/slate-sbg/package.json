@@ -18,5 +18,7 @@
     },
     "output": "${package.dir}/build",
     "local": true,
-    "requires": []
+    "requires": [
+        "slate-core-data"
+    ]
 }
