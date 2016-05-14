@@ -7,6 +7,8 @@ Ext.define('Slate.sbg.model.StandardsWorksheet', {
         'Ext.data.identifier.Negative'
     ],
 
+
+    // model config
     idProperty: 'ID',
     identifier: 'negative',
 
