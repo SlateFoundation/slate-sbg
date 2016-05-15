@@ -49,7 +49,7 @@ Ext.define('Slate.sbg.view.worksheets.Form', {
         itemId: 'addPromptBtn',
 
         text: 'Add Prompt',
-        glyph: 0xf055, // fa-plus-circle
+        glyph: 0xf055 // fa-plus-circle
     },{
         itemId: 'saveBtn',
 

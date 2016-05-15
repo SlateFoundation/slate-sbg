@@ -30,7 +30,7 @@ Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
                 triggerAction: 'all',
                 typeAhead: true,
                 forceSelection: true,
-                selectOnFocus: true,
+                selectOnFocus: true
             },
             renderer: function(worksheetId, metaData, section) {
                 if (!worksheetId) {
