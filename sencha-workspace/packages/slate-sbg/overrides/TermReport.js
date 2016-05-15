@@ -1,5 +1,5 @@
 Ext.define('Slate.sbg.overrides.TermReport', {
-    override: 'Slate.model.TermReport',
+    override: 'Slate.model.TermReport'
 }, function(Report) {
     Report.addFields([
         {

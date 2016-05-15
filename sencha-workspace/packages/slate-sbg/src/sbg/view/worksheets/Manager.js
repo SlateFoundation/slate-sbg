@@ -21,7 +21,7 @@ Ext.define('Slate.sbg.view.worksheets.Manager', {
         region: 'center',
         xtype: 'sbg-worksheets-form',
         flex: 1
-    }],
+    }]
 
 
     // //helper functions
