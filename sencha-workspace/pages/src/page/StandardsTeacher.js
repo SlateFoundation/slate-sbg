@@ -298,10 +298,12 @@ Ext.define('Site.page.StandardsTeacher', {
             },
             calculateGrowth: function(prompt, section) {
                 var me = this,
+                    termFirst = me.termFirst,
+                    termLast = me.termLast,
                     terms = me.terms,
                     reports = me.reports, reportsCount = reports.getCount(), i,
                     report, reportGrades, promptGrade, studentId,
-                    students = {}, student, term, termPosition,
+                    students = {}, student, term,
                     studentsTotal = 0, studentsGrown = 0,
                     first, last, firstGrade, lastGrade;
 
@@ -328,18 +330,13 @@ Ext.define('Site.page.StandardsTeacher', {
                     studentId = report.get('StudentID');
                     student = students[studentId] || (students[studentId] = {});
                     term = terms.getById(report.get('TermID'));
-                    termPosition = term.get('Left');
 
-                    if (!student.first || termPosition < student.first.position) {
+                    if (term === termFirst) {
                         student.first = {
-                            position: termPosition,
                             grade: promptGrade
                         };
-                    }
-
-                    if (!student.last || termPosition > student.last.position) {
+                    } else if (term === termLast) {
                         student.last = {
-                            position: termPosition,
                             grade: promptGrade
                         };
                     }
@@ -351,7 +348,7 @@ Ext.define('Site.page.StandardsTeacher', {
                     first = student.first;
                     last = student.last;
 
-                    if (!first || !last || first.position == last.position) {
+                    if (!first || !last) {
                         continue;
                     }
 
