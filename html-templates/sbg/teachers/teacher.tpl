@@ -20,6 +20,10 @@
             margin-top: .3333em;
         }
 
+		.table-ct {
+			overflow: auto;
+		}
+
         .standards-grid,
         .standards-grid-sections-table {
             table-layout: fixed;
