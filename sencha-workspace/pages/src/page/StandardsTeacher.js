@@ -20,6 +20,7 @@ Ext.define('Site.page.StandardsTeacher', {
         '{% var baseCls = values.baseCls %}',
         '{% var totalColumns = 6 + values.terms.getCount() * 4 %}',
         '{% this.terms = values.terms %}',
+        '{% this.changeUnit = values.changeUnit %}',
         '{% this.termFirst = values.termFirst %}',
         '{% this.termLast = values.termLast %}',
         '{% this.reports = values.reports %}',
@@ -49,7 +50,12 @@ Ext.define('Site.page.StandardsTeacher', {
 	                '<tr class="{[baseCls]}-group-header-row">',
 	                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
 	                    '<th class="{[baseCls]}-grid-group-header" colspan="5">',
-	                    	'Compare (%):',
+	                    	'Compare (',
+	                    	    '<select name="change-unit">',
+	                    	        '<option value="percent" {[this.changeUnit == "percent" ? "selected" : ""]}>%</option>',
+                    	            '<option value="count" {[this.changeUnit == "count" ? "selected" : ""]}>&Delta;</option>',
+                	            '</select>',
+            	            '):',
 	                    	'<div class="{[baseCls]}-comparison-controls">',
 		                    	'<select name="term-first" class="field-control">',
 		                    	    '<tpl for="this.terms">',
@@ -284,7 +290,11 @@ Ext.define('Site.page.StandardsTeacher', {
                     return null;
                 }
 
-                return ((countLast / totalLast) - (countFirst / totalFirst)) * 100;
+                if (me.changeUnit == 'percent') {
+                    return ((countLast / totalLast) - (countFirst / totalFirst)) * 100;
+                }
+
+                return countLast - countFirst;
             },
             calculateGrowth: function(prompt, section) {
                 var me = this,
@@ -435,6 +445,7 @@ Ext.define('Site.page.StandardsTeacher', {
     renderTable: function() {
         var me = this,
             termsStore = me.termsStore,
+            changeUnitSelect = me.standardsCt.down('select[name=change-unit]'),
             termFirstSelect = me.standardsCt.down('select[name=term-first]'),
             termLastSelect = me.standardsCt.down('select[name=term-last]');
 
@@ -448,6 +459,7 @@ Ext.define('Site.page.StandardsTeacher', {
             courseSections: me.courseSectionsStore,
             worksheets: me.worksheetsStore,
             reports: me.reportsStore,
+            changeUnit: changeUnitSelect ? changeUnitSelect.getValue() : 'percent',
             termFirst: termFirstSelect ? termsStore.getById(termFirstSelect.getValue()) : termsStore.first(),
             termLast: termLastSelect ? termsStore.getById(termLastSelect.getValue()) : termsStore.last()
         });
