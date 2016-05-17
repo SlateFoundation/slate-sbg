@@ -27,7 +27,11 @@
         .standards-grid,
         .standards-grid-sections-table {
 			table-layout: fixed;
+			width: auto;
         }
+
+		.standards-grid .standards-grid-sections-table {
+		}
 
 {*
         .standards-grid-sizing-cell {
@@ -46,18 +50,25 @@
             padding-left: 2em;
         }
 
-        .standards-grid-section-column,
-        .standards-grid-standard-column {
-            width: 12em;
+		.standards-grid-standard-column {
+			width: 16em;
+		}
+
+        .standards-grid-section-column {
+            width: 14em;
         }
 
-        .standards-grid-sections-table .standards-grid-section-column {
-            width: 10em;
+        .standards-grid-compare-columns col {
+            width: 3.5em;
         }
 
-        .standards-grid-growth-column {
-            width: 4.5em;
-        }
+		.standards-grid-compare-columns .standards-grid-growth-column {
+			width: 4.5em;
+		}
+
+		.standards-grid-term-columns col {
+			width: 3.5em;
+		}
 
         .standards-grid-group-header small {
             display: inline;
@@ -66,6 +77,8 @@
 
         .standards-grid-percent-cell,
         .standards-grid-rating-header {
+	        box-sizing: border-box;
+	        min-width: 3.5em;
             text-align: right;
         }
 
@@ -118,10 +131,6 @@
 
         .has-divider {
             border-left: 2px solid #888;
-        }
-
-        .standards-grid-student-column {
-            width: 10%;
         }
 
         .standards-grid-timeframe-header-row th {
@@ -188,6 +197,9 @@
             padding: 0;
         }
 
+		.standards-grid-blank-header {
+		}
+
         .standards-grid-standard-header {
             font-size: small;
             line-height: 1.25;
@@ -223,7 +235,7 @@
 		        </form>
 		    </header>
 		</div>
-
+	
 	    <div id='standardsCt'><div class="text-center"><img class="loading-spinner" src="/img/loaders/spinner.gif" alt=""> Loading {$Teacher->FullNamePossessive|escape} standards for {$Term->Title|escape}&hellip;</div></div>
 	</main>
 {/block}

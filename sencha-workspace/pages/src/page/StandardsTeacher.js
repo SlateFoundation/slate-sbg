@@ -24,29 +24,29 @@ Ext.define('Site.page.StandardsTeacher', {
 
 		'<div class="table-ct">',
 	        '<table class="{[baseCls]}">',
-	            '<colgroup class="{[baseCls]}-standard-column">',
-	            '<colgroup class="{[baseCls]}-growth-column">',
-	            '<colgroup class="{[baseCls]}-delta-columns">',
+	            '<col class="{[baseCls]}-standard-column">',
+	            '<colgroup class="{[baseCls]}-compare-columns">',
+	            	'<col class="{[baseCls]}-growth-column">',
 	                '<col class="{[baseCls]}-nm-column">',
 	                '<col class="{[baseCls]}-a-column">',
 	                '<col class="{[baseCls]}-m-column">',
 	                '<col class="{[baseCls]}-e-column">',
 	            '</colgroup>',
 	            '<tpl for="terms">',
-	                '<colgroup class="{[baseCls]}-q{[xindex]}-columns">',
+	                '<colgroup class="{[baseCls]}-term-columns">',
 	                    '<col class="{[baseCls]}-nm-column">',
 	                    '<col class="{[baseCls]}-a-column">',
 	                    '<col class="{[baseCls]}-m-column">',
 	                    '<col class="{[baseCls]}-e-column">',
 	                '</colgroup>',
 	            '</tpl>',
-
-
+	
+	
 	            '<thead class="{[baseCls]}-header">',
-
+	
 	                '<tr class="{[baseCls]}-group-header-row">',
-	                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
-	                    '<th class="{[baseCls]}-grid-group-header" colspan="5">',
+	                    '<th class="{[baseCls]}-blank-header">&nbsp;</th>',
+	                    '<th class="{[baseCls]}-group-header has-divider" colspan="5">',
 	                    	'Compare (%):',
 	                    	'<div class="{[baseCls]}-comparison-controls">',
 		                    	'<select class="field-control"><option>2015-16: 1st Quarter</option></select>',
@@ -54,63 +54,63 @@ Ext.define('Site.page.StandardsTeacher', {
 	                    	'</div>',
 	                	'</th>',
 	                    '<tpl for="terms">',
-	                        '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4">{[values.get("Title")]}</th>',
+	                        '<th class="{[baseCls]}-group-header has-divider" colspan="4">{[values.get("Title")]}</th>',
 	                    '</tpl>',
 	                '</tr>',
-
+	
 	                '<tr class="{[baseCls]}-rating-header-row">',
-	                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
+	                    '<th class="{[baseCls]}-blank-header">&nbsp;</th>',
 
-	                    '<th class="{[baseCls]}-grid-rating-header">Growth</th>',
-
-	                    '<th class="{[baseCls]}-grid-rating-header has-divider">',
+	                    '<th class="{[baseCls]}-rating-header">Growth</th>',
+	
+	                    '<th class="{[baseCls]}-rating-header has-divider">',
 	                        '<abbr title="Not Meeting">NM</abbr>',
 	                    '</th>',
-	                    '<th class="{[baseCls]}-grid-rating-header">',
+	                    '<th class="{[baseCls]}-rating-header">',
 	                        '<abbr title="Approaching">A</abbr>',
 	                    '</th>',
-	                    '<th class="{[baseCls]}-grid-rating-header">',
+	                    '<th class="{[baseCls]}-rating-header">',
 	                        '<abbr title="Meeting">M</abbr>',
 	                    '</th>',
-	                    '<th class="{[baseCls]}-grid-rating-header">',
+	                    '<th class="{[baseCls]}-rating-header">',
 	                        '<abbr title="Exceeding">E</abbr>',
 	                    '</th>',
-
+	
 	                    '<tpl for="this.terms">',
-	                        '<th class="{[baseCls]}-grid-rating-header has-divider">',
+	                        '<th class="{[baseCls]}-rating-header has-divider">',
 	                            '<abbr title="Not Meeting">NM</abbr>',
 	                        '</th>',
-	                        '<th class="{[baseCls]}-grid-rating-header">',
+	                        '<th class="{[baseCls]}-rating-header">',
 	                            '<abbr title="Approaching">A</abbr>',
 	                        '</th>',
-	                        '<th class="{[baseCls]}-grid-rating-header">',
+	                        '<th class="{[baseCls]}-rating-header">',
 	                            '<abbr title="Meeting">M</abbr>',
 	                        '</th>',
-	                        '<th class="{[baseCls]}-grid-rating-header">',
+	                        '<th class="{[baseCls]}-rating-header">',
 	                            '<abbr title="Exceeding">E</abbr>',
 	                        '</th>',
 	                    '</tpl>',
 	                '</tr>',
-
+	
 	            '</thead>',
-
-
+	
+	
 	            '<tpl for="worksheets.getRange()">',
 	                '<tbody class="{[baseCls]}-worksheet-body">',
-
+	
 	                    '<tr class="{[baseCls]}-worksheet-row">',
 	                        '<th class="{[baseCls]}-worksheet-header" colspan="{[totalColumns]}">{[values.get("Title")]}</th>',
 	                    '</tr>',
-
+	
 	                    '<tpl for="values.get(\'Prompts\')">',
-
+	
 	                        '<tr class="{[baseCls]}-standard-row" data-prompt="{ID}">',
 	                            '<th class="{[baseCls]}-standard-header">{Prompt}</th>',
-	                            '<td class="{[baseCls]}-percent-cell">',
+	                            '<td class="{[baseCls]}-percent-cell {[baseCls]}-growth-cell">',
 	                                '{% v = this.calculateGrowth(values.ID) %}',
 	                                '{[v === null ? "&mdash;" : fm.number(v, "0.#")]}',
 	                            '</td>',
-
+	
 	                            '{% this.currentDelta = this.calculateDelta(1, values.ID) %}',
 	                            '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
 	                                '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.#")]}',
@@ -127,7 +127,7 @@ Ext.define('Site.page.StandardsTeacher', {
 	                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
 	                                '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.#")]}',
 	                            '</td>',
-
+	
 	                            '<tpl for="this.terms">',
 	                                '<td class="{[baseCls]}-percent-cell has-divider">',
 	                                    '{[this.countGrades(1, values.getId(), parent.ID)]}',
@@ -143,37 +143,37 @@ Ext.define('Site.page.StandardsTeacher', {
 	                                '</td>',
 	                            '</tpl>',
 	                        '</tr>',
-
+	
 	                        '<tr class="{[baseCls]}-standard-row">',
 	                            '<td class="{[baseCls]}-standard-row" colspan="{[totalColumns]}">',
 	                                '<div class="{[baseCls]}-sections-ct">',
 	                                    '<table class="{[baseCls]}-sections-table">',
-	                                        '<colgroup class="{[baseCls]}-section-column">',
-	                                        '<colgroup class="{[baseCls]}-growth-column">',
-	                                        '<colgroup class="{[baseCls]}-delta-columns">',
+	                                        '<col class="{[baseCls]}-section-column">',
+	                                        '<colgroup class="{[baseCls]}-compare-columns">',
+	                                        	'<col class="{[baseCls]}-growth-column">',
 	                                            '<col class="{[baseCls]}-nm-column">',
 	                                            '<col class="{[baseCls]}-a-column">',
 	                                            '<col class="{[baseCls]}-m-column">',
 	                                            '<col class="{[baseCls]}-e-column">',
 	                                        '</colgroup>',
 	                                        '<tpl for="this.terms">',
-	                                            '<colgroup class="{[baseCls]}-q{[xindex]}-columns">',
+	                                            '<colgroup class="{[baseCls]}-term-columns">',
 	                                                '<col class="{[baseCls]}-nm-column">',
 	                                                '<col class="{[baseCls]}-a-column">',
 	                                                '<col class="{[baseCls]}-m-column">',
 	                                                '<col class="{[baseCls]}-e-column">',
 	                                            '</colgroup>',
 	                                        '</tpl>',
-
+	
 	                                        '<tpl for="parent.get(\'CourseSections\').getRange()">',
 	                                            '<tr class="{[baseCls]}-section-row" data-section="{[values.getId()]}">',
 	                                                '<th class="{[baseCls]}-section-header">{[values.get("Title")]}</th>',
-	                                                '<td class="{[baseCls]}-percent-cell">',
+	                                                '<td class="{[baseCls]}-percent-cell {[baseCls]}-growth-cell">',
 	                                                    '{% v = this.calculateGrowth(parent.ID, values.getId()) %}',
 	                                                    '{[v === null ? "&mdash;" : fm.number(v, "0.#")]}',
 	                                                '</td>',
-
-
+	
+	
 	                                                '{% this.currentDelta = this.calculateDelta(1, parent.ID, values.getId()) %}',
 	                                                '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
 	                                                    '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.#")]}',
@@ -190,7 +190,7 @@ Ext.define('Site.page.StandardsTeacher', {
 	                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
 	                                                    '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.#")]}',
 	                                                '</td>',
-
+	
 	                                                '{% values.currentPromptId = parent.ID %}',
 	                                                '<tpl for="this.terms">',
 	                                                    '<td class="{[baseCls]}-percent-cell has-divider">',
@@ -208,21 +208,21 @@ Ext.define('Site.page.StandardsTeacher', {
 	                                                '</tpl>',
 	                                            '</tr>',
 	                                        '</tpl>',
-
+	
 	                                    '</table>',
 	                                '</div>',
 	                            '</td>',
 	                        '</tr>',
-
+	
 	                    '</tpl>',
-
+	
 	                '</tbody>',
 	            '</tpl>',
-
-
+	
+	
 	        '</table>',
         '<div>',
-
+        
         {
             countGrades: function(grade, term, prompt, section) {
                 var reports = this.reports,
@@ -284,7 +284,7 @@ Ext.define('Site.page.StandardsTeacher', {
 
 
                     reportGrades = (report.get('SbgWorksheet') || {}).grades;
-
+                    
                     if (
                         !reportGrades ||
                         !(promptGrade = reportGrades[prompt])
