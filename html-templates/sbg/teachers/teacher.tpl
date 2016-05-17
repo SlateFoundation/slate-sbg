@@ -186,7 +186,9 @@
     </style>
 {/block}
 
-{block "content"}
+{block "content-wrapper"}
+	<main class="content site" role="main">
+		<div class="inner">
     <header class="page-header">
         <form method="GET" class="inline-fields">
             {if $.get.jsdebug}
@@ -203,8 +205,10 @@
             {labeledField html=$termSelect type=select label=Term class=auto-width}
         </form>
     </header>
+		</div>
 
     <div id='standardsCt'><div class="text-center"><img class="loading-spinner" src="/img/loaders/spinner.gif" alt=""> Loading {$Teacher->FullNamePossessive|escape} standards for {$Term->Title|escape}&hellip;</div></div>
+	</main>
 {/block}
 
 {block js-bottom}
