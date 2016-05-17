@@ -26,7 +26,7 @@
 
         .standards-grid,
         .standards-grid-sections-table {
-            table-layout: fixed;
+			table-layout: fixed;
         }
 
 {*
@@ -77,6 +77,19 @@
         .standards-grid-rating-header-row > th {
             border-bottom: none;
         }
+
+		.standards-grid-comparison-controls {
+			display: flex;
+			font-size: smaller;
+		}
+
+		.standards-grid-comparison-controls .field-control {
+			flex: 1;
+		}
+
+		.standards-grid-comparison-controls .field-control + .field-control {
+			margin-left: .5em;
+		}
 
         .standards-grid-sections-table,
         .standards-grid-students-table {
@@ -193,25 +206,25 @@
 {block "content-wrapper"}
 	<main class="content site" role="main">
 		<div class="inner">
-    <header class="page-header">
-        <form method="GET" class="inline-fields">
-            {if $.get.jsdebug}
-                <input type="hidden" name="jsdebug" value="1">
-            {/if}
-            {capture assign=termSelect}
-                <select class="field-control inline medium" name="term" onchange="this.form.submit()">
-                    <option value="">&ndash;select&ndash;</option>
-                    {foreach item=availableTerm from=Slate\Term::getAllMaster()}
-                        <option value="{$availableTerm->Handle}" {refill field=term selected=$availableTerm->Handle default=$Term->Handle}>{$availableTerm->Title|escape}</option>
-                    {/foreach}
-                </select>
-            {/capture}
-            {labeledField html=$termSelect type=select label=Term class=auto-width}
-        </form>
-    </header>
+		    <header class="page-header">
+		        <form method="GET" class="inline-fields">
+		            {if $.get.jsdebug}
+		                <input type="hidden" name="jsdebug" value="1">
+		            {/if}
+		            {capture assign=termSelect}
+		                <select class="field-control inline medium" name="term" onchange="this.form.submit()">
+		                    <option value="">&ndash;select&ndash;</option>
+		                    {foreach item=availableTerm from=Slate\Term::getAllMaster()}
+		                        <option value="{$availableTerm->Handle}" {refill field=term selected=$availableTerm->Handle default=$Term->Handle}>{$availableTerm->Title|escape}</option>
+		                    {/foreach}
+		                </select>
+		            {/capture}
+		            {labeledField html=$termSelect type=select label=Term class=auto-width}
+		        </form>
+		    </header>
 		</div>
 
-    <div id='standardsCt'><div class="text-center"><img class="loading-spinner" src="/img/loaders/spinner.gif" alt=""> Loading {$Teacher->FullNamePossessive|escape} standards for {$Term->Title|escape}&hellip;</div></div>
+	    <div id='standardsCt'><div class="text-center"><img class="loading-spinner" src="/img/loaders/spinner.gif" alt=""> Loading {$Teacher->FullNamePossessive|escape} standards for {$Term->Title|escape}&hellip;</div></div>
 	</main>
 {/block}
 
