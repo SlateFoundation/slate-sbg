@@ -20,203 +20,237 @@ Ext.define('Site.page.StandardsTeacher', {
         '{% var baseCls = values.baseCls %}',
         '{% var totalColumns = 6 + values.terms.getCount() * 4 %}',
         '{% this.terms = values.terms %}',
+        '{% this.changeUnit = values.changeUnit %}',
+        '{% this.termFirst = values.termFirst %}',
+        '{% this.termLast = values.termLast %}',
         '{% this.reports = values.reports %}',
 
-
-        '<table class="{[baseCls]}">',
-
-
-            '<colgroup class="{[baseCls]}-standard-column">',
-            '<colgroup class="{[baseCls]}-growth-column">',
-            '<colgroup class="{[baseCls]}-delta-columns">',
-                '<col class="{[baseCls]}-nm-column">',
-                '<col class="{[baseCls]}-a-column">',
-                '<col class="{[baseCls]}-m-column">',
-                '<col class="{[baseCls]}-e-column">',
-            '</colgroup>',
-            '<tpl for="terms">',
-                '<colgroup class="{[baseCls]}-q{[xindex]}-columns">',
-                    '<col class="{[baseCls]}-nm-column">',
-                    '<col class="{[baseCls]}-a-column">',
-                    '<col class="{[baseCls]}-m-column">',
-                    '<col class="{[baseCls]}-e-column">',
-                '</colgroup>',
-            '</tpl>',
+		'<div class="table-ct">',
+	        '<table class="{[baseCls]}">',
+	            '<colgroup class="{[baseCls]}-standard-column">',
+	            '<colgroup class="{[baseCls]}-growth-column">',
+	            '<colgroup class="{[baseCls]}-delta-columns">',
+	                '<col class="{[baseCls]}-nm-column">',
+	                '<col class="{[baseCls]}-a-column">',
+	                '<col class="{[baseCls]}-m-column">',
+	                '<col class="{[baseCls]}-e-column">',
+	            '</colgroup>',
+	            '<tpl for="terms">',
+	                '<colgroup class="{[baseCls]}-q{[xindex]}-columns">',
+	                    '<col class="{[baseCls]}-nm-column">',
+	                    '<col class="{[baseCls]}-a-column">',
+	                    '<col class="{[baseCls]}-m-column">',
+	                    '<col class="{[baseCls]}-e-column">',
+	                '</colgroup>',
+	            '</tpl>',
 
 
-            '<thead class="{[baseCls]}-header">',
+	            '<thead class="{[baseCls]}-header">',
 
-                '<tr class="{[baseCls]}-group-header-row">',
-                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
-                    '<th class="{[baseCls]}-grid-group-header">Growth</th>',
-                    '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4">Delta</th>',
-                    '<tpl for="terms">',
-                        '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4">{[values.get("Title")]}</th>',
-                    '</tpl>',
-                '</tr>',
+	                '<tr class="{[baseCls]}-group-header-row">',
+	                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
+	                    '<th class="{[baseCls]}-grid-group-header" colspan="5">',
+	                    	'Compare (',
+	                    	    '<select name="change-unit">',
+	                    	        '<option value="percent" {[this.changeUnit == "percent" ? "selected" : ""]}>%</option>',
+                    	            '<option value="count" {[this.changeUnit == "count" ? "selected" : ""]}>&Delta;</option>',
+                	            '</select>',
+            	            '):',
+	                    	'<div class="{[baseCls]}-comparison-controls">',
+		                    	'<select name="term-first" class="field-control">',
+		                    	    '<tpl for="this.terms">',
+		                    	        '<option',
+		                    	            ' value="{[values.getId()]}"',
+		                    	            '{[values === this.termFirst ? " selected" : ""]}',
+		                    	            '{[values.get("Left") >= this.termLast.get("Left") ? " disabled" : ""]}',
+	                    	            '>',
+	                    	                '{[values.get("Title")]}',
+	                    	            '</option>',
+	                    	        '</tpl>',
+                    	        '</select>',
+		                    	'<select name="term-last" class="field-control">',
+		                    	    '<tpl for="this.terms">',
+		                    	        '<option',
+		                    	            ' value="{[values.getId()]}"',
+		                    	            '{[values === this.termLast ? " selected" : ""]}',
+		                    	            '{[values.get("Left") <= this.termFirst.get("Left") ? " disabled" : ""]}',
+	                    	            '>',
+	                    	                '{[values.get("Title")]}',
+	                    	            '</option>',
+	                    	        '</tpl>',
+	                    	    '</select>',
+	                    	'</div>',
+	                	'</th>',
+	                    '<tpl for="terms">',
+	                        '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4">{[values.get("Title")]}</th>',
+	                    '</tpl>',
+	                '</tr>',
 
-                '<tr class="{[baseCls]}-rating-header-row">',
-                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
-                    '<th class="{[baseCls]}-grid-rating-header">(%)</th>',
+	                '<tr class="{[baseCls]}-rating-header-row">',
+	                    '<th class="{[baseCls]}-grid-blank-header">&nbsp;</th>',
 
-                    '<th class="{[baseCls]}-grid-rating-header has-divider">',
-                        '<abbr title="Not Meeting">NM</abbr>',
-                    '</th>',
-                    '<th class="{[baseCls]}-grid-rating-header">',
-                        '<abbr title="Approaching">A</abbr>',
-                    '</th>',
-                    '<th class="{[baseCls]}-grid-rating-header">',
-                        '<abbr title="Meeting">M</abbr>',
-                    '</th>',
-                    '<th class="{[baseCls]}-grid-rating-header">',
-                        '<abbr title="Exceeding">E</abbr>',
-                    '</th>',
+	                    '<th class="{[baseCls]}-grid-rating-header">Growth</th>',
 
-                    '<tpl for="this.terms">',
-                        '<th class="{[baseCls]}-grid-rating-header has-divider">',
-                            '<abbr title="Not Meeting">NM</abbr>',
-                        '</th>',
-                        '<th class="{[baseCls]}-grid-rating-header">',
-                            '<abbr title="Approaching">A</abbr>',
-                        '</th>',
-                        '<th class="{[baseCls]}-grid-rating-header">',
-                            '<abbr title="Meeting">M</abbr>',
-                        '</th>',
-                        '<th class="{[baseCls]}-grid-rating-header">',
-                            '<abbr title="Exceeding">E</abbr>',
-                        '</th>',
-                    '</tpl>',
-                '</tr>',
+	                    '<th class="{[baseCls]}-grid-rating-header has-divider">',
+	                        '<abbr title="Not Meeting">NM</abbr>',
+	                    '</th>',
+	                    '<th class="{[baseCls]}-grid-rating-header">',
+	                        '<abbr title="Approaching">A</abbr>',
+	                    '</th>',
+	                    '<th class="{[baseCls]}-grid-rating-header">',
+	                        '<abbr title="Meeting">M</abbr>',
+	                    '</th>',
+	                    '<th class="{[baseCls]}-grid-rating-header">',
+	                        '<abbr title="Exceeding">E</abbr>',
+	                    '</th>',
 
-            '</thead>',
+	                    '<tpl for="this.terms">',
+	                        '<th class="{[baseCls]}-grid-rating-header has-divider">',
+	                            '<abbr title="Not Meeting">NM</abbr>',
+	                        '</th>',
+	                        '<th class="{[baseCls]}-grid-rating-header">',
+	                            '<abbr title="Approaching">A</abbr>',
+	                        '</th>',
+	                        '<th class="{[baseCls]}-grid-rating-header">',
+	                            '<abbr title="Meeting">M</abbr>',
+	                        '</th>',
+	                        '<th class="{[baseCls]}-grid-rating-header">',
+	                            '<abbr title="Exceeding">E</abbr>',
+	                        '</th>',
+	                    '</tpl>',
+	                '</tr>',
 
-
-            '<tpl for="worksheets.getRange()">',
-                '<tbody class="{[baseCls]}-worksheet-body">',
-
-                    '<tr class="{[baseCls]}-worksheet-row">',
-                        '<th class="{[baseCls]}-worksheet-header" colspan="{[totalColumns]}">{[values.get("Title")]}</th>',
-                    '</tr>',
-
-                    '<tpl for="values.get(\'Prompts\')">',
-
-                        '<tr class="{[baseCls]}-standard-row" data-prompt="{ID}">',
-                            '<th class="{[baseCls]}-standard-header">{Prompt}</th>',
-                            '<td class="{[baseCls]}-percent-cell">',
-                                '{% v = this.calculateGrowth(values.ID) %}',
-                                '{[v === null ? "&mdash;" : fm.number(v, "0.#%")]}',
-                            '</td>',
-
-                            '{% this.currentDelta = this.calculateDelta(1, values.ID) %}',
-                            '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                            '</td>',
-                            '{% this.currentDelta = this.calculateDelta(2, values.ID) %}',
-                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                            '</td>',
-                            '{% this.currentDelta = this.calculateDelta(3, values.ID) %}',
-                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                            '</td>',
-                            '{% this.currentDelta = this.calculateDelta(4, values.ID) %}',
-                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                            '</td>',
-
-                            '<tpl for="this.terms">',
-                                '<td class="{[baseCls]}-percent-cell has-divider">',
-                                    '{[this.countGrades(1, values.getId(), parent.ID)]}',
-                                '</td>',
-                                '<td class="{[baseCls]}-percent-cell">',
-                                    '{[this.countGrades(2, values.getId(), parent.ID)]}',
-                                '</td>',
-                                '<td class="{[baseCls]}-percent-cell">',
-                                    '{[this.countGrades(3, values.getId(), parent.ID)]}',
-                                '</td>',
-                                '<td class="{[baseCls]}-percent-cell">',
-                                    '{[this.countGrades(4, values.getId(), parent.ID)]}',
-                                '</td>',
-                            '</tpl>',
-                        '</tr>',
-
-                        '<tr class="{[baseCls]}-standard-row">',
-                            '<td class="{[baseCls]}-standard-row" colspan="{[totalColumns]}">',
-                                '<div class="{[baseCls]}-sections-ct">',
-                                    '<table class="{[baseCls]}-sections-table">',
-                                        '<colgroup class="{[baseCls]}-section-column">',
-                                        '<colgroup class="{[baseCls]}-growth-column">',
-                                        '<colgroup class="{[baseCls]}-delta-columns">',
-                                            '<col class="{[baseCls]}-nm-column">',
-                                            '<col class="{[baseCls]}-a-column">',
-                                            '<col class="{[baseCls]}-m-column">',
-                                            '<col class="{[baseCls]}-e-column">',
-                                        '</colgroup>',
-                                        '<tpl for="this.terms">',
-                                            '<colgroup class="{[baseCls]}-q{[xindex]}-columns">',
-                                                '<col class="{[baseCls]}-nm-column">',
-                                                '<col class="{[baseCls]}-a-column">',
-                                                '<col class="{[baseCls]}-m-column">',
-                                                '<col class="{[baseCls]}-e-column">',
-                                            '</colgroup>',
-                                        '</tpl>',
-
-                                        '<tpl for="parent.get(\'CourseSections\').getRange()">',
-                                            '<tr class="{[baseCls]}-section-row" data-section="{[values.getId()]}">',
-                                                '<th class="{[baseCls]}-section-header">{[values.get("Title")]}</th>',
-                                                '<td class="{[baseCls]}-percent-cell">',
-                                                    '{% v = this.calculateGrowth(parent.ID, values.getId()) %}',
-                                                    '{[v === null ? "&mdash;" : fm.number(v, "0.#%")]}',
-                                                '</td>',
+	            '</thead>',
 
 
-                                                '{% this.currentDelta = this.calculateDelta(1, parent.ID, values.getId()) %}',
-                                                '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                                    '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                                                '</td>',
-                                                '{% this.currentDelta = this.calculateDelta(2, parent.ID, values.getId()) %}',
-                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                                    '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                                                '</td>',
-                                                '{% this.currentDelta = this.calculateDelta(3, parent.ID, values.getId()) %}',
-                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                                    '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                                                '</td>',
-                                                '{% this.currentDelta = this.calculateDelta(4, parent.ID, values.getId()) %}',
-                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
-                                                    '{[this.currentDelta === null ? "&mdash;" : fm.number(this.currentDelta, "0.##%")]}',
-                                                '</td>',
+	            '<tpl for="worksheets.getRange()">',
+	                '<tbody class="{[baseCls]}-worksheet-body">',
 
-                                                '{% values.currentPromptId = parent.ID %}',
-                                                '<tpl for="this.terms">',
-                                                    '<td class="{[baseCls]}-percent-cell has-divider">',
-                                                        '{[this.countGrades(1, values.getId(), parent.currentPromptId, parent.getId())]}',
-                                                    '</td>',
-                                                    '<td class="{[baseCls]}-percent-cell">',
-                                                        '{[this.countGrades(2, values.getId(), parent.currentPromptId, parent.getId())]}',
-                                                    '</td>',
-                                                    '<td class="{[baseCls]}-percent-cell">',
-                                                        '{[this.countGrades(3, values.getId(), parent.currentPromptId, parent.getId())]}',
-                                                    '</td>',
-                                                    '<td class="{[baseCls]}-percent-cell">',
-                                                        '{[this.countGrades(4, values.getId(), parent.currentPromptId, parent.getId())]}',
-                                                    '</td>',
-                                                '</tpl>',
-                                            '</tr>',
-                                        '</tpl>',
+	                    '<tr class="{[baseCls]}-worksheet-row">',
+	                        '<th class="{[baseCls]}-worksheet-header" colspan="{[totalColumns]}">{[values.get("Title")]}</th>',
+	                    '</tr>',
 
-                                    '</table>',
-                                '</div>',
-                            '</td>',
-                        '</tr>',
+	                    '<tpl for="values.get(\'Prompts\')">',
 
-                    '</tpl>',
+	                        '<tr class="{[baseCls]}-standard-row" data-prompt="{ID}">',
+	                            '<th class="{[baseCls]}-standard-header">{Prompt}</th>',
+	                            '<td class="{[baseCls]}-percent-cell">',
+	                                '{% v = this.calculateGrowth(values.ID) %}',
+	                                '{[v === null ? "&mdash;" : fm.number(v, "0.#")]}',
+	                            '</td>',
 
-                '</tbody>',
-            '</tpl>',
+	                            '{% this.currentDelta = this.calculateDelta(1, values.ID) %}',
+	                            '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                            '</td>',
+	                            '{% this.currentDelta = this.calculateDelta(2, values.ID) %}',
+	                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                            '</td>',
+	                            '{% this.currentDelta = this.calculateDelta(3, values.ID) %}',
+	                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                            '</td>',
+	                            '{% this.currentDelta = this.calculateDelta(4, values.ID) %}',
+	                            '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                            '</td>',
+
+	                            '<tpl for="this.terms">',
+	                                '<td class="{[baseCls]}-percent-cell has-divider">',
+	                                    '{[this.countGrades(1, values.getId(), parent.ID)]}',
+	                                '</td>',
+	                                '<td class="{[baseCls]}-percent-cell">',
+	                                    '{[this.countGrades(2, values.getId(), parent.ID)]}',
+	                                '</td>',
+	                                '<td class="{[baseCls]}-percent-cell">',
+	                                    '{[this.countGrades(3, values.getId(), parent.ID)]}',
+	                                '</td>',
+	                                '<td class="{[baseCls]}-percent-cell">',
+	                                    '{[this.countGrades(4, values.getId(), parent.ID)]}',
+	                                '</td>',
+	                            '</tpl>',
+	                        '</tr>',
+
+	                        '<tr class="{[baseCls]}-standard-row">',
+	                            '<td class="{[baseCls]}-standard-row" colspan="{[totalColumns]}">',
+	                                '<div class="{[baseCls]}-sections-ct">',
+	                                    '<table class="{[baseCls]}-sections-table">',
+	                                        '<colgroup class="{[baseCls]}-section-column">',
+	                                        '<colgroup class="{[baseCls]}-growth-column">',
+	                                        '<colgroup class="{[baseCls]}-delta-columns">',
+	                                            '<col class="{[baseCls]}-nm-column">',
+	                                            '<col class="{[baseCls]}-a-column">',
+	                                            '<col class="{[baseCls]}-m-column">',
+	                                            '<col class="{[baseCls]}-e-column">',
+	                                        '</colgroup>',
+	                                        '<tpl for="this.terms">',
+	                                            '<colgroup class="{[baseCls]}-q{[xindex]}-columns">',
+	                                                '<col class="{[baseCls]}-nm-column">',
+	                                                '<col class="{[baseCls]}-a-column">',
+	                                                '<col class="{[baseCls]}-m-column">',
+	                                                '<col class="{[baseCls]}-e-column">',
+	                                            '</colgroup>',
+	                                        '</tpl>',
+
+	                                        '<tpl for="parent.get(\'CourseSections\').getRange()">',
+	                                            '<tr class="{[baseCls]}-section-row" data-section="{[values.getId()]}">',
+	                                                '<th class="{[baseCls]}-section-header">{[values.get("Title")]}</th>',
+	                                                '<td class="{[baseCls]}-percent-cell">',
+	                                                    '{% v = this.calculateGrowth(parent.ID, values.getId()) %}',
+	                                                    '{[v === null ? "&mdash;" : fm.number(v, "0.#")]}',
+	                                                '</td>',
 
 
-        '</table>',
+	                                                '{% this.currentDelta = this.calculateDelta(1, parent.ID, values.getId()) %}',
+	                                                '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                                    '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                                                '</td>',
+	                                                '{% this.currentDelta = this.calculateDelta(2, parent.ID, values.getId()) %}',
+	                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                                    '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                                                '</td>',
+	                                                '{% this.currentDelta = this.calculateDelta(3, parent.ID, values.getId()) %}',
+	                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                                    '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                                                '</td>',
+	                                                '{% this.currentDelta = this.calculateDelta(4, parent.ID, values.getId()) %}',
+	                                                '<td class="{[baseCls]}-percent-cell <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
+	                                                    '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
+	                                                '</td>',
+
+	                                                '{% values.currentPromptId = parent.ID %}',
+	                                                '<tpl for="this.terms">',
+	                                                    '<td class="{[baseCls]}-percent-cell has-divider">',
+	                                                        '{[this.countGrades(1, values.getId(), parent.currentPromptId, parent.getId())]}',
+	                                                    '</td>',
+	                                                    '<td class="{[baseCls]}-percent-cell">',
+	                                                        '{[this.countGrades(2, values.getId(), parent.currentPromptId, parent.getId())]}',
+	                                                    '</td>',
+	                                                    '<td class="{[baseCls]}-percent-cell">',
+	                                                        '{[this.countGrades(3, values.getId(), parent.currentPromptId, parent.getId())]}',
+	                                                    '</td>',
+	                                                    '<td class="{[baseCls]}-percent-cell">',
+	                                                        '{[this.countGrades(4, values.getId(), parent.currentPromptId, parent.getId())]}',
+	                                                    '</td>',
+	                                                '</tpl>',
+	                                            '</tr>',
+	                                        '</tpl>',
+
+	                                    '</table>',
+	                                '</div>',
+	                            '</td>',
+	                        '</tr>',
+
+	                    '</tpl>',
+
+	                '</tbody>',
+	            '</tpl>',
+
+
+	        '</table>',
+        '<div>',
+
         {
             countGrades: function(grade, term, prompt, section) {
                 var reports = this.reports,
@@ -245,10 +279,10 @@ Ext.define('Site.page.StandardsTeacher', {
             calculateDelta: function(grade, prompt, section) {
                 var me = this,
                     terms = me.terms,
-                    termFirst = terms.first().getId(),
+                    termFirst = me.termFirst.getId(),
                     countFirst = me.countGrades(grade, termFirst, prompt, section),
                     totalFirst = me.countGrades(null, termFirst, prompt, section),
-                    termLast = terms.last().getId(),
+                    termLast = me.termLast.getId(),
                     countLast = me.countGrades(grade, termLast, prompt, section),
                     totalLast = me.countGrades(null, termLast, prompt, section);
 
@@ -256,14 +290,20 @@ Ext.define('Site.page.StandardsTeacher', {
                     return null;
                 }
 
-                return ((countLast / totalLast) - (countFirst / totalFirst)) * 100;
+                if (me.changeUnit == 'percent') {
+                    return ((countLast / totalLast) - (countFirst / totalFirst)) * 100;
+                }
+
+                return countLast - countFirst;
             },
             calculateGrowth: function(prompt, section) {
                 var me = this,
+                    termFirst = me.termFirst,
+                    termLast = me.termLast,
                     terms = me.terms,
                     reports = me.reports, reportsCount = reports.getCount(), i,
                     report, reportGrades, promptGrade, studentId,
-                    students = {}, student, term, termPosition,
+                    students = {}, student, term,
                     studentsTotal = 0, studentsGrown = 0,
                     first, last, firstGrade, lastGrade;
 
@@ -278,7 +318,7 @@ Ext.define('Site.page.StandardsTeacher', {
 
 
                     reportGrades = (report.get('SbgWorksheet') || {}).grades;
-                    
+
                     if (
                         !reportGrades ||
                         !(promptGrade = reportGrades[prompt])
@@ -290,18 +330,13 @@ Ext.define('Site.page.StandardsTeacher', {
                     studentId = report.get('StudentID');
                     student = students[studentId] || (students[studentId] = {});
                     term = terms.getById(report.get('TermID'));
-                    termPosition = term.get('Left');
 
-                    if (!student.first || termPosition < student.first.position) {
+                    if (term === termFirst) {
                         student.first = {
-                            position: termPosition,
                             grade: promptGrade
                         };
-                    }
-
-                    if (!student.last || termPosition > student.last.position) {
+                    } else if (term === termLast) {
                         student.last = {
-                            position: termPosition,
                             grade: promptGrade
                         };
                     }
@@ -313,7 +348,7 @@ Ext.define('Site.page.StandardsTeacher', {
                     first = student.first;
                     last = student.last;
 
-                    if (!first || !last || first.position == last.position) {
+                    if (!first || !last) {
                         continue;
                     }
 
@@ -388,7 +423,7 @@ Ext.define('Site.page.StandardsTeacher', {
         });
 
 
-        // // compile cross-references
+        // compile cross-references
         me.worksheetsStore.each(function(worksheet) {
             var assignments = assignmentsStore.query('WorksheetID', worksheet.getId()),
                 courseSectionIds = assignments.collect('CourseSectionID', 'data');
@@ -400,19 +435,37 @@ Ext.define('Site.page.StandardsTeacher', {
         });
 
 
-        // // initiate rendering
+        // initiate rendering
         me.renderTable();
     },
 
     renderTable: function() {
-        var me = this;
+        var me = this,
+            termsStore = me.termsStore,
+            changeUnitSelect = me.standardsCt.down('select[name=change-unit]'),
+            termFirstSelect = me.standardsCt.down('select[name=term-first]'),
+            termLastSelect = me.standardsCt.down('select[name=term-last]');
 
+        // remove change listeners attached to any select elements
+        me.standardsCt.select('select', true).un('change', 'onTermChange', me);
+
+        // overwrite container with template
         Ext.XTemplate.getTpl(me, 'tableTpl').overwrite(me.standardsCt, {
             baseCls: me.baseCls,
             terms: me.termsStore,
             courseSections: me.courseSectionsStore,
             worksheets: me.worksheetsStore,
-            reports: me.reportsStore
+            reports: me.reportsStore,
+            changeUnit: changeUnitSelect ? changeUnitSelect.getValue() : 'percent',
+            termFirst: termFirstSelect ? termsStore.getById(termFirstSelect.getValue()) : termsStore.first(),
+            termLast: termLastSelect ? termsStore.getById(termLastSelect.getValue()) : termsStore.last()
         });
+
+        // atach change listeners to select elements
+        me.standardsCt.select('select', true).on('change', 'onTermChange', me);
+    },
+
+    onTermChange: function(ev, t) {
+        this.renderTable();
     }
 });
