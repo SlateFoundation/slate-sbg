@@ -20,6 +20,8 @@ Ext.define('Site.page.StandardsTeacher', {
         '{% var baseCls = values.baseCls %}',
         '{% var totalColumns = 6 + values.terms.getCount() * 4 %}',
         '{% this.terms = values.terms %}',
+        '{% this.firstTerm = values.firstTerm %}',
+        '{% this.lastTerm = values.lastTerm %}',
         '{% this.reports = values.reports %}',
 
 		'<div class="table-ct">',
@@ -49,8 +51,28 @@ Ext.define('Site.page.StandardsTeacher', {
 	                    '<th class="{[baseCls]}-grid-group-header" colspan="5">',
 	                    	'Compare (%):',
 	                    	'<div class="{[baseCls]}-comparison-controls">',
-		                    	'<select class="field-control"><option>2015-16: 1st Quarter</option></select>',
-		                    	'<select class="field-control"><option>2015-16: 2nd Quarter</option></select>',
+		                    	'<select name="term-first" class="field-control">',
+		                    	    '<tpl for="this.terms">',
+		                    	        '<option',
+		                    	            ' value="{[values.getId()]}"',
+		                    	            '{[values === this.firstTerm ? " selected" : ""]}',
+		                    	            '{[values.get("Left") >= this.lastTerm.get("Left") ? " disabled" : ""]}',
+	                    	            '>',
+	                    	                '{[values.get("Title")]}',
+	                    	            '</option>',
+	                    	        '</tpl>',
+                    	        '</select>',
+		                    	'<select name="term-last" class="field-control">',
+		                    	    '<tpl for="this.terms">',
+		                    	        '<option',
+		                    	            ' value="{[values.getId()]}"',
+		                    	            '{[values === this.lastTerm ? " selected" : ""]}',
+		                    	            '{[values.get("Left") <= this.firstTerm.get("Left") ? " disabled" : ""]}',
+	                    	            '>',
+	                    	                '{[values.get("Title")]}',
+	                    	            '</option>',
+	                    	        '</tpl>',
+	                    	    '</select>',
 	                    	'</div>',
 	                	'</th>',
 	                    '<tpl for="terms">',
@@ -394,7 +416,7 @@ Ext.define('Site.page.StandardsTeacher', {
         });
 
 
-        // // compile cross-references
+        // compile cross-references
         me.worksheetsStore.each(function(worksheet) {
             var assignments = assignmentsStore.query('WorksheetID', worksheet.getId()),
                 courseSectionIds = assignments.collect('CourseSectionID', 'data');
@@ -406,19 +428,35 @@ Ext.define('Site.page.StandardsTeacher', {
         });
 
 
-        // // initiate rendering
+        // initiate rendering
         me.renderTable();
     },
 
     renderTable: function() {
-        var me = this;
+        var me = this,
+            termsStore = me.termsStore,
+            firstTermSelect = me.standardsCt.down('select[name=term-first]'),
+            lastTermSelect = me.standardsCt.down('select[name=term-last]');
 
+        // remove change listeners attached to any select elements
+        me.standardsCt.select('select', true).un('change', 'onTermChange', me);
+
+        // overwrite container with template
         Ext.XTemplate.getTpl(me, 'tableTpl').overwrite(me.standardsCt, {
             baseCls: me.baseCls,
             terms: me.termsStore,
             courseSections: me.courseSectionsStore,
             worksheets: me.worksheetsStore,
-            reports: me.reportsStore
+            reports: me.reportsStore,
+            firstTerm: firstTermSelect ? termsStore.getById(firstTermSelect.getValue()) : termsStore.first(),
+            lastTerm: lastTermSelect ? termsStore.getById(lastTermSelect.getValue()) : termsStore.last()
         });
+
+        // atach change listeners to select elements
+        me.standardsCt.select('select', true).on('change', 'onTermChange', me);
+    },
+
+    onTermChange: function(ev, t) {
+        this.renderTable();
     }
 });
