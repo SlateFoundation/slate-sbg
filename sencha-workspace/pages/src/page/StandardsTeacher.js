@@ -20,8 +20,8 @@ Ext.define('Site.page.StandardsTeacher', {
         '{% var baseCls = values.baseCls %}',
         '{% var totalColumns = 6 + values.terms.getCount() * 4 %}',
         '{% this.terms = values.terms %}',
-        '{% this.firstTerm = values.firstTerm %}',
-        '{% this.lastTerm = values.lastTerm %}',
+        '{% this.termFirst = values.termFirst %}',
+        '{% this.termLast = values.termLast %}',
         '{% this.reports = values.reports %}',
 
 		'<div class="table-ct">',
@@ -55,8 +55,8 @@ Ext.define('Site.page.StandardsTeacher', {
 		                    	    '<tpl for="this.terms">',
 		                    	        '<option',
 		                    	            ' value="{[values.getId()]}"',
-		                    	            '{[values === this.firstTerm ? " selected" : ""]}',
-		                    	            '{[values.get("Left") >= this.lastTerm.get("Left") ? " disabled" : ""]}',
+		                    	            '{[values === this.termFirst ? " selected" : ""]}',
+		                    	            '{[values.get("Left") >= this.termLast.get("Left") ? " disabled" : ""]}',
 	                    	            '>',
 	                    	                '{[values.get("Title")]}',
 	                    	            '</option>',
@@ -66,8 +66,8 @@ Ext.define('Site.page.StandardsTeacher', {
 		                    	    '<tpl for="this.terms">',
 		                    	        '<option',
 		                    	            ' value="{[values.getId()]}"',
-		                    	            '{[values === this.lastTerm ? " selected" : ""]}',
-		                    	            '{[values.get("Left") <= this.firstTerm.get("Left") ? " disabled" : ""]}',
+		                    	            '{[values === this.termLast ? " selected" : ""]}',
+		                    	            '{[values.get("Left") <= this.termFirst.get("Left") ? " disabled" : ""]}',
 	                    	            '>',
 	                    	                '{[values.get("Title")]}',
 	                    	            '</option>',
@@ -435,8 +435,8 @@ Ext.define('Site.page.StandardsTeacher', {
     renderTable: function() {
         var me = this,
             termsStore = me.termsStore,
-            firstTermSelect = me.standardsCt.down('select[name=term-first]'),
-            lastTermSelect = me.standardsCt.down('select[name=term-last]');
+            termFirstSelect = me.standardsCt.down('select[name=term-first]'),
+            termLastSelect = me.standardsCt.down('select[name=term-last]');
 
         // remove change listeners attached to any select elements
         me.standardsCt.select('select', true).un('change', 'onTermChange', me);
@@ -448,8 +448,8 @@ Ext.define('Site.page.StandardsTeacher', {
             courseSections: me.courseSectionsStore,
             worksheets: me.worksheetsStore,
             reports: me.reportsStore,
-            firstTerm: firstTermSelect ? termsStore.getById(firstTermSelect.getValue()) : termsStore.first(),
-            lastTerm: lastTermSelect ? termsStore.getById(lastTermSelect.getValue()) : termsStore.last()
+            termFirst: termFirstSelect ? termsStore.getById(termFirstSelect.getValue()) : termsStore.first(),
+            termLast: termLastSelect ? termsStore.getById(termLastSelect.getValue()) : termsStore.last()
         });
 
         // atach change listeners to select elements
