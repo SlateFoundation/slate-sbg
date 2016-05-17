@@ -273,10 +273,10 @@ Ext.define('Site.page.StandardsTeacher', {
             calculateDelta: function(grade, prompt, section) {
                 var me = this,
                     terms = me.terms,
-                    termFirst = terms.first().getId(),
+                    termFirst = me.termFirst.getId(),
                     countFirst = me.countGrades(grade, termFirst, prompt, section),
                     totalFirst = me.countGrades(null, termFirst, prompt, section),
-                    termLast = terms.last().getId(),
+                    termLast = me.termLast.getId(),
                     countLast = me.countGrades(grade, termLast, prompt, section),
                     totalLast = me.countGrades(null, termLast, prompt, section);
 
