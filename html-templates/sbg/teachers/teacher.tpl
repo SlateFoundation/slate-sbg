@@ -261,18 +261,13 @@
         }, $this->scope['worksheetCourseSections']);
 
         $this->scope['reports'] = DB::allRecords(
-            'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s) AND Status = "published"',
+            'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
             [
                 Slate\Progress\Narratives\Report::$tableName,
                 implode(',', $termIds),
                 implode(',', $courseSectionIds)
             ]
         );
-
-        /*Slate\Progress\Narratives\Report::getAllByWhere([
-            'TermID IN ('.implode(',', $termIds).')',
-            'CourseSectionID IN ('.implode(',', $courseSectionIds).')'
-        ])*/;
 
     ?>
 
