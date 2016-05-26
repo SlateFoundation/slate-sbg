@@ -18,6 +18,11 @@ LIB_PATH=`cd $SLATE_ADMIN/sencha-workspace/packages; pwd`
 test -d "$LIB_PATH/slate-sbg" || { echo >&2 "slate-sbg not found in $LIB_PATH"; exit 1; }
 
 
+# ensure branches are up-to-date
+git pull --ff origin $SOURCE_BRANCH >/dev/null 2>&1 || { echo >&2 "Could not fast-fwd $SOURCE_BRANCH"; exit 1; }
+git fetch origin $BUILD_BRANCH:$BUILD_BRANCH || { echo >&2 "Could not fast-fwd $BUILD_BRANCH"; exit 1; }
+
+
 # check version change
 JSON_PATH="$PACKAGE_PATH/package.json"
 test -f "$JSON_PATH" || { echo >&2 "Could not find $JSON_PATH"; exit 1; }
