@@ -131,7 +131,9 @@ Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
             gradesData = {};
         for (; i < len; i++) {
             promptComponent = promptComponents[i];
-            gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
+            if (promptComponent.isXType('sbg-worksheets-prompt')) {
+                gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
+            }
         }
         return gradesData;
     },
