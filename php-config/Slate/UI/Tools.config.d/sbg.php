@@ -18,7 +18,7 @@ Slate\UI\Tools::$tools['Standards-Based Grading'] = [
         '_icon' => 'notes'
     ],
     'Growth Dashboard' => [
-        '_href' => '/sbg/dashboard',
+        '_href' => '/sbg/teachers',
         '_icon' => 'area-chart'
     ]
 ];
