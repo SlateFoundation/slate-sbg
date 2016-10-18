@@ -89,7 +89,7 @@ class TeachersRequestHandler extends \RequestHandler
     protected static function _getRequestedTerm()
     {
         if (empty($_GET['term'])) {
-            return Term::getCurrent()->getMaster();
+            return Term::getClosest()->getMaster();
         }
 
         if (!$Term = Term::getByHandle($_GET['term'])) {
