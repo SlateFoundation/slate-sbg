@@ -12,12 +12,15 @@ class WorksheetPrompt extends \VersionedRecord
     public static $updateOnDuplicateKey = true;
 
     public static $fields = [
-        'WorksheetID' => 'uint',
+        'WorksheetID' => [
+            'type' => 'uint',
+            'index' => true
+        ],
         'Position' => [
             'type' => 'uint',
             'default' => 1
         ],
-        'Prompt' => 'string',
+        'Prompt' => 'clob',
         'Status' => [
             'type' => 'enum',
             'values' => ['published', 'deleted'],
@@ -35,13 +38,6 @@ class WorksheetPrompt extends \VersionedRecord
     public static $validators = [
         'Worksheet' => 'require-relationship',
         'Prompt'
-    ];
-
-    public static $indexes = [
-        'WorksheetPrompt' => [
-            'fields' => ['WorksheetID', 'Prompt'],
-            'unique' => true
-        ]
     ];
 
     public function destroy()

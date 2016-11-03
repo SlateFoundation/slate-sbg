@@ -4,7 +4,7 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
     xtype: 'sbg-worksheets-promptsgrid',
     requires: [
         'Ext.grid.plugin.CellEditing',
-        'Ext.form.field.Text',
+        'Ext.form.field.TextArea',
         'Ext.grid.column.Action'
     ],
 
@@ -39,10 +39,11 @@ Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
         text: 'Prompt',
         dataIndex: 'Prompt',
         editor: {
-            xtype: 'textfield',
+            xtype: 'textarea',
             allowBlank: false,
-            maxLength: 255,
-            enforceMaxLength: true
+            maxLength: 500,
+            enforceMaxLength: true,
+            enterIsSpecial: true
         }
     },{
         xtype: 'actioncolumn',
