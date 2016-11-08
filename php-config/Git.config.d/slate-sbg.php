@@ -6,6 +6,8 @@ Git::$repositories['slate-sbg'] = [
     'workingBranch' => 'builds/v1',
     'trees' => [
         'html-templates/sbg',
+        'html-templates/progress/narratives/sbg-print.tpl',
+        'html-templates/subtemplates/sbg-reports.tpl',
         'php-classes/Slate/SBG',
         'php-config/Git.config.d/slate-sbg.php',
         'php-config/Slate/Progress/Narratives/Report.config.d/sbg.php',
