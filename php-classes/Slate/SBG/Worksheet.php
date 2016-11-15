@@ -3,6 +3,7 @@
 namespace Slate\SBG;
 
 use HandleBehavior;
+use Slate\Progress\Narratives\Report;
 
 class Worksheet extends \VersionedRecord
 {
@@ -49,7 +50,7 @@ class Worksheet extends \VersionedRecord
     public static $dynamicFields = [
         'Prompts',
         'TotalPrompts' => [
-            'method' => [__CLASS__, 'getTotalPrompts']    
+            'method' => [__CLASS__, 'getTotalPrompts']
         ]
     ];
 
@@ -59,7 +60,7 @@ class Worksheet extends \VersionedRecord
         parent::validate($deep);
 
         // implement handles
-        HandleBehavior::onValidate($this, $this->_validator);                
+        HandleBehavior::onValidate($this, $this->_validator);
 
         // save results
         return $this->finishValidation();
@@ -68,7 +69,7 @@ class Worksheet extends \VersionedRecord
     public function save($deep = true)
     {
         // implement handles
-        HandleBehavior::onSave($this);                
+        HandleBehavior::onSave($this);
 
         // call parent
         parent::save($deep);
@@ -106,5 +107,32 @@ class Worksheet extends \VersionedRecord
         $Worksheet = static::getbyId($id);
 
         return $Worksheet ? $Worksheet->destroy() : false;
+    }
+
+    public function getStandardsGrades(Report $Report)
+    {
+
+        $grades = [];
+        $prompts = $this->Prompts;
+        $sbgWorksheet = $Report->SbgWorksheet;
+        $sbgWorksheetId = !empty($sbgWorksheet['worksheet_id']) ? $sbgWorksheet['worksheet_id'] : null;
+
+        if ($sbgWorksheetId && !empty($sbgWorksheet['grades'])) {
+            $worksheetGrades = $sbgWorksheet['grades'];
+        }
+
+
+        foreach ($prompts as $prompt) {
+            $grades[] = [
+                'TermID' => $Report->TermID,
+                'CourseSectionID' => $Report->CourseSectionID,
+                'StudentID' => $Report->StudentID,
+                'PromptID' => $prompt->ID,
+                'Prompt' => $prompt->Prompt,
+                'Grade' => isset($worksheetGrades[$prompt->ID]) ? $worksheetGrades[$prompt->ID] : null
+            ];
+        }
+
+        return $grades;
     }
 }

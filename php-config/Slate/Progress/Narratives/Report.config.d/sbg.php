@@ -22,3 +22,5 @@ Report::$relationships['SbgWorksheetMaster'] = [
         ];
     }
 ];
+
+Report::$printTemplate = 'sbg-print';
