@@ -67,12 +67,12 @@
 
         {if $Report->Assessment}
             <dt class="assessment">Assessment</dt>
-            <dd class="assessment">{$Report->Assessment}</dd>
+            <dd class="assessment">{$Report->Assessment|markdown}</dd>
         {/if}
 
         {if $Report->Notes}
             <dt class="comments">Comments</dt>
-            <dd class="comments">{$Report->Notes}</dd>
+            <dd class="comments">{$Report->Notes|markdown}</dd>
         {/if}
         </dl>
     </article>
