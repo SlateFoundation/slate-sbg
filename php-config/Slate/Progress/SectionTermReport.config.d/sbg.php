@@ -1,6 +1,6 @@
 <?php
 
-namespace Slate\Progress\Narratives;
+namespace Slate\Progress;
 
 SectionTermReport::$fields['SbgWorksheet'] = [
     'type' => 'json',
@@ -10,7 +10,7 @@ SectionTermReport::$fields['SbgWorksheet'] = [
 SectionTermReport::$relationships['SbgWorksheetMaster'] = [
     'type' => 'one-one',
     'class' => \Slate\SBG\Worksheet::class,
-    'link' => function(Report $Report) {
+    'link' => function(SectionTermReport $Report) {
         $worksheet = $Report->SbgWorksheet;
 
         if (!$worksheet || empty($worksheet['worksheet_id'])) {

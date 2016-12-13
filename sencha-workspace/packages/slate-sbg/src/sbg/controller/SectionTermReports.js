@@ -1,5 +1,5 @@
 /* global Ext */
-Ext.define('Slate.sbg.controller.Narratives', {
+Ext.define('Slate.sbg.controller.SectionTermReports', {
     extend: 'Ext.app.Controller',
 
 
@@ -20,10 +20,10 @@ Ext.define('Slate.sbg.controller.Narratives', {
     ],
 
     refs: {
-        sectionsGrid: 'progress-narratives-sectionsgrid',
-        termSelector: 'progress-narratives-sectionsgrid #termSelector',
-        editorForm: 'progress-narratives-editorform',
-        promptsFieldset: 'progress-narratives-editorform #sbgPromptsFieldset'
+        sectionsGrid: 'progress-terms-sectionsgrid',
+        termSelector: 'progress-terms-sectionsgrid #termSelector',
+        editorForm: 'progress-terms-editorform',
+        promptsFieldset: 'progress-terms-editorform #sbgPromptsFieldset'
     },
 
     control: {
@@ -35,13 +35,13 @@ Ext.define('Slate.sbg.controller.Narratives', {
 
     listen: {
         store: {
-            '#progress.narratives.Sections': {
+            '#progress.terms.Sections': {
                 load: 'onSectionsLoad',
                 update: 'onSectionUpdate'
             }
         },
         controller: {
-            '#progress.Narratives': {
+            '#progress.terms.Report': {
                 reportload: 'onReportLoad',
                 beforereportsave: 'onBeforeReportSave',
                 reportsave: 'onReportSave'
