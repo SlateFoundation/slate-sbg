@@ -263,7 +263,7 @@
         $this->scope['reports'] = DB::allRecords(
             'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
             [
-                Slate\Progress\Narratives\Report::$tableName,
+                Slate\Progress\SectionTermReport::$tableName,
                 implode(',', $termIds),
                 implode(',', $courseSectionIds)
             ]
