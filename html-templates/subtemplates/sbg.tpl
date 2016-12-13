@@ -35,7 +35,7 @@
     <!-- end standards -->
 {/template}
 
-{template studentnarrativestandards Report}
+{template studenttermreports Report}
     {$gradeLabels = array(
         "N/A" = "Standard not Applicable during the Semester"
         ,1 = "Not currently meeting expectations"

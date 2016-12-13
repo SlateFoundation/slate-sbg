@@ -2,12 +2,12 @@
 
 namespace Slate\Progress\Narratives;
 
-Report::$fields['SbgWorksheet'] = [
+SectionTermReport::$fields['SbgWorksheet'] = [
     'type' => 'json',
     'notnull' => false
 ];
 
-Report::$relationships['SbgWorksheetMaster'] = [
+SectionTermReport::$relationships['SbgWorksheetMaster'] = [
     'type' => 'one-one',
     'class' => \Slate\SBG\Worksheet::class,
     'link' => function(Report $Report) {
@@ -23,4 +23,4 @@ Report::$relationships['SbgWorksheetMaster'] = [
     }
 ];
 
-Report::$printTemplate = 'sbg-print';
+SectionTermReport::$printTemplate = 'sbg-print';
