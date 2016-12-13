@@ -22,5 +22,3 @@ SectionTermReport::$relationships['SbgWorksheetMaster'] = [
         ];
     }
 ];
-
-SectionTermReport::$printTemplate = 'sbg-print';
