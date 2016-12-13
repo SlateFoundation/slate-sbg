@@ -109,7 +109,7 @@ class Worksheet extends \VersionedRecord
         return $Worksheet ? $Worksheet->destroy() : false;
     }
 
-    public function getStandardsGrades(Report $Report)
+    public function getStandardsGrades(SectionTermReport $Report)
     {
 
         $grades = [];
