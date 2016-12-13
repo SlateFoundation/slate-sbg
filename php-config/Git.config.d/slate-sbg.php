@@ -11,6 +11,7 @@ Git::$repositories['slate-sbg'] = [
         'php-classes/Slate/SBG',
         'php-config/Git.config.d/slate-sbg.php',
         'php-config/Slate/Progress/SectionTermReport.config.d/sbg.php',
+        'php-config/Slate/Progress/SectionTermReportsRequestHandler.config.d/print-template.php',
         'php-config/Slate/UI/Tools.config.d/sbg.php',
         'sencha-workspace/packages/slate-sbg',
         'sencha-workspace/pages/src/page/StandardsTeacher.js',
