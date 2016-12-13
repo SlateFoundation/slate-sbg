@@ -6,11 +6,11 @@ Git::$repositories['slate-sbg'] = [
     'workingBranch' => 'builds/v1',
     'trees' => [
         'html-templates/sbg',
-        'html-templates/progress/narratives/sbg-print.tpl',
+        'html-templates/progress/section-term-reports/sbg-print.tpl',
         'html-templates/subtemplates/sbg.tpl',
         'php-classes/Slate/SBG',
         'php-config/Git.config.d/slate-sbg.php',
-        'php-config/Slate/Progress/Narratives/Report.config.d/sbg.php',
+        'php-config/Slate/Progress/SectionTermReport.config.d/sbg.php',
         'php-config/Slate/UI/Tools.config.d/sbg.php',
         'sencha-workspace/packages/slate-sbg',
         'sencha-workspace/pages/src/page/StandardsTeacher.js',
