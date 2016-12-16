@@ -231,11 +231,11 @@
 {block js-bottom}
     <?php
         // collect related worksheets
-        $this->scope['worksheets'] = array_values(array_unique(
+        $this->scope['worksheets'] = array_values(array_filter(array_unique(
             array_map(function($WorksheetAssignment) {
                 return $WorksheetAssignment->Worksheet;
             }, $this->scope['data'])
-        ));
+        )));
 
         // collect related terms
         $this->scope['worksheetTerms'] = array_values(array_unique(
