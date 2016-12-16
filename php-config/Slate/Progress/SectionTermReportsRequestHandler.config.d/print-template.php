@@ -2,4 +2,4 @@
 
 namespace Slate\Progress;
 
-SectionTermReportsRequestHandler::$printTemplate = 'sbg-print';
+SectionTermReportsRequestHandler::$printTemplate = 'sbg/progress/section-term-reports/sbg-print';
