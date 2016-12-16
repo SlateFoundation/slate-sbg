@@ -260,14 +260,18 @@
             return $CourseSection->ID;
         }, $this->scope['worksheetCourseSections']);
 
-        $this->scope['reports'] = DB::allRecords(
-            'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
-            [
-                Slate\Progress\SectionTermReport::$tableName,
-                implode(',', $termIds),
-                implode(',', $courseSectionIds)
-            ]
-        );
+        if (!empty($termIds) && !empty($courseSectionIds)) {
+            $this->scope['reports'] = DB::allRecords(
+                'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
+                [
+                    Slate\Progress\SectionTermReport::$tableName,
+                    implode(',', $termIds),
+                    implode(',', $courseSectionIds)
+                ]
+            );
+        } else {
+            $this->scope['reports'] = [];
+        }
 
     ?>
 
