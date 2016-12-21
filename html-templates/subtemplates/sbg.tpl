@@ -65,9 +65,9 @@
 
             {standards $Report $gradeLabels}
 
-            {if $Report->SectionNotes && trim($Report->SectionNotes->Notes)}
+            {if $Report->SectionTermData && trim($Report->SectionTermData->TermReportNotes)}
                 <dt class="comments">Section Notes</dt>
-                <dd class="comments">{$Report->SectionNotes->Notes|escape|markdown}</dd>
+                <dd class="comments">{$Report->SectionTermData->TermReportNotes|escape|markdown}</dd>
             {/if}
 
             {if $Report->Assessment}
