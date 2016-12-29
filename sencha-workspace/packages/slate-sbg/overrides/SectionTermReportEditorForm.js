@@ -1,5 +1,5 @@
-Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
-    override: 'SlateAdmin.view.progress.narratives.EditorForm',
+Ext.define('Slate.sbg.overrides.SectionTermReportEditorForm', {
+    override: 'SlateAdmin.view.progress.terms.EditorForm',
     requires: [
         'Ext.form.FieldSet',
         'Slate.sbg.widget.WorksheetPrompt'
