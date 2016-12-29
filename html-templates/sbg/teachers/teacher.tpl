@@ -231,11 +231,11 @@
 {block js-bottom}
     <?php
         // collect related worksheets
-        $this->scope['worksheets'] = array_values(array_unique(
+        $this->scope['worksheets'] = array_values(array_filter(array_unique(
             array_map(function($WorksheetAssignment) {
                 return $WorksheetAssignment->Worksheet;
             }, $this->scope['data'])
-        ));
+        )));
 
         // collect related terms
         $this->scope['worksheetTerms'] = array_values(array_unique(
@@ -260,14 +260,18 @@
             return $CourseSection->ID;
         }, $this->scope['worksheetCourseSections']);
 
-        $this->scope['reports'] = DB::allRecords(
-            'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
-            [
-                Slate\Progress\Narratives\Report::$tableName,
-                implode(',', $termIds),
-                implode(',', $courseSectionIds)
-            ]
-        );
+        if (!empty($termIds) && !empty($courseSectionIds)) {
+            $this->scope['reports'] = DB::allRecords(
+                'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
+                [
+                    Slate\Progress\SectionTermReport::$tableName,
+                    implode(',', $termIds),
+                    implode(',', $courseSectionIds)
+                ]
+            );
+        } else {
+            $this->scope['reports'] = [];
+        }
 
     ?>
 

@@ -1,5 +1,5 @@
-Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
-    override: 'SlateAdmin.view.progress.narratives.SectionsGrid',
+Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {
+    override: 'SlateAdmin.view.progress.terms.SectionsGrid',
     requires: [
         'Ext.grid.plugin.CellEditing',
         'Ext.form.field.ComboBox'

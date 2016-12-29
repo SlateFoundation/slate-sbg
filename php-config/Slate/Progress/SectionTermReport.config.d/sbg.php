@@ -1,16 +1,16 @@
 <?php
 
-namespace Slate\Progress\Narratives;
+namespace Slate\Progress;
 
-Report::$fields['SbgWorksheet'] = [
+SectionTermReport::$fields['SbgWorksheet'] = [
     'type' => 'json',
     'notnull' => false
 ];
 
-Report::$relationships['SbgWorksheetMaster'] = [
+SectionTermReport::$relationships['SbgWorksheetMaster'] = [
     'type' => 'one-one',
     'class' => \Slate\SBG\Worksheet::class,
-    'link' => function(Report $Report) {
+    'link' => function(SectionTermReport $Report) {
         $worksheet = $Report->SbgWorksheet;
 
         if (!$worksheet || empty($worksheet['worksheet_id'])) {
@@ -22,5 +22,3 @@ Report::$relationships['SbgWorksheetMaster'] = [
         ];
     }
 ];
-
-Report::$printTemplate = 'sbg-print';

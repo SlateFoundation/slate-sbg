@@ -3,7 +3,7 @@
 namespace Slate\SBG;
 
 use HandleBehavior;
-use Slate\Progress\Narratives\Report;
+use Slate\Progress\SectionTermReport;
 
 class Worksheet extends \VersionedRecord
 {
@@ -109,7 +109,7 @@ class Worksheet extends \VersionedRecord
         return $Worksheet ? $Worksheet->destroy() : false;
     }
 
-    public function getStandardsGrades(Report $Report)
+    public function getStandardsGrades(SectionTermReport $Report)
     {
 
         $grades = [];
