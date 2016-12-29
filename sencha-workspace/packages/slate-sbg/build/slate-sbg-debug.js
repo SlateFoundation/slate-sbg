@@ -1,5 +1,5 @@
-Ext.define('Slate.sbg.overrides.TermReport', {
-    override: 'Slate.model.TermReport'
+Ext.define('Slate.sbg.overrides.SectionTermReport', {
+    override: 'Slate.model.SectionTermReport'
 }, function(Report) {
     Report.addFields([
         {
@@ -103,8 +103,8 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
     }
 });
 
-Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
-    override: 'SlateAdmin.view.progress.narratives.EditorForm',
+Ext.define('Slate.sbg.overrides.SectionTermReportEditorForm', {
+    override: 'SlateAdmin.view.progress.terms.EditorForm',
     requires: [
         'Ext.form.FieldSet',
         'Slate.sbg.widget.WorksheetPrompt'
@@ -149,54 +149,6 @@ Ext.define('Slate.sbg.overrides.NarrativesEditorForm', {
                 promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
             }
         }
-    }
-});
-
-Ext.define('Slate.sbg.overrides.NarrativesSectionsGrid', {
-    override: 'SlateAdmin.view.progress.narratives.SectionsGrid',
-    requires: [
-        'Ext.grid.plugin.CellEditing',
-        'Ext.form.field.ComboBox'
-    ],
-    width: 300,
-    worksheetColumnTitle: 'Worksheet',
-    emptyWorksheetText: '<em>Double-click to select</em>',
-    initComponent: function() {
-        var me = this;
-        me.columns = me.columns.concat({
-            text: me.worksheetColumnTitle,
-            dataIndex: 'WorksheetID',
-            emptyCellText: me.emptyWorksheetText,
-            width: 200,
-            editor: {
-                xtype: 'combo',
-                allowBlank: true,
-                emptyText: 'Select worksheet',
-                store: 'StandardsWorksheets',
-                displayField: 'Title',
-                valueField: 'ID',
-                queryMode: 'local',
-                triggerAction: 'all',
-                typeAhead: true,
-                forceSelection: true,
-                selectOnFocus: true
-            },
-            renderer: function(worksheetId, metaData, section) {
-                if (!worksheetId) {
-                    return null;
-                }
-                var worksheet = section.get('worksheet');
-                if (!worksheet) {
-                    return '[Deleted Worksheet]';
-                }
-                return worksheet.get('Title');
-            }
-        });
-        me.plugins = (me.plugins || []).concat({
-            ptype: 'cellediting',
-            clicksToEdit: 2
-        });
-        me.callParent(arguments);
     }
 });
 
@@ -951,7 +903,7 @@ Ext.define('Slate.sbg.store.StandardsWorksheetAssignments', {
 });
 
 /* global Ext */
-Ext.define('Slate.sbg.controller.Narratives', {
+Ext.define('Slate.sbg.controller.SectionTermReports', {
     extend: 'Ext.app.Controller',
     config: {
         worksheet: null
@@ -967,10 +919,10 @@ Ext.define('Slate.sbg.controller.Narratives', {
         'WorksheetPrompt@Slate.sbg.widget'
     ],
     refs: {
-        sectionsGrid: 'progress-narratives-sectionsgrid',
-        termSelector: 'progress-narratives-sectionsgrid #termSelector',
-        editorForm: 'progress-narratives-editorform',
-        promptsFieldset: 'progress-narratives-editorform #sbgPromptsFieldset'
+        sectionsGrid: 'progress-terms-sectionsgrid',
+        termSelector: 'progress-terms-sectionsgrid #termSelector',
+        editorForm: 'progress-terms-editorform',
+        promptsFieldset: 'progress-terms-editorform #sbgPromptsFieldset'
     },
     control: {
         sectionsGrid: {
@@ -980,13 +932,13 @@ Ext.define('Slate.sbg.controller.Narratives', {
     },
     listen: {
         store: {
-            '#progress.narratives.Sections': {
+            '#progress.terms.Sections': {
                 load: 'onSectionsLoad',
                 update: 'onSectionUpdate'
             }
         },
         controller: {
-            '#progress.Narratives': {
+            '#progress.terms.Report': {
                 reportload: 'onReportLoad',
                 beforereportsave: 'onBeforeReportSave',
                 reportsave: 'onReportSave'
@@ -1137,12 +1089,60 @@ Ext.define('Slate.sbg.overrides.SlateAdmin', {
     override: 'SlateAdmin.Application',
     requires: [
         'Slate.sbg.controller.Worksheets',
-        'Slate.sbg.controller.Narratives'
+        'Slate.sbg.controller.SectionTermReports'
     ],
     initControllers: function() {
         this.callParent();
         this.getController('Slate.sbg.controller.Worksheets');
-        this.getController('Slate.sbg.controller.Narratives');
+        this.getController('Slate.sbg.controller.SectionTermReports');
+    }
+});
+
+Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {
+    override: 'SlateAdmin.view.progress.terms.SectionsGrid',
+    requires: [
+        'Ext.grid.plugin.CellEditing',
+        'Ext.form.field.ComboBox'
+    ],
+    width: 300,
+    worksheetColumnTitle: 'Worksheet',
+    emptyWorksheetText: '<em>Double-click to select</em>',
+    initComponent: function() {
+        var me = this;
+        me.columns = me.columns.concat({
+            text: me.worksheetColumnTitle,
+            dataIndex: 'WorksheetID',
+            emptyCellText: me.emptyWorksheetText,
+            width: 200,
+            editor: {
+                xtype: 'combo',
+                allowBlank: true,
+                emptyText: 'Select worksheet',
+                store: 'StandardsWorksheets',
+                displayField: 'Title',
+                valueField: 'ID',
+                queryMode: 'local',
+                triggerAction: 'all',
+                typeAhead: true,
+                forceSelection: true,
+                selectOnFocus: true
+            },
+            renderer: function(worksheetId, metaData, section) {
+                if (!worksheetId) {
+                    return null;
+                }
+                var worksheet = section.get('worksheet');
+                if (!worksheet) {
+                    return '[Deleted Worksheet]';
+                }
+                return worksheet.get('Title');
+            }
+        });
+        me.plugins = (me.plugins || []).concat({
+            ptype: 'cellediting',
+            clicksToEdit: 2
+        });
+        me.callParent(arguments);
     }
 });
 
