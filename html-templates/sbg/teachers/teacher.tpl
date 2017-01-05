@@ -262,7 +262,7 @@
 
         if (!empty($termIds) && !empty($courseSectionIds)) {
             $this->scope['reports'] = DB::allRecords(
-                'SELECT TermID, CourseSectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND CourseSectionID IN (%s)',
+                'SELECT TermID, SectionID, StudentID, SbgWorksheet FROM `%s` WHERE TermID IN (%s) AND SectionID IN (%s)',
                 [
                     Slate\Progress\SectionTermReport::$tableName,
                     implode(',', $termIds),
