@@ -22,3 +22,6 @@ SectionTermReport::$relationships['SbgWorksheetMaster'] = [
         ];
     }
 ];
+
+SectionTermReport::$bodyTpl = 'sbg/progress/section-term-reports/sbg.body';
+SectionTermReport::$cssTpl = 'sbg/progress/section-term-reports/sbg.css';
