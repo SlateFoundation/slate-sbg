@@ -1,4 +1,5 @@
-{extends "progress/section-term-reports/sectionTermReport.css.tpl"}
+{include "progress/section-term-reports/sectionTermReport.css.tpl"}
+
 th, td.grade {
     font-family: Helvetica Neue, Helvetica, Arial, Verdana, sans-serif !important;
 }
