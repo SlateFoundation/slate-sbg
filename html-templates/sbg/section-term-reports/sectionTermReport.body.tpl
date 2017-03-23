@@ -6,8 +6,27 @@
     ,4 = "Exceeding expectations"
 )}
 
-{template standards Report gradeLabels}
-    <!-- begin standards -->
+
+<article class="report">
+
+    <h2>{$Report->Section->Title|escape}</h2>
+
+    <dl>
+        {if count($Report->Section->Teachers)}
+            <dt class="instructor">Teacher{tif count($Report->Section->Teachers) != 1 ? s}</dt>
+            {foreach item=Teacher from=$Report->Section->Teachers implode='<br />'}
+                <dd class="instructor">
+                    {$Teacher->FullName|escape}
+                    &lt;<a href="mailto:{$Teacher->Email|escape}">{$Teacher->Email|escape}</a>&gt;
+                </dd>
+            {/foreach}
+        {/if}
+
+        {if $Report->Grade}
+            <dt class="grade">Overall Grade</dt>
+            <dd class="grade">{$Report->Grade}</dd>
+        {/if}
+
         {$worksheet = $Report->SbgWorksheetMaster}
         {if $worksheet}
             {$standardsGrades = $worksheet->getStandardsGrades($Report)}
@@ -40,30 +59,6 @@
                 </article>
             </dd>
         {/if}
-    <!-- end standards -->
-{/template}
-
-<article class="report">
-
-    <h2>{$Report->Section->Title|escape}</h2>
-
-    <dl>
-        {if count($Report->Section->Teachers)}
-            <dt class="instructor">Teacher{tif count($Report->Section->Teachers) != 1 ? s}</dt>
-            {foreach item=Teacher from=$Report->Section->Teachers implode='<br />'}
-                <dd class="instructor">
-                    {$Teacher->FullName|escape}
-                    &lt;<a href="mailto:{$Teacher->Email|escape}">{$Teacher->Email|escape}</a>&gt;
-                </dd>
-            {/foreach}
-        {/if}
-
-        {if $Report->Grade}
-            <dt class="grade">Overall Grade</dt>
-            <dd class="grade">{$Report->Grade}</dd>
-        {/if}
-
-        {standards $Report $gradeLabels}
 
         {if $Report->SectionTermData && trim($Report->SectionTermData->TermReportNotes)}
             <dt class="comments">Section Notes</dt>
