@@ -172,7 +172,7 @@ Ext.define('Site.page.StandardsTeacher', {
 	                            '</tpl>',
 	                        '</tr>',
 
-	                        '<tr class="{[baseCls]}-standard-row">',
+	                        '<tr class="{[baseCls]}-standard-row" data-prompt="{ID}">',
 	                            '<td class="{[baseCls]}-standard-row" colspan="{[totalColumns]}">',
 	                                '<div class="{[baseCls]}-sections-ct">',
 	                                    '<table class="{[baseCls]}-sections-table">',
