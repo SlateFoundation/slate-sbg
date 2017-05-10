@@ -7,9 +7,9 @@ Ext.define('Site.page.StandardsTeacher', {
         'Site.Common',
         'Slate.store.Terms',
         'Slate.store.CourseSections',
+        'Slate.store.progress.SectionTermReports',
         'Slate.sbg.store.StandardsWorksheets',
         'Slate.sbg.store.StandardsWorksheetAssignments',
-        'Slate.store.TermReports',
         'Ext.XTemplate'
     ],
 
@@ -417,7 +417,7 @@ Ext.define('Site.page.StandardsTeacher', {
             data: siteEnv.standardsWorksheetAssignments
         });
 
-        me.reportsStore = Ext.create('Slate.store.TermReports', {
+        me.reportsStore = Ext.create('Slate.store.progress.SectionTermReports', {
             storeId: 'standards-reports',
             data: siteEnv.standardsReports
         });
