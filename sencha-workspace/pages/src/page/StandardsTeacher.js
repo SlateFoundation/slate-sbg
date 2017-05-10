@@ -195,7 +195,7 @@ Ext.define('Site.page.StandardsTeacher', {
 
 	                                        '<tpl for="parent.get(\'CourseSections\').getRange()">',
 	                                            '<tr class="{[baseCls]}-section-row" data-section="{[values.getId()]}">',
-	                                                '<th class="{[baseCls]}-section-header">{[values.get("Title")]}</th>',
+	                                                '<th class="{[baseCls]}-section-header">{[values.get("Code")]}</th>',
 	                                                '<td class="{[baseCls]}-percent-cell">',
 	                                                    '{% v = this.calculateGrowth(parent.ID, values.getId()) %}',
 	                                                    '{[v === null ? "&mdash;" : fm.number(v, "0.#")]}',
