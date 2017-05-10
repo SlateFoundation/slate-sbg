@@ -268,7 +268,7 @@ Ext.define('Site.page.StandardsTeacher', {
                         (prompt in grades) &&
                         (!grade || grades[prompt] == grade) &&
                         report.get('TermID') == term &&
-                        (!section || report.get('CourseSectionID') == section)
+                        (!section || report.get('SectionID') == section)
                     ) {
                         count++;
                     }
@@ -312,7 +312,7 @@ Ext.define('Site.page.StandardsTeacher', {
                 for (i = 0; i < reportsCount; i++) {
                     report = reports.getAt(i);
 
-                    if (section && report.get('CourseSectionID') != section) {
+                    if (section && report.get('SectionID') != section) {
                         continue;
                     }
 
