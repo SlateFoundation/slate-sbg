@@ -82,7 +82,7 @@ Ext.define('Site.page.StandardsTeacher', {
                             '</div>',
                         '</th>',
                         '<tpl for="terms">',
-                            '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4">{[values.get("Title")]}</th>',
+                            '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4" data-term="{[values.getId()]}">{[values.get("Title")]}</th>',
                         '</tpl>',
                     '</tr>',
 
@@ -126,6 +126,8 @@ Ext.define('Site.page.StandardsTeacher', {
                 '<tpl for="worksheets.getRange()">',
                     '<tbody class="{[baseCls]}-worksheet-body">',
 
+                        '{% this.currentSectionIds = values.get("CourseSections").collect("ID", "data") %}',
+
                         '<tr class="{[baseCls]}-worksheet-row">',
                             '<th class="{[baseCls]}-worksheet-header" colspan="{[totalColumns]}">{[values.get("Title")]}</th>',
                         '</tr>',
@@ -139,7 +141,7 @@ Ext.define('Site.page.StandardsTeacher', {
                                     '{[v === null ? "&mdash;" : fm.number(v, "0.#")]}',
                                 '</td>',
 
-                                '{% this.currentDelta = this.calculateDelta(1, values.ID) %}',
+                                '{% this.currentDelta = this.calculateDelta(1, values.ID, this.currentSectionIds) %}',
                                 '<td class="{[baseCls]}-percent-cell has-divider <tpl if="this.currentDelta &lt; 0">standards-grid-negative</tpl>">',
                                     '{[this.currentDelta === null ? "&mdash;" : (this.currentDelta > 0 ? "+" : "") + fm.number(this.currentDelta, "0.#")]}',
                                 '</td>',
@@ -158,16 +160,16 @@ Ext.define('Site.page.StandardsTeacher', {
 
                                 '<tpl for="this.terms">',
                                     '<td class="{[baseCls]}-percent-cell has-divider">',
-                                        '{[this.countGrades(1, values.getId(), parent.ID)]}',
+                                        '{[this.countGrades(1, values.getId(), parent.ID, this.currentSectionIds)]}',
                                     '</td>',
                                     '<td class="{[baseCls]}-percent-cell">',
-                                        '{[this.countGrades(2, values.getId(), parent.ID)]}',
+                                        '{[this.countGrades(2, values.getId(), parent.ID, this.currentSectionIds)]}',
                                     '</td>',
                                     '<td class="{[baseCls]}-percent-cell">',
-                                        '{[this.countGrades(3, values.getId(), parent.ID)]}',
+                                        '{[this.countGrades(3, values.getId(), parent.ID, this.currentSectionIds)]}',
                                     '</td>',
                                     '<td class="{[baseCls]}-percent-cell">',
-                                        '{[this.countGrades(4, values.getId(), parent.ID)]}',
+                                        '{[this.countGrades(4, values.getId(), parent.ID, this.currentSectionIds)]}',
                                     '</td>',
                                 '</tpl>',
                             '</tr>',
@@ -252,12 +254,16 @@ Ext.define('Site.page.StandardsTeacher', {
         '<div>',
 
         {
-            countGrades: function(grade, term, prompt, section) {
+            countGrades: function(grade, term, prompt, sections) {
                 var reports = this.reports,
                     reportsCount = reports.getCount(),
                     i = 0,
                     count = 0,
                     report, grades;
+
+                if (!Ext.isArray(sections)) {
+                    sections = [sections];
+                }
 
                 for (; i < reportsCount; i++) {
                     report = reports.getAt(i);
@@ -268,7 +274,7 @@ Ext.define('Site.page.StandardsTeacher', {
                         (prompt in grades) &&
                         (!grade || grades[prompt] == grade) &&
                         report.get('TermID') == term &&
-                        (!section || report.get('SectionID') == section)
+                        Ext.Array.contains(sections, report.get('SectionID'))
                     ) {
                         count++;
                     }

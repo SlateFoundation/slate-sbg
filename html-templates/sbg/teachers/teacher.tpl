@@ -244,7 +244,7 @@
             }, $this->scope['data'])
         ));
 
-        // collect related terms
+        // collect related course sections
         $this->scope['worksheetCourseSections'] = array_values(array_unique(
             array_map(function($WorksheetAssignment) {
                 return $WorksheetAssignment->CourseSection;
