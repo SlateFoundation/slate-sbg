@@ -153,159 +153,6 @@ Ext.define('Slate.sbg.overrides.SectionTermReportEditorForm', {
 });
 
 /*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.model.StandardsWorksheet', {
-    extend: 'Ext.data.Model',
-    requires: [
-        'Slate.proxy.Records',
-        'Ext.data.validator.Presence',
-        'Ext.data.identifier.Negative'
-    ],
-    // model config
-    idProperty: 'ID',
-    identifier: 'negative',
-    fields: [
-        {
-            name: 'ID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Class',
-            type: 'string',
-            defaultValue: 'Slate\\SBG\\Worksheet'
-        },
-        {
-            name: 'Created',
-            type: 'date',
-            dateFormat: 'timestamp',
-            allowNull: true
-        },
-        {
-            name: 'CreatorID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Title',
-            type: 'string'
-        },
-        {
-            name: 'Handle',
-            type: 'string'
-        },
-        {
-            name: 'Status',
-            type: 'string',
-            defaultValue: 'published'
-        },
-        {
-            name: 'Description',
-            type: 'string'
-        }
-    ],
-    validators: {
-        Title: 'presence'
-    },
-    proxy: {
-        type: 'slate-records',
-        url: '/sbg/worksheets',
-        limitParam: null,
-        startParam: null
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.store.StandardsWorksheets', {
-    extend: 'Ext.data.Store',
-    model: 'Slate.sbg.model.StandardsWorksheet',
-    config: {
-        pageSize: false,
-        autoSync: false
-    }
-});
-
-/*jslint browser: true, undef: true */
-/*global Ext*/
-Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
-    extend: 'Ext.data.Model',
-    requires: [
-        'Slate.proxy.Records',
-        'Ext.data.identifier.Negative'
-    ],
-    // model config
-    idProperty: 'ID',
-    identifier: 'negative',
-    fields: [
-        {
-            name: 'ID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Class',
-            type: 'string',
-            defaultValue: 'Slate\\SBG\\WorksheetPrompt'
-        },
-        {
-            name: 'Created',
-            type: 'date',
-            dateFormat: 'timestamp',
-            allowNull: true
-        },
-        {
-            name: 'CreatorID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'WorksheetID',
-            type: 'int'
-        },
-        {
-            name: 'Position',
-            type: 'int',
-            defaultValue: 1
-        },
-        {
-            name: 'Prompt',
-            type: 'string'
-        },
-        {
-            name: 'Status',
-            type: 'string',
-            defaultValue: 'published'
-        }
-    ],
-    validators: {
-        Prompt: 'presence'
-    },
-    proxy: {
-        type: 'slate-records',
-        url: '/sbg/worksheet-prompts',
-        limitParam: null,
-        startParam: null
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {
-    extend: 'Ext.data.Store',
-    model: 'Slate.sbg.model.StandardsWorksheetPrompt',
-    config: {
-        pageSize: false,
-        autoSync: false,
-        sorters: [
-            {
-                property: 'Position'
-            }
-        ]
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
 /*global Ext,SlateAdmin*/
 Ext.define('Slate.sbg.view.worksheets.Grid', {
     extend: 'Ext.grid.Panel',
@@ -538,6 +385,159 @@ Ext.define('Slate.sbg.view.worksheets.Manager', {
 // getWorksheet: function(){
 //     return this.worksheet;
 // }
+
+/*jslint browser: true, undef: true, white: false, laxbreak: true */
+/*global Ext,Slate*/
+Ext.define('Slate.sbg.model.StandardsWorksheet', {
+    extend: 'Ext.data.Model',
+    requires: [
+        'Slate.proxy.Records',
+        'Ext.data.validator.Presence',
+        'Ext.data.identifier.Negative'
+    ],
+    // model config
+    idProperty: 'ID',
+    identifier: 'negative',
+    fields: [
+        {
+            name: 'ID',
+            type: 'int',
+            allowNull: true
+        },
+        {
+            name: 'Class',
+            type: 'string',
+            defaultValue: 'Slate\\SBG\\Worksheet'
+        },
+        {
+            name: 'Created',
+            type: 'date',
+            dateFormat: 'timestamp',
+            allowNull: true
+        },
+        {
+            name: 'CreatorID',
+            type: 'int',
+            allowNull: true
+        },
+        {
+            name: 'Title',
+            type: 'string'
+        },
+        {
+            name: 'Handle',
+            type: 'string'
+        },
+        {
+            name: 'Status',
+            type: 'string',
+            defaultValue: 'published'
+        },
+        {
+            name: 'Description',
+            type: 'string'
+        }
+    ],
+    validators: {
+        Title: 'presence'
+    },
+    proxy: {
+        type: 'slate-records',
+        url: '/sbg/worksheets',
+        limitParam: null,
+        startParam: null
+    }
+});
+
+/*jslint browser: true, undef: true, white: false, laxbreak: true */
+/*global Ext,Slate*/
+Ext.define('Slate.sbg.store.StandardsWorksheets', {
+    extend: 'Ext.data.Store',
+    model: 'Slate.sbg.model.StandardsWorksheet',
+    config: {
+        pageSize: false,
+        autoSync: false
+    }
+});
+
+/*jslint browser: true, undef: true */
+/*global Ext*/
+Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
+    extend: 'Ext.data.Model',
+    requires: [
+        'Slate.proxy.Records',
+        'Ext.data.identifier.Negative'
+    ],
+    // model config
+    idProperty: 'ID',
+    identifier: 'negative',
+    fields: [
+        {
+            name: 'ID',
+            type: 'int',
+            allowNull: true
+        },
+        {
+            name: 'Class',
+            type: 'string',
+            defaultValue: 'Slate\\SBG\\WorksheetPrompt'
+        },
+        {
+            name: 'Created',
+            type: 'date',
+            dateFormat: 'timestamp',
+            allowNull: true
+        },
+        {
+            name: 'CreatorID',
+            type: 'int',
+            allowNull: true
+        },
+        {
+            name: 'WorksheetID',
+            type: 'int'
+        },
+        {
+            name: 'Position',
+            type: 'int',
+            defaultValue: 1
+        },
+        {
+            name: 'Prompt',
+            type: 'string'
+        },
+        {
+            name: 'Status',
+            type: 'string',
+            defaultValue: 'published'
+        }
+    ],
+    validators: {
+        Prompt: 'presence'
+    },
+    proxy: {
+        type: 'slate-records',
+        url: '/sbg/worksheet-prompts',
+        limitParam: null,
+        startParam: null
+    }
+});
+
+/*jslint browser: true, undef: true, white: false, laxbreak: true */
+/*global Ext,Slate*/
+Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {
+    extend: 'Ext.data.Store',
+    model: 'Slate.sbg.model.StandardsWorksheetPrompt',
+    config: {
+        pageSize: false,
+        autoSync: false,
+        sorters: [
+            {
+                property: 'Position'
+            }
+        ]
+    }
+});
 
 Ext.define('Slate.sbg.controller.Worksheets', {
     extend: 'Ext.app.Controller',
