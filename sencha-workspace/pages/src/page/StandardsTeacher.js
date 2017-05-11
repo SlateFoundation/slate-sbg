@@ -82,7 +82,7 @@ Ext.define('Site.page.StandardsTeacher', {
                             '</div>',
                         '</th>',
                         '<tpl for="terms">',
-                            '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4">{[values.get("Title")]}</th>',
+                            '<th class="{[baseCls]}-grid-group-header has-divider" colspan="4" data-term="{[values.getId()]}">{[values.get("Title")]}</th>',
                         '</tpl>',
                     '</tr>',
 
