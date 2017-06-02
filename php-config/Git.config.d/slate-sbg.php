@@ -13,6 +13,7 @@ Git::$repositories['slate-sbg'] = [
         'php-migrations/Slate/SBG',
         'sencha-workspace/packages/slate-sbg',
         'sencha-workspace/pages/src/page/StandardsTeacher.js',
+        'site-root/sass/reports/sbg.scss',
         'site-root/sbg'
     ]
 ];
