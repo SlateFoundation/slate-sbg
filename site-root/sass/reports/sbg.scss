@@ -1,0 +1,31 @@
+.standard-worksheet {
+    .prompts {
+        border-collapse: collapse;
+        margin-bottom: 1em;
+        width: 100%;
+        page-break-before: avoid;
+    }
+
+    th, td {
+        padding: .5em 0;
+    }
+
+    td {
+        border-top: 1px dotted #999;
+    }
+
+    tr:first-child td {
+        border-top: 0;
+    }
+
+    .prompt {
+        text-align: left;
+        width: 80%;
+    }
+
+    .grade {
+        text-align: right;
+        white-space: nowrap;
+        padding-left: 1em;
+    }
+}
