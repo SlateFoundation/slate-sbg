@@ -1,31 +1,45 @@
+@import 'variables';
+@import 'mixins';
+
+dt.standards {
+    vertical-align: top;
+}
+
 .standard-worksheet {
     .prompts {
         border-collapse: collapse;
-        margin-bottom: 1em;
-        width: 100%;
+        margin: 0 0 1em;
         page-break-before: avoid;
+        width: 100%;
     }
 
     th, td {
+        text-align: left;
         padding: .5em 0;
+        vertical-align: top;
+    }
+
+    th {
+        border-bottom: 1px solid #ccc;
+        font-size: .875em;
+        font-weight: normal;
+        letter-spacing: .05em;
+        padding-top: .75em;
+        text-transform: uppercase;
     }
 
     td {
-        border-top: 1px dotted #999;
-    }
-
-    tr:first-child td {
-        border-top: 0;
+        border-top: 1px solid #ddd;
     }
 
     .prompt {
+        padding-right: 1em;
         text-align: left;
         width: 80%;
     }
 
     .grade {
-        text-align: right;
-        white-space: nowrap;
         padding-left: 1em;
+        white-space: nowrap;
     }
 }

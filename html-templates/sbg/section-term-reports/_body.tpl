@@ -4,7 +4,7 @@
     {$dwoo.parent}
 
     {$gradeLabels = array(
-        "N/A" = "Standard not Applicable during the Semester",
+        "N/A" = "Standard not applicable during the semester",
         1 = "Not currently meeting expectations",
         2 = "Approaching expectations",
         3 = "Meeting expectations",
@@ -24,17 +24,22 @@
             <dd class="standards">
                 <article class="standard-worksheet">
                     <table class="prompts">
+                        <thead>
+                            <th class="prompt">Prompt</th>
+                            <th class="grade">Grade</th>
+                        </thead>
                         <tbody>
                             {foreach item=Grade from=$standardsGrades}
                                 <tr>
                                     <td class="prompt">{$Grade.Prompt|escape}</td>
                                     <td class="grade">
                                         {if $Grade.Grade === null}
-                                            -
+                                            <span class="muted">&mdash;</span>
                                         {elseif $Grade.Grade === 0}
-                                            N/A
+                                            <span class="muted">N/A</span>
                                         {else}
-                                            {$gradeLabels[$Grade.Grade]}
+                                            <strong>{$Grade.Grade}</strong>&nbsp;&nbsp;
+                                            <span class="muted">{$gradeLabels[$Grade.Grade]}</span>
                                         {/if}
                                     </td>
                                 </tr>
