@@ -1,1148 +1,2089 @@
-Ext.define('Slate.sbg.overrides.SectionTermReport', {
-    override: 'Slate.model.progress.SectionTermReport'
-}, function(Report) {
-    Report.addFields([
-        {
-            name: 'SbgWorksheet',
-            convert: function(v) {
-                return typeof v == 'string' ? Ext.decode(v, true) || null : v;
-            }
-        }
-    ]);
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext*/
-Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {
-    extend: 'Ext.data.Store',
-    config: {
-        fields: [
-            'id',
-            'text'
-        ],
-        data: [
-            {
-                id: 0,
-                text: 'N/A'
-            },
-            {
-                id: 1,
-                text: '1'
-            },
-            {
-                id: 2,
-                text: '2'
-            },
-            {
-                id: 3,
-                text: '3'
-            },
-            {
-                id: 4,
-                text: '4'
-            }
-        ]
+var $jscomp = $jscomp || {};
+$jscomp.scope = {};
+$jscomp.ASSUME_ES5 = false;
+$jscomp.ASSUME_NO_NATIVE_MAP = false;
+$jscomp.ASSUME_NO_NATIVE_SET = false;
+$jscomp.defineProperty = $jscomp.ASSUME_ES5 || typeof Object.defineProperties == 'function' ? Object.defineProperty : function(target, property, descriptor) {
+  descriptor = descriptor;
+  if (target == Array.prototype || target == Object.prototype) {
+    return;
+  }
+  target[property] = descriptor.value;
+};
+$jscomp.getGlobal = function(maybeGlobal) {
+  return typeof window != 'undefined' && window === maybeGlobal ? maybeGlobal : typeof global != 'undefined' && global != null ? global : maybeGlobal;
+};
+$jscomp.global = $jscomp.getGlobal(this);
+$jscomp.polyfill = function(target, polyfill, fromLang, toLang) {
+  if (!polyfill) {
+    return;
+  }
+  var obj = $jscomp.global;
+  var split = target.split('.');
+  for (var i = 0; i < split.length - 1; i++) {
+    var key = split[i];
+    if (!(key in obj)) {
+      obj[key] = {};
     }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.widget.WorksheetPrompt', {
-    extend: 'Ext.container.Container',
-    xtype: 'sbg-worksheets-prompt',
-    requires: [
-        'Ext.form.field.ComboBox'
-    ],
-    config: {
-        prompt: null,
-        grade: null
-    },
-    layout: 'hbox',
-    items: [
-        {
-            xtype: 'combobox',
-            width: 60,
-            submitValue: false,
-            store: {
-                xclass: 'Slate.sbg.store.StandardsWorksheetPromptOptions'
-            },
-            valueField: 'id',
-            displayField: 'text',
-            queryMode: 'local',
-            forceSelection: true,
-            autoSelect: true,
-            matchFieldWidth: false
-        },
-        {
-            itemId: 'promptCmp',
-            flex: 1,
-            xtype: 'component',
-            tpl: '{Prompt}'
-        }
-    ],
-    initComponent: function() {
-        var me = this,
-            combo, promptCmp, prompt, grade;
-        me.callParent(arguments);
-        combo = me.combo = me.down('combobox');
-        promptCmp = me.promptCmp = me.down('#promptCmp');
-        if (prompt = me.getPrompt()) {
-            promptCmp.update(prompt.getData());
-        }
-        combo.setValue(grade || null);
-    },
-    getGrade: function() {
-        return this.combo ? this.combo.getValue() : this.callParent();
-    },
-    setGrade: function(grade) {
-        var combo = this.combo;
-        if (combo) {
-            combo.setValue(grade);
-            combo.resetOriginalValue();
-        }
-    }
-});
-
-Ext.define('Slate.sbg.overrides.SectionTermReportEditorForm', {
-    override: 'SlateAdmin.view.progress.terms.EditorForm',
-    requires: [
-        'Ext.form.FieldSet',
-        'Slate.sbg.widget.WorksheetPrompt'
-    ],
-    initComponent: function() {
-        var me = this;
-        me.items = Ext.Array.insert(Ext.Array.clone(me.items), 1, [
-            {
-                itemId: 'sbgPromptsFieldset',
-                xtype: 'fieldset',
-                title: 'Standards-based grading worksheet',
-                defaultType: 'sbg-worksheets-prompt',
-                hidden: true
-            }
-        ]);
-        me.callParent(arguments);
-        me.sbgPromptsFieldset = me.down('#sbgPromptsFieldset');
-    },
-    getSbgGrades: function() {
-        var promptComponents = this.sbgPromptsFieldset.items.getRange(),
-            len = promptComponents.length,
-            i = 0,
-            promptComponent,
-            gradesData = {};
-        for (; i < len; i++) {
-            promptComponent = promptComponents[i];
-            if (promptComponent.isXType('sbg-worksheets-prompt')) {
-                gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
-            }
-        }
-        return gradesData;
-    },
-    setSbgGrades: function(gradesData) {
-        var promptComponents = this.sbgPromptsFieldset.items.getRange(),
-            len = promptComponents.length,
-            i = 0,
-            promptComponent;
-        gradesData = gradesData || {};
-        for (; i < len; i++) {
-            promptComponent = promptComponents[i];
-            if (promptComponent.isXType('sbg-worksheets-prompt')) {
-                promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
-            }
-        }
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.model.StandardsWorksheet', {
-    extend: 'Ext.data.Model',
-    requires: [
-        'Slate.proxy.Records',
-        'Ext.data.validator.Presence',
-        'Ext.data.identifier.Negative'
-    ],
-    // model config
-    idProperty: 'ID',
-    identifier: 'negative',
-    fields: [
-        {
-            name: 'ID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Class',
-            type: 'string',
-            defaultValue: 'Slate\\SBG\\Worksheet'
-        },
-        {
-            name: 'Created',
-            type: 'date',
-            dateFormat: 'timestamp',
-            allowNull: true
-        },
-        {
-            name: 'CreatorID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Title',
-            type: 'string'
-        },
-        {
-            name: 'Handle',
-            type: 'string'
-        },
-        {
-            name: 'Status',
-            type: 'string',
-            defaultValue: 'published'
-        },
-        {
-            name: 'Description',
-            type: 'string'
-        }
-    ],
-    validators: {
-        Title: 'presence'
-    },
-    proxy: {
-        type: 'slate-records',
-        url: '/sbg/worksheets',
-        limitParam: null,
-        startParam: null
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.store.StandardsWorksheets', {
-    extend: 'Ext.data.Store',
-    model: 'Slate.sbg.model.StandardsWorksheet',
-    config: {
-        pageSize: false,
-        autoSync: false
-    }
-});
-
-/*jslint browser: true, undef: true */
-/*global Ext*/
-Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
-    extend: 'Ext.data.Model',
-    requires: [
-        'Slate.proxy.Records',
-        'Ext.data.identifier.Negative'
-    ],
-    // model config
-    idProperty: 'ID',
-    identifier: 'negative',
-    fields: [
-        {
-            name: 'ID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Class',
-            type: 'string',
-            defaultValue: 'Slate\\SBG\\WorksheetPrompt'
-        },
-        {
-            name: 'Created',
-            type: 'date',
-            dateFormat: 'timestamp',
-            allowNull: true
-        },
-        {
-            name: 'CreatorID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'WorksheetID',
-            type: 'int'
-        },
-        {
-            name: 'Position',
-            type: 'int',
-            defaultValue: 1
-        },
-        {
-            name: 'Prompt',
-            type: 'string'
-        },
-        {
-            name: 'Status',
-            type: 'string',
-            defaultValue: 'published'
-        }
-    ],
-    validators: {
-        Prompt: 'presence'
-    },
-    proxy: {
-        type: 'slate-records',
-        url: '/sbg/worksheet-prompts',
-        limitParam: null,
-        startParam: null
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {
-    extend: 'Ext.data.Store',
-    model: 'Slate.sbg.model.StandardsWorksheetPrompt',
-    config: {
-        pageSize: false,
-        autoSync: false,
-        sorters: [
-            {
-                property: 'Position'
-            }
-        ]
-    }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.Grid', {
-    extend: 'Ext.grid.Panel',
-    xtype: 'sbg-worksheets-grid',
-    requires: [
-        'Ext.grid.plugin.CellEditing',
-        'Ext.form.field.Text',
-        'Ext.grid.column.Action'
-    ],
-    title: 'Available Worksheets',
-    componentCls: 'sbg-worksheets-grid',
-    bbar: [
-        {
-            flex: 1,
-            itemId: 'createWorksheetBtn',
-            xtype: 'button',
-            text: 'Create Worksheet',
-            glyph: 61525
-        }
-    ],
-    // fa-plus-circle
-    hideHeaders: true,
-    store: 'StandardsWorksheets',
-    columns: [
-        {
-            flex: 1,
-            text: 'Title',
-            dataIndex: 'Title',
-            emptyCellText: 'Untitled worksheet'
-        },
-        {
-            xtype: 'actioncolumn',
-            width: 20,
-            items: [
-                {
-                    action: 'delete',
-                    iconCls: 'prompt-delete glyph-danger',
-                    glyph: 61526,
-                    // fa-minus-circle
-                    tooltip: 'Delete prompt'
-                }
-            ]
-        }
-    ]
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
-    extend: 'Ext.grid.Panel',
-    xtype: 'sbg-worksheets-promptsgrid',
-    requires: [
-        'Ext.grid.plugin.CellEditing',
-        'Ext.form.field.TextArea',
-        'Ext.grid.column.Action'
-    ],
-    title: 'Prompts',
-    componentCls: 'sbg-worksheets-promptsgrid',
-    // tbar: [{
-    //     xtype: 'button',
-    //     text: 'Add Prompt',
-    //     action: 'addPrompt'
-    // }, {
-    //     xtype: 'tbfill'
-    // }, {
-    //     xtype: 'button',
-    //     text: 'Disable this worksheet',
-    //     action: 'disableWorksheet'
-    // }],
-    plugins: [
-        {
-            ptype: 'cellediting',
-            pluginId: 'cellediting',
-            clicksToEdit: 1
-        }
-    ],
-    hideHeaders: true,
-    store: 'StandardsWorksheetPrompts',
-    columns: [
-        {
-            text: 'Position',
-            width: 40,
-            dataIndex: 'Position'
-        },
-        {
-            flex: 1,
-            text: 'Prompt',
-            dataIndex: 'Prompt',
-            editor: {
-                xtype: 'textarea',
-                allowBlank: false,
-                maxLength: 500,
-                enforceMaxLength: true,
-                enterIsSpecial: true
-            }
-        },
-        {
-            xtype: 'actioncolumn',
-            width: 50,
-            items: [
-                {
-                    action: 'up',
-                    glyph: 61538,
-                    // fa-arrow-up
-                    tooltip: 'Move prompt up'
-                },
-                {
-                    action: 'down',
-                    glyph: 61539,
-                    // fa-arrow-down
-                    tooltip: 'Move prompt down'
-                },
-                {
-                    action: 'delete',
-                    iconCls: 'prompt-delete glyph-danger',
-                    glyph: 61526,
-                    // fa-minus-circle
-                    tooltip: 'Delete prompt'
-                }
-            ]
-        }
-    ]
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.Form', {
-    extend: 'Ext.form.Panel',
-    xtype: 'sbg-worksheets-form',
-    requires: [
-        'Ext.form.field.Text',
-        'Ext.form.field.TextArea',
-        'Slate.sbg.view.worksheets.PromptsGrid'
-    ],
-    disabled: true,
-    title: 'Selected Worksheet',
-    componentCls: 'sbg-standards-worksheets-editor',
-    bodyPadding: 10,
-    scrollable: 'vertical',
-    trackResetOnLoad: true,
-    defaults: {
-        labelWidth: 70,
-        labelAlign: 'right',
-        anchor: '100%'
-    },
-    items: [
-        {
-            xtype: 'textfield',
-            name: 'Title',
-            fieldLabel: 'Title',
-            allowBlank: false
-        },
-        {
-            xtype: 'textareafield',
-            name: 'Description',
-            // enableKeyEvents: true,
-            fieldLabel: 'Description',
-            emptyText: 'Optional explanation of worksheet for parents and students',
-            grow: true
-        },
-        {
-            xtype: 'sbg-worksheets-promptsgrid'
-        }
-    ],
-    buttons: [
-        {
-            itemId: 'revertBtn',
-            text: 'Revert Changes',
-            cls: 'glyph-danger',
-            glyph: 61527
-        },
-        // fa-times-circle
-        {
-            xtype: 'tbfill'
-        },
-        {
-            itemId: 'addPromptBtn',
-            text: 'Add Prompt',
-            glyph: 61525
-        },
-        // fa-plus-circle
-        {
-            itemId: 'saveBtn',
-            text: 'Save Changes',
-            cls: 'glyph-success',
-            glyph: 61528
-        }
-    ]
-});
-// fa-check-circle
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.Manager', {
-    extend: 'Ext.Container',
-    xtype: 'sbg-worksheets-manager',
-    requires: [
-        'Slate.sbg.view.worksheets.Grid',
-        'Slate.sbg.view.worksheets.Form'
-    ],
-    componentCls: 'sbg-worksheets-manager',
-    layout: 'border',
-    // worksheet: null,
-    items: [
-        {
-            region: 'west',
-            split: true,
-            xtype: 'sbg-worksheets-grid',
-            autoScroll: true,
-            width: 500
-        },
-        {
-            region: 'center',
-            xtype: 'sbg-worksheets-form',
-            flex: 1
-        }
-    ]
-});
-// //helper functions
-// updateWorksheet: function(worksheet){
-//     if(!worksheet) {
-//         return false;
-//     }
-//     var editor = this.down('sbg-worksheets-editor'),
-//         field = editor.down('textareafield[name=Description]');
-//     field.removeCls('dirty').addCls('saved');
-//     this.down('sbg-worksheets-editor').loadRecord(worksheet);
-//     this.worksheet = worksheet;
-// },
-// getWorksheet: function(){
-//     return this.worksheet;
-// }
-
-Ext.define('Slate.sbg.controller.Worksheets', {
-    extend: 'Ext.app.Controller',
-    // controller config
-    routes: {
-        'settings/standards-worksheets': 'showWorksheetSettings'
-    },
-    views: [
-        'worksheets.Manager@Slate.sbg.view'
-    ],
-    stores: [
-        'StandardsWorksheets@Slate.sbg.store',
-        'StandardsWorksheetPrompts@Slate.sbg.store'
-    ],
-    refs: {
-        settingsNavPanel: 'settings-navpanel',
-        managerCt: {
-            selector: 'sbg-worksheets-manager',
-            autoCreate: true,
-            xtype: 'sbg-worksheets-manager'
-        },
-        grid: 'sbg-worksheets-grid',
-        form: 'sbg-worksheets-form',
-        titleField: 'sbg-worksheets-form field[name=Title]',
-        promptsGrid: 'sbg-worksheets-promptsgrid',
-        revertBtn: 'sbg-worksheets-form button#revertBtn',
-        saveBtn: 'sbg-worksheets-form button#saveBtn'
-    },
-    control: {
-        managerCt: {
-            activate: 'onManagerCtActivate'
-        },
-        'sbg-worksheets-manager button#createWorksheetBtn': {
-            click: 'onCreateWorksheetBtnClick'
-        },
-        grid: {
-            beforeselect: 'onGridBeforeSelect',
-            select: 'onGridSelect',
-            deleteclick: 'onWorksheetDeleteClick'
-        },
-        'sbg-worksheets-form field': {
-            dirtychange: 'onFieldDirtyChange'
-        },
-        promptsGrid: {
-            upclick: 'onPromptGridUpClick',
-            downclick: 'onPromptGridDownClick',
-            deleteclick: 'onPromptDeleteClick'
-        },
-        revertBtn: {
-            click: 'onRevertBtnClick'
-        },
-        saveBtn: {
-            click: 'onSaveBtnClick'
-        },
-        'sbg-worksheets-manager button#addPromptBtn': {
-            click: 'onAddPromptBtnClick'
-        }
-    },
-    listen: {
-        store: {
-            '#StandardsWorksheets': {
-                update: 'onWorksheetUpdate'
-            },
-            '#StandardsWorksheetPrompts': {
-                add: 'onWorksheetPromptAdd',
-                update: 'onWorksheetPromptUpdate',
-                remove: 'onWorksheetPromptRemove',
-                write: 'onWorksheetPromptsStoreWrite'
-            }
-        }
-    },
-    // controller template methods
-    init: function() {
-        SlateAdmin.view.settings.NavPanel.prototype.config.data.push({
-            href: '#settings/standards-worksheets',
-            text: 'Standards Worksheets'
-        });
-    },
-    onLaunch: function() {
-        console.warn('SBG controller launched');
-    },
-    // route handlers
-    showWorksheetSettings: function() {
-        var me = this,
-            navPanel = me.getSettingsNavPanel();
-        Ext.suspendLayouts();
-        Ext.util.History.suspendState();
-        navPanel.setActiveLink('settings/standards-worksheets');
-        navPanel.expand(false);
-        Ext.util.History.resumeState(false);
-        // false to discard any changes to state
-        me.application.getController('Viewport').loadCard(me.getManagerCt());
-        Ext.resumeLayouts(true);
-    },
-    // event handlers
-    onManagerCtActivate: function() {
-        this.getStandardsWorksheetsStore().load();
-    },
-    onCreateWorksheetBtnClick: function() {
-        var grid = this.getGrid(),
-            worksheet = grid.getStore().add({})[0];
-        grid.setSelection(worksheet);
-        this.getTitleField().focus();
-    },
-    onGridBeforeSelect: function(selModel, worksheet) {
-        var me = this,
-            form = me.getForm(),
-            loadedWorksheet = form.getRecord();
-        if (loadedWorksheet && (form.isDirty() || me.isPromptsStoreDirty())) {
-            Ext.Msg.confirm('Unsaved Changes', 'You have unsaved changes to this worksheet.<br/><br/>Do you want to continue without saving them?', function(btn) {
-                if (btn != 'yes') {
-                    return;
-                }
-                me.revertChanges();
-                selModel.select([
-                    worksheet
-                ]);
-            });
-            return false;
-        }
-    },
-    onGridSelect: function(selModel, worksheet) {
-        var me = this,
-            form = me.getForm(),
-            promptsStore = me.getStandardsWorksheetPromptsStore();
-        form.enable();
-        form.loadRecord(worksheet);
-        if (worksheet.phantom) {
-            promptsStore.loadRecords([]);
+    obj = obj[key];
+  }
+  var property = split[split.length - 1];
+  var orig = obj[property];
+  var impl = polyfill(orig);
+  if (impl == orig || impl == null) {
+    return;
+  }
+  $jscomp.defineProperty(obj, property, {configurable:true, writable:true, value:impl});
+};
+$jscomp.polyfill('Array.prototype.copyWithin', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, start, opt_end) {
+    var len = this.length;
+    target = Number(target);
+    start = Number(start);
+    opt_end = Number(opt_end != null ? opt_end : len);
+    if (target < start) {
+      opt_end = Math.min(opt_end, len);
+      while (start < opt_end) {
+        if (start in this) {
+          this[target++] = this[start++];
         } else {
-            promptsStore.load({
-                params: {
-                    worksheet: worksheet.getId()
-                }
-            });
+          delete this[target++];
+          start++;
         }
-        me.syncFormButtons();
-    },
-    onWorksheetDeleteClick: function(grid, worksheet) {
-        Ext.Msg.confirm('Delete Worksheet', Ext.String.format('Are you sure you want to delete the worksheet <strong>"{0}"</strong> and all of its prompts?', worksheet.get('Title')), function(btn) {
-            if (btn != 'yes') {
-                return;
-            }
-            worksheet.erase();
-        });
-    },
-    onFieldDirtyChange: function(field, dirty) {
-        this.syncFormButtons();
-    },
-    onPromptGridUpClick: function(promptsGrid, prompt, item, rowIndex) {
-        var promptsStore = promptsGrid.getStore(),
-            previousPrompt = promptsStore.getAt(rowIndex - 1);
-        if (!previousPrompt) {
-            return;
-        }
-        promptsStore.beginUpdate();
-        previousPrompt.set('Position', rowIndex + 1);
-        prompt.set('Position', rowIndex);
-        promptsStore.endUpdate();
-    },
-    onPromptGridDownClick: function(promptsGrid, prompt, item, rowIndex) {
-        var promptsStore = promptsGrid.getStore(),
-            nextPrompt = promptsStore.getAt(rowIndex + 1);
-        if (!nextPrompt) {
-            return;
-        }
-        promptsStore.beginUpdate();
-        prompt.set('Position', rowIndex + 2);
-        nextPrompt.set('Position', rowIndex + 1);
-        promptsStore.endUpdate();
-    },
-    onPromptDeleteClick: function(promptsGrid, prompt, item, rowIndex) {
-        var promptsStore = promptsGrid.getStore();
-        promptsStore.remove(prompt);
-        promptsStore.each(function(otherPrompt, otherRowIndex) {
-            if (otherRowIndex >= rowIndex) {
-                otherPrompt.set('Position', otherRowIndex + 1);
-            }
-        });
-    },
-    onWorksheetUpdate: function(worksheetsStore, worksheet, operation) {
-        var form = this.getForm();
-        // reload record into form after commit to server
-        if (operation == 'commit' && form.getRecord() === worksheet) {
-            form.loadRecord(worksheet);
-        }
-    },
-    onWorksheetPromptAdd: function() {
-        this.syncFormButtons();
-    },
-    onWorksheetPromptUpdate: function() {
-        this.syncFormButtons();
-    },
-    onWorksheetPromptRemove: function() {
-        this.syncFormButtons();
-    },
-    onWorksheetPromptsStoreWrite: function() {
-        this.syncFormButtons();
-    },
-    onRevertBtnClick: function() {
-        var me = this,
-            grid = me.getGrid(),
-            form = me.getForm(),
-            worksheet = form.getRecord();
-        Ext.Msg.confirm('Discard Changes', 'Are you sure you want to discard all changes to this worksheet?', function(btn) {
-            if (btn != 'yes') {
-                return;
-            }
-            me.revertChanges();
-            if (worksheet.phantom) {
-                form.disable();
-                grid.getStore().remove(worksheet);
-            }
-        });
-    },
-    onSaveBtnClick: function() {
-        var me = this,
-            managerCt = me.getManagerCt(),
-            form = me.getForm(),
-            worksheet = form.getRecord(),
-            worksheetWasPhantom = worksheet.phantom,
-            promptsStore = me.getStandardsWorksheetPromptsStore(),
-            isPromptsStoreDirty = me.isPromptsStoreDirty(),
-            doSavePrompts = function() {
-                var worksheetId = worksheet.getId();
-                if (worksheetWasPhantom) {
-                    promptsStore.each(function(prompt) {
-                        prompt.set('WorksheetID', worksheetId);
-                    });
-                }
-                if (isPromptsStoreDirty) {
-                    promptsStore.sync({
-                        callback: function(batch, options) {
-                            managerCt.setLoading(false);
-                        }
-                    });
-                } else {
-                    managerCt.setLoading(false);
-                }
-            };
-        form.updateRecord(worksheet);
-        if (!worksheet.dirty && !isPromptsStoreDirty) {
-            return;
-        }
-        managerCt.setLoading('Saving worksheet&hellip;');
-        if (worksheet.dirty) {
-            worksheet.save({
-                callback: function(report, operation, success) {
-                    if (success) {
-                        doSavePrompts();
-                    } else {
-                        managerCt.setLoading(false);
-                        Ext.Msg.alert('Failed to save worksheet', 'This worksheet failed to save to the server:<br><br>' + (operation.getError() || 'Unknown reason, try again or contact support'));
-                    }
-                }
-            });
+      }
+    } else {
+      opt_end = Math.min(opt_end, len + start - target);
+      target += opt_end - start;
+      while (opt_end > start) {
+        if (--opt_end in this) {
+          this[--target] = this[opt_end];
         } else {
-            doSavePrompts();
+          delete this[target];
         }
-    },
-    onAddPromptBtnClick: function() {
-        var promptsGrid = this.getPromptsGrid(),
-            promptsStore = promptsGrid.getStore(),
-            prompt = promptsStore.add({
-                WorksheetID: this.getForm().getRecord().getId(),
-                Position: promptsStore.getCount() + 1
-            })[0];
-        promptsGrid.getPlugin('cellediting').startEdit(prompt, 1);
-    },
-    // controller methods
-    syncFormButtons: function() {
-        var me = this,
-            form = me.getForm(),
-            formDirty = form.isDirty(),
-            promptsDirty = me.isPromptsStoreDirty();
-        me.getRevertBtn().setDisabled(!formDirty && !form.getRecord().phantom && !promptsDirty);
-        me.getSaveBtn().setDisabled((!formDirty && !promptsDirty) || !form.isValid() || !me.isPromptsStoreValid());
-    },
-    revertChanges: function() {
-        this.getForm().reset();
-        this.getStandardsWorksheetPromptsStore().rejectChanges();
-    },
-    isPromptsStoreValid: function() {
-        var isValid = true;
-        this.getStandardsWorksheetPromptsStore().each(function(prompt) {
-            if (!prompt.isValid()) {
-                isValid = false;
-                return false;
-            }
-        });
-        return isValid;
-    },
-    isPromptsStoreDirty: function() {
-        var promptsStore = this.getStandardsWorksheetPromptsStore();
-        return (promptsStore.getNewRecords().length || promptsStore.getUpdatedRecords().length || promptsStore.getRemovedRecords().length);
+      }
     }
-});
-
-/*jslint browser: true, undef: true */
-/*global Ext*/
-Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {
-    extend: 'Ext.data.Model',
-    requires: [
-        'Slate.proxy.Records',
-        'Ext.data.identifier.Negative'
-    ],
-    // model config
-    idProperty: 'ID',
-    identifier: 'negative',
-    fields: [
-        {
-            name: 'ID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'Class',
-            type: 'string',
-            defaultValue: 'Slate\\SBG\\WorksheetAssignment'
-        },
-        {
-            name: 'Created',
-            type: 'date',
-            dateFormat: 'timestamp',
-            allowNull: true
-        },
-        {
-            name: 'CreatorID',
-            type: 'int',
-            allowNull: true
-        },
-        {
-            name: 'TermID',
-            type: 'int'
-        },
-        {
-            name: 'CourseSectionID',
-            type: 'int'
-        },
-        {
-            name: 'WorksheetID',
-            type: 'int',
-            allowNull: true
-        }
-    ],
-    proxy: {
-        type: 'slate-records',
-        url: '/sbg/worksheet-assignments',
-        limitParam: null,
-        startParam: null
+    return this;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.SYMBOL_PREFIX = 'jscomp_symbol_';
+$jscomp.initSymbol = function() {
+  $jscomp.initSymbol = function() {
+  };
+  if (!$jscomp.global['Symbol']) {
+    $jscomp.global['Symbol'] = $jscomp.Symbol;
+  }
+};
+$jscomp.Symbol = function() {
+  var counter = 0;
+  function Symbol(opt_description) {
+    return $jscomp.SYMBOL_PREFIX + (opt_description || '') + counter++;
+  }
+  return Symbol;
+}();
+$jscomp.initSymbolIterator = function() {
+  $jscomp.initSymbol();
+  var symbolIterator = $jscomp.global['Symbol'].iterator;
+  if (!symbolIterator) {
+    symbolIterator = $jscomp.global['Symbol'].iterator = $jscomp.global['Symbol']('iterator');
+  }
+  if (typeof Array.prototype[symbolIterator] != 'function') {
+    $jscomp.defineProperty(Array.prototype, symbolIterator, {configurable:true, writable:true, value:function() {
+      return $jscomp.arrayIterator(this);
+    }});
+  }
+  $jscomp.initSymbolIterator = function() {
+  };
+};
+$jscomp.arrayIterator = function(array) {
+  var index = 0;
+  return $jscomp.iteratorPrototype(function() {
+    if (index < array.length) {
+      return {done:false, value:array[index++]};
+    } else {
+      return {done:true};
     }
-});
-
-/*jslint browser: true, undef: true, white: false, laxbreak: true */
-/*global Ext,Slate*/
-Ext.define('Slate.sbg.store.StandardsWorksheetAssignments', {
-    extend: 'Ext.data.Store',
-    model: 'Slate.sbg.model.StandardsWorksheetAssignment',
-    config: {
-        pageSize: false,
-        autoSync: false
+  });
+};
+$jscomp.iteratorPrototype = function(next) {
+  $jscomp.initSymbolIterator();
+  var iterator = {next:next};
+  iterator[$jscomp.global['Symbol'].iterator] = function() {
+    return this;
+  };
+  return iterator;
+};
+$jscomp.iteratorFromArray = function(array, transform) {
+  $jscomp.initSymbolIterator();
+  if (array instanceof String) {
+    array = array + '';
+  }
+  var i = 0;
+  var iter = {next:function() {
+    if (i < array.length) {
+      var index = i++;
+      return {value:transform(index, array[index]), done:false};
     }
-});
-
-/* global Ext */
-Ext.define('Slate.sbg.controller.SectionTermReports', {
-    extend: 'Ext.app.Controller',
-    config: {
-        worksheet: null
-    },
-    // controller config
-    stores: [
-        'StandardsWorksheets@Slate.sbg.store',
-        'StandardsWorksheetAssignments@Slate.sbg.store',
-        'StandardsWorksheetPrompts@Slate.sbg.store',
-        'StandardsWorksheetPromptOptions@Slate.sbg.store'
-    ],
-    views: [
-        'WorksheetPrompt@Slate.sbg.widget'
-    ],
-    refs: {
-        sectionsGrid: 'progress-terms-sectionsgrid',
-        termSelector: 'progress-terms-sectionsgrid #termSelector',
-        editorForm: 'progress-terms-editorform',
-        promptsFieldset: 'progress-terms-editorform #sbgPromptsFieldset'
-    },
-    control: {
-        sectionsGrid: {
-            boxready: 'onSectionsGridBoxReady',
-            select: 'onSectionsGridSelect'
+    iter.next = function() {
+      return {done:true, value:void 0};
+    };
+    return iter.next();
+  }};
+  iter[Symbol.iterator] = function() {
+    return iter;
+  };
+  return iter;
+};
+$jscomp.polyfill('Array.prototype.entries', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function() {
+    return $jscomp.iteratorFromArray(this, function(i, v) {
+      return [i, v];
+    });
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Array.prototype.fill', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(value, opt_start, opt_end) {
+    var length = this.length || 0;
+    if (opt_start < 0) {
+      opt_start = Math.max(0, length + opt_start);
+    }
+    if (opt_end == null || opt_end > length) {
+      opt_end = length;
+    }
+    opt_end = Number(opt_end);
+    if (opt_end < 0) {
+      opt_end = Math.max(0, length + opt_end);
+    }
+    for (var i = Number(opt_start || 0); i < opt_end; i++) {
+      this[i] = value;
+    }
+    return this;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.findInternal = function(array, callback, thisArg) {
+  if (array instanceof String) {
+    array = String(array);
+  }
+  var len = array.length;
+  for (var i = 0; i < len; i++) {
+    var value = array[i];
+    if (callback.call(thisArg, value, i, array)) {
+      return {i:i, v:value};
+    }
+  }
+  return {i:-1, v:void 0};
+};
+$jscomp.polyfill('Array.prototype.find', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(callback, opt_thisArg) {
+    return $jscomp.findInternal(this, callback, opt_thisArg).v;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Array.prototype.findIndex', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(callback, opt_thisArg) {
+    return $jscomp.findInternal(this, callback, opt_thisArg).i;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Array.from', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(arrayLike, opt_mapFn, opt_thisArg) {
+    $jscomp.initSymbolIterator();
+    opt_mapFn = opt_mapFn != null ? opt_mapFn : function(x) {
+      return x;
+    };
+    var result = [];
+    var iteratorFunction = arrayLike[Symbol.iterator];
+    if (typeof iteratorFunction == 'function') {
+      arrayLike = iteratorFunction.call(arrayLike);
+      var next;
+      while (!(next = arrayLike.next()).done) {
+        result.push(opt_mapFn.call(opt_thisArg, next.value));
+      }
+    } else {
+      var len = arrayLike.length;
+      for (var i = 0; i < len; i++) {
+        result.push(opt_mapFn.call(opt_thisArg, arrayLike[i]));
+      }
+    }
+    return result;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Object.is', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(left, right) {
+    if (left === right) {
+      return left !== 0 || 1 / left === 1 / right;
+    } else {
+      return left !== left && right !== right;
+    }
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Array.prototype.includes', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var includes = function(searchElement, opt_fromIndex) {
+    var array = this;
+    if (array instanceof String) {
+      array = String(array);
+    }
+    var len = array.length;
+    for (var i = opt_fromIndex || 0; i < len; i++) {
+      if (array[i] == searchElement || Object.is(array[i], searchElement)) {
+        return true;
+      }
+    }
+    return false;
+  };
+  return includes;
+}, 'es7', 'es3');
+$jscomp.polyfill('Array.prototype.keys', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function() {
+    return $jscomp.iteratorFromArray(this, function(i) {
+      return i;
+    });
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Array.of', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(var_args) {
+    return Array.from(arguments);
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Array.prototype.values', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function() {
+    return $jscomp.iteratorFromArray(this, function(k, v) {
+      return v;
+    });
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.makeIterator = function(iterable) {
+  $jscomp.initSymbolIterator();
+  var iteratorFunction = iterable[Symbol.iterator];
+  return iteratorFunction ? iteratorFunction.call(iterable) : $jscomp.arrayIterator(iterable);
+};
+$jscomp.FORCE_POLYFILL_PROMISE = false;
+$jscomp.polyfill('Promise', function(NativePromise) {
+  if (NativePromise && !$jscomp.FORCE_POLYFILL_PROMISE) {
+    return NativePromise;
+  }
+  function AsyncExecutor() {
+    this.batch_ = null;
+  }
+  AsyncExecutor.prototype.asyncExecute = function(f) {
+    if (this.batch_ == null) {
+      this.batch_ = [];
+      this.asyncExecuteBatch_();
+    }
+    this.batch_.push(f);
+    return this;
+  };
+  AsyncExecutor.prototype.asyncExecuteBatch_ = function() {
+    var self = this;
+    this.asyncExecuteFunction(function() {
+      self.executeBatch_();
+    });
+  };
+  var nativeSetTimeout = $jscomp.global['setTimeout'];
+  AsyncExecutor.prototype.asyncExecuteFunction = function(f) {
+    nativeSetTimeout(f, 0);
+  };
+  AsyncExecutor.prototype.executeBatch_ = function() {
+    while (this.batch_ && this.batch_.length) {
+      var executingBatch = this.batch_;
+      this.batch_ = [];
+      for (var i = 0; i < executingBatch.length; ++i) {
+        var f = executingBatch[i];
+        delete executingBatch[i];
+        try {
+          f();
+        } catch (error) {
+          this.asyncThrow_(error);
         }
-    },
-    listen: {
-        store: {
-            '#progress.terms.Sections': {
-                load: 'onSectionsLoad',
-                update: 'onSectionUpdate'
-            }
-        },
-        controller: {
-            '#progress.terms.Report': {
-                reportload: 'onReportLoad',
-                beforereportsave: 'onBeforeReportSave',
-                reportsave: 'onReportSave'
-            }
+      }
+    }
+    this.batch_ = null;
+  };
+  AsyncExecutor.prototype.asyncThrow_ = function(exception) {
+    this.asyncExecuteFunction(function() {
+      throw exception;
+    });
+  };
+  var PromiseState = {PENDING:0, FULFILLED:1, REJECTED:2};
+  var PolyfillPromise = function(executor) {
+    this.state_ = PromiseState.PENDING;
+    this.result_ = undefined;
+    this.onSettledCallbacks_ = [];
+    var resolveAndReject = this.createResolveAndReject_();
+    try {
+      executor(resolveAndReject.resolve, resolveAndReject.reject);
+    } catch (e) {
+      resolveAndReject.reject(e);
+    }
+  };
+  PolyfillPromise.prototype.createResolveAndReject_ = function() {
+    var thisPromise = this;
+    var alreadyCalled = false;
+    function firstCallWins(method) {
+      return function(x) {
+        if (!alreadyCalled) {
+          alreadyCalled = true;
+          method.call(thisPromise, x);
         }
-    },
-    // config handlers
-    updateWorksheet: function(worksheetId) {
-        var me = this,
-            promptsFieldset = me.getPromptsFieldset(),
-            promptsStore = me.getStandardsWorksheetPromptsStore();
-        promptsFieldset.hide();
-        if (worksheetId) {
-            promptsStore.getProxy().setExtraParam('worksheet', worksheetId);
-            promptsStore.load({
-                callback: function(prompts) {
-                    var len = prompts.length,
-                        i = 0,
-                        prompt,
-                        promptComponents = [];
-                    for (; i < len; i++) {
-                        prompt = prompts[i];
-                        promptComponents.push({
-                            prompt: prompt
-                        });
-                    }
-                    if (!promptComponents.length) {
-                        promptComponents.push({
-                            xtype: 'component',
-                            html: 'Selected worksheet contains no prompts'
-                        });
-                    }
-                    Ext.suspendLayouts();
-                    promptsFieldset.removeAll();
-                    promptsFieldset.add(promptComponents);
-                    promptsFieldset.show();
-                    Ext.resumeLayouts(true);
-                }
-            });
+      };
+    }
+    return {resolve:firstCallWins(this.resolveTo_), reject:firstCallWins(this.reject_)};
+  };
+  PolyfillPromise.prototype.resolveTo_ = function(value) {
+    if (value === this) {
+      this.reject_(new TypeError('A Promise cannot resolve to itself'));
+    } else {
+      if (value instanceof PolyfillPromise) {
+        this.settleSameAsPromise_(value);
+      } else {
+        if (isObject(value)) {
+          this.resolveToNonPromiseObj_(value);
         } else {
-            promptsStore.loadRecords([]);
+          this.fulfill_(value);
         }
-    },
-    // event handlers
-    onSectionsGridBoxReady: function(sectionsGrid) {
-        var worksheetsStore = this.getStandardsWorksheetsStore();
-        this.setWorksheet(null);
-        if (!worksheetsStore.isLoaded()) {
-            worksheetsStore.load();
-        }
-    },
-    onSectionsGridSelect: function(sectionsGrid, section) {
-        this.setWorksheet(section.get('WorksheetID'));
-    },
-    onSectionsLoad: function(sectionsStore) {
-        var me = this,
-            sectionsView = me.getSectionsGrid().getView(),
-            worksheetsStore = me.getStandardsWorksheetsStore(),
-            assignmentsStore = me.getStandardsWorksheetAssignmentsStore(),
-            finishLoadAssignments = function() {
-                var assignments = assignmentsStore.getRange(),
-                    len = assignments.length,
-                    i = 0,
-                    assignment, worksheetId, section;
-                sectionsStore.beginUpdate();
-                for (; i < len; i++) {
-                    assignment = assignments[i];
-                    worksheetId = assignment.get('WorksheetID');
-                    if (section = sectionsStore.getById(assignment.get('CourseSectionID'))) {
-                        section.set({
-                            WorksheetID: worksheetId,
-                            worksheet: worksheetsStore.getById(worksheetId),
-                            worksheetAssignment: assignment
-                        }, {
-                            dirty: false
-                        });
-                    }
-                }
-                sectionsStore.endUpdate();
-                sectionsView.setLoading(false);
-                // restore original loading text
-                sectionsView.loadMask.msg = sectionsView.loadingText;
-            };
-        assignmentsStore.getProxy().setExtraParams(sectionsStore.getProxy().getExtraParams());
-        sectionsView.setLoading('Loading SBG assignments&hellip;');
-        assignmentsStore.load({
-            callback: function() {
-                if (worksheetsStore.isLoading()) {
-                    worksheetsStore.on('load', finishLoadAssignments, me, {
-                        single: true
-                    });
-                } else {
-                    finishLoadAssignments();
-                }
-            }
-        });
-    },
-    onSectionUpdate: function(sectionsStore, section, operation, modifiedFieldNames) {
-        if (operation != 'edit' || modifiedFieldNames.indexOf('WorksheetID') == -1) {
-            return;
-        }
-        var me = this,
-            assignment = section.get('worksheetAssignment'),
-            worksheetId = section.get('WorksheetID');
-        if (assignment) {
-            assignment.set('WorksheetID', worksheetId);
-        } else {
-            assignment = me.getStandardsWorksheetAssignmentsStore().add({
-                TermID: me.getTermSelector().getSelection().getId(),
-                CourseSectionID: section.getId(),
-                WorksheetID: worksheetId
-            })[0];
-        }
-        if (!assignment.dirty && !assignment.phantom) {
-            return;
-        }
-        assignment.save({
-            success: function() {
-                section.set({
-                    WorksheetID: worksheetId,
-                    worksheet: me.getStandardsWorksheetsStore().getById(worksheetId),
-                    worksheetAssignment: assignment
-                }, {
-                    dirty: false
-                });
-                section.commit();
-                me.setWorksheet(worksheetId);
-            }
-        });
-    },
-    onReportLoad: function(report) {
-        var worksheetData = report.get('SbgWorksheet');
-        this.getEditorForm().setSbgGrades(worksheetData && worksheetData.worksheet_id == this.getWorksheet() && worksheetData.grades);
-    },
-    onBeforeReportSave: function(report) {
-        report.set('SbgWorksheet', {
-            worksheet_id: this.getWorksheet(),
-            grades: this.getEditorForm().getSbgGrades()
-        });
-    },
-    onReportSave: function(report) {
-        var worksheetData = report.get('SbgWorksheet');
-        this.getEditorForm().setSbgGrades(worksheetData && worksheetData.worksheet_id == this.getWorksheet() && worksheetData.grades);
+      }
     }
-});
-
-Ext.define('Slate.sbg.overrides.SlateAdmin', {
-    override: 'SlateAdmin.Application',
-    requires: [
-        'Slate.sbg.controller.Worksheets',
-        'Slate.sbg.controller.SectionTermReports'
-    ],
-    initControllers: function() {
-        this.callParent();
-        this.getController('Slate.sbg.controller.Worksheets');
-        this.getController('Slate.sbg.controller.SectionTermReports');
+  };
+  PolyfillPromise.prototype.resolveToNonPromiseObj_ = function(obj) {
+    var thenMethod = undefined;
+    try {
+      thenMethod = obj.then;
+    } catch (error) {
+      this.reject_(error);
+      return;
     }
-});
-
-Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {
-    override: 'SlateAdmin.view.progress.terms.SectionsGrid',
-    requires: [
-        'Ext.grid.plugin.CellEditing',
-        'Ext.form.field.ComboBox'
-    ],
-    width: 300,
-    worksheetColumnTitle: 'Worksheet',
-    emptyWorksheetText: '<em>Double-click to select</em>',
-    initComponent: function() {
-        var me = this;
-        me.columns = me.columns.concat({
-            text: me.worksheetColumnTitle,
-            dataIndex: 'WorksheetID',
-            emptyCellText: me.emptyWorksheetText,
-            width: 200,
-            editor: {
-                xtype: 'combo',
-                allowBlank: true,
-                emptyText: 'Select worksheet',
-                store: 'StandardsWorksheets',
-                displayField: 'Title',
-                valueField: 'ID',
-                queryMode: 'local',
-                triggerAction: 'all',
-                typeAhead: true,
-                forceSelection: true,
-                selectOnFocus: true
-            },
-            renderer: function(worksheetId, metaData, section) {
-                if (!worksheetId) {
-                    return null;
-                }
-                var worksheet = section.get('worksheet');
-                if (!worksheet) {
-                    return '[Deleted Worksheet]';
-                }
-                return worksheet.get('Title');
+    if (typeof thenMethod == 'function') {
+      this.settleSameAsThenable_(thenMethod, obj);
+    } else {
+      this.fulfill_(obj);
+    }
+  };
+  function isObject(value) {
+    switch(typeof value) {
+      case 'object':
+        return value != null;
+      case 'function':
+        return true;
+      default:
+        return false;
+    }
+  }
+  PolyfillPromise.prototype.reject_ = function(reason) {
+    this.settle_(PromiseState.REJECTED, reason);
+  };
+  PolyfillPromise.prototype.fulfill_ = function(value) {
+    this.settle_(PromiseState.FULFILLED, value);
+  };
+  PolyfillPromise.prototype.settle_ = function(settledState, valueOrReason) {
+    if (this.state_ != PromiseState.PENDING) {
+      throw new Error('Cannot settle(' + settledState + ', ' + valueOrReason | '): Promise already settled in state' + this.state_);
+    }
+    this.state_ = settledState;
+    this.result_ = valueOrReason;
+    this.executeOnSettledCallbacks_();
+  };
+  PolyfillPromise.prototype.executeOnSettledCallbacks_ = function() {
+    if (this.onSettledCallbacks_ != null) {
+      var callbacks = this.onSettledCallbacks_;
+      for (var i = 0; i < callbacks.length; ++i) {
+        callbacks[i].call();
+        callbacks[i] = null;
+      }
+      this.onSettledCallbacks_ = null;
+    }
+  };
+  var asyncExecutor = new AsyncExecutor;
+  PolyfillPromise.prototype.settleSameAsPromise_ = function(promise) {
+    var methods = this.createResolveAndReject_();
+    promise.callWhenSettled_(methods.resolve, methods.reject);
+  };
+  PolyfillPromise.prototype.settleSameAsThenable_ = function(thenMethod, thenable) {
+    var methods = this.createResolveAndReject_();
+    try {
+      thenMethod.call(thenable, methods.resolve, methods.reject);
+    } catch (error) {
+      methods.reject(error);
+    }
+  };
+  PolyfillPromise.prototype.then = function(onFulfilled, onRejected) {
+    var resolveChild;
+    var rejectChild;
+    var childPromise = new PolyfillPromise(function(resolve, reject) {
+      resolveChild = resolve;
+      rejectChild = reject;
+    });
+    function createCallback(paramF, defaultF) {
+      if (typeof paramF == 'function') {
+        return function(x) {
+          try {
+            resolveChild(paramF(x));
+          } catch (error) {
+            rejectChild(error);
+          }
+        };
+      } else {
+        return defaultF;
+      }
+    }
+    this.callWhenSettled_(createCallback(onFulfilled, resolveChild), createCallback(onRejected, rejectChild));
+    return childPromise;
+  };
+  PolyfillPromise.prototype['catch'] = function(onRejected) {
+    return this.then(undefined, onRejected);
+  };
+  PolyfillPromise.prototype.callWhenSettled_ = function(onFulfilled, onRejected) {
+    var thisPromise = this;
+    function callback() {
+      switch(thisPromise.state_) {
+        case PromiseState.FULFILLED:
+          onFulfilled(thisPromise.result_);
+          break;
+        case PromiseState.REJECTED:
+          onRejected(thisPromise.result_);
+          break;
+        default:
+          throw new Error('Unexpected state: ' + thisPromise.state_);
+      }
+    }
+    if (this.onSettledCallbacks_ == null) {
+      asyncExecutor.asyncExecute(callback);
+    } else {
+      this.onSettledCallbacks_.push(function() {
+        asyncExecutor.asyncExecute(callback);
+      });
+    }
+  };
+  function resolvingPromise(opt_value) {
+    if (opt_value instanceof PolyfillPromise) {
+      return opt_value;
+    } else {
+      return new PolyfillPromise(function(resolve, reject) {
+        resolve(opt_value);
+      });
+    }
+  }
+  PolyfillPromise['resolve'] = resolvingPromise;
+  PolyfillPromise['reject'] = function(opt_reason) {
+    return new PolyfillPromise(function(resolve, reject) {
+      reject(opt_reason);
+    });
+  };
+  PolyfillPromise['race'] = function(thenablesOrValues) {
+    return new PolyfillPromise(function(resolve, reject) {
+      var iterator = $jscomp.makeIterator(thenablesOrValues);
+      for (var iterRec = iterator.next(); !iterRec.done; iterRec = iterator.next()) {
+        resolvingPromise(iterRec.value).callWhenSettled_(resolve, reject);
+      }
+    });
+  };
+  PolyfillPromise['all'] = function(thenablesOrValues) {
+    var iterator = $jscomp.makeIterator(thenablesOrValues);
+    var iterRec = iterator.next();
+    if (iterRec.done) {
+      return resolvingPromise([]);
+    } else {
+      return new PolyfillPromise(function(resolveAll, rejectAll) {
+        var resultsArray = [];
+        var unresolvedCount = 0;
+        function onFulfilled(i) {
+          return function(ithResult) {
+            resultsArray[i] = ithResult;
+            unresolvedCount--;
+            if (unresolvedCount == 0) {
+              resolveAll(resultsArray);
             }
-        });
-        me.plugins = (me.plugins || []).concat({
-            ptype: 'cellediting',
-            clicksToEdit: 2
-        });
-        me.callParent(arguments);
+          };
+        }
+        do {
+          resultsArray.push(undefined);
+          unresolvedCount++;
+          resolvingPromise(iterRec.value).callWhenSettled_(onFulfilled(resultsArray.length - 1), rejectAll);
+          iterRec = iterator.next();
+        } while (!iterRec.done);
+      });
     }
+  };
+  return PolyfillPromise;
+}, 'es6', 'es3');
+$jscomp.executeAsyncGenerator = function(generator) {
+  function passValueToGenerator(value) {
+    return generator.next(value);
+  }
+  function passErrorToGenerator(error) {
+    return generator['throw'](error);
+  }
+  return new Promise(function(resolve, reject) {
+    function handleGeneratorRecord(genRec) {
+      if (genRec.done) {
+        resolve(genRec.value);
+      } else {
+        Promise.resolve(genRec.value).then(passValueToGenerator, passErrorToGenerator).then(handleGeneratorRecord, reject);
+      }
+    }
+    handleGeneratorRecord(generator.next());
+  });
+};
+$jscomp.owns = function(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+};
+$jscomp.polyfill('WeakMap', function(NativeWeakMap) {
+  function isConformant() {
+    if (!NativeWeakMap || !Object.seal) {
+      return false;
+    }
+    try {
+      var x = Object.seal({});
+      var y = Object.seal({});
+      var map = new NativeWeakMap([[x, 2], [y, 3]]);
+      if (map.get(x) != 2 || map.get(y) != 3) {
+        return false;
+      }
+      map['delete'](x);
+      map.set(y, 4);
+      return !map.has(x) && map.get(y) == 4;
+    } catch (err) {
+      return false;
+    }
+  }
+  if (isConformant()) {
+    return NativeWeakMap;
+  }
+  var prop = '$jscomp_hidden_' + Math.random().toString().substring(2);
+  function insert(target) {
+    if (!$jscomp.owns(target, prop)) {
+      var obj = {};
+      $jscomp.defineProperty(target, prop, {value:obj});
+    }
+  }
+  function patch(name) {
+    var prev = Object[name];
+    if (prev) {
+      Object[name] = function(target) {
+        insert(target);
+        return prev(target);
+      };
+    }
+  }
+  patch('freeze');
+  patch('preventExtensions');
+  patch('seal');
+  var index = 0;
+  var PolyfillWeakMap = function(opt_iterable) {
+    this.id_ = (index += Math.random() + 1).toString();
+    if (opt_iterable) {
+      $jscomp.initSymbol();
+      $jscomp.initSymbolIterator();
+      var iter = $jscomp.makeIterator(opt_iterable);
+      var entry;
+      while (!(entry = iter.next()).done) {
+        var item = entry.value;
+        this.set(item[0], item[1]);
+      }
+    }
+  };
+  PolyfillWeakMap.prototype.set = function(key, value) {
+    insert(key);
+    if (!$jscomp.owns(key, prop)) {
+      throw new Error('WeakMap key fail: ' + key);
+    }
+    key[prop][this.id_] = value;
+    return this;
+  };
+  PolyfillWeakMap.prototype.get = function(key) {
+    return $jscomp.owns(key, prop) ? key[prop][this.id_] : undefined;
+  };
+  PolyfillWeakMap.prototype.has = function(key) {
+    return $jscomp.owns(key, prop) && $jscomp.owns(key[prop], this.id_);
+  };
+  PolyfillWeakMap.prototype['delete'] = function(key) {
+    if (!$jscomp.owns(key, prop) || !$jscomp.owns(key[prop], this.id_)) {
+      return false;
+    }
+    return delete key[prop][this.id_];
+  };
+  return PolyfillWeakMap;
+}, 'es6', 'es3');
+$jscomp.MapEntry = function() {
+  this.previous;
+  this.next;
+  this.head;
+  this.key;
+  this.value;
+};
+$jscomp.polyfill('Map', function(NativeMap) {
+  var isConformant = !$jscomp.ASSUME_NO_NATIVE_MAP && function() {
+    if (!NativeMap || !NativeMap.prototype.entries || typeof Object.seal != 'function') {
+      return false;
+    }
+    try {
+      NativeMap = NativeMap;
+      var key = Object.seal({x:4});
+      var map = new NativeMap($jscomp.makeIterator([[key, 's']]));
+      if (map.get(key) != 's' || map.size != 1 || map.get({x:4}) || map.set({x:4}, 't') != map || map.size != 2) {
+        return false;
+      }
+      var iter = map.entries();
+      var item = iter.next();
+      if (item.done || item.value[0] != key || item.value[1] != 's') {
+        return false;
+      }
+      item = iter.next();
+      if (item.done || item.value[0].x != 4 || item.value[1] != 't' || !iter.next().done) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }();
+  if (isConformant) {
+    return NativeMap;
+  }
+  $jscomp.initSymbol();
+  $jscomp.initSymbolIterator();
+  var idMap = new WeakMap;
+  var PolyfillMap = function(opt_iterable) {
+    this.data_ = {};
+    this.head_ = createHead();
+    this.size = 0;
+    if (opt_iterable) {
+      var iter = $jscomp.makeIterator(opt_iterable);
+      var entry;
+      while (!(entry = iter.next()).done) {
+        var item = entry.value;
+        this.set(item[0], item[1]);
+      }
+    }
+  };
+  PolyfillMap.prototype.set = function(key, value) {
+    var r = maybeGetEntry(this, key);
+    if (!r.list) {
+      r.list = this.data_[r.id] = [];
+    }
+    if (!r.entry) {
+      r.entry = {next:this.head_, previous:this.head_.previous, head:this.head_, key:key, value:value};
+      r.list.push(r.entry);
+      this.head_.previous.next = r.entry;
+      this.head_.previous = r.entry;
+      this.size++;
+    } else {
+      r.entry.value = value;
+    }
+    return this;
+  };
+  PolyfillMap.prototype['delete'] = function(key) {
+    var r = maybeGetEntry(this, key);
+    if (r.entry && r.list) {
+      r.list.splice(r.index, 1);
+      if (!r.list.length) {
+        delete this.data_[r.id];
+      }
+      r.entry.previous.next = r.entry.next;
+      r.entry.next.previous = r.entry.previous;
+      r.entry.head = null;
+      this.size--;
+      return true;
+    }
+    return false;
+  };
+  PolyfillMap.prototype.clear = function() {
+    this.data_ = {};
+    this.head_ = this.head_.previous = createHead();
+    this.size = 0;
+  };
+  PolyfillMap.prototype.has = function(key) {
+    return !!maybeGetEntry(this, key).entry;
+  };
+  PolyfillMap.prototype.get = function(key) {
+    var entry = maybeGetEntry(this, key).entry;
+    return entry && entry.value;
+  };
+  PolyfillMap.prototype.entries = function() {
+    return makeIterator(this, function(entry) {
+      return [entry.key, entry.value];
+    });
+  };
+  PolyfillMap.prototype.keys = function() {
+    return makeIterator(this, function(entry) {
+      return entry.key;
+    });
+  };
+  PolyfillMap.prototype.values = function() {
+    return makeIterator(this, function(entry) {
+      return entry.value;
+    });
+  };
+  PolyfillMap.prototype.forEach = function(callback, opt_thisArg) {
+    var iter = this.entries();
+    var item;
+    while (!(item = iter.next()).done) {
+      var entry = item.value;
+      callback.call(opt_thisArg, entry[1], entry[0], this);
+    }
+  };
+  PolyfillMap.prototype[Symbol.iterator] = PolyfillMap.prototype.entries;
+  var maybeGetEntry = function(map, key) {
+    var id = getId(key);
+    var list = map.data_[id];
+    if (list && $jscomp.owns(map.data_, id)) {
+      for (var index = 0; index < list.length; index++) {
+        var entry = list[index];
+        if (key !== key && entry.key !== entry.key || key === entry.key) {
+          return {id:id, list:list, index:index, entry:entry};
+        }
+      }
+    }
+    return {id:id, list:list, index:-1, entry:undefined};
+  };
+  var makeIterator = function(map, func) {
+    var entry = map.head_;
+    return $jscomp.iteratorPrototype(function() {
+      if (entry) {
+        while (entry.head != map.head_) {
+          entry = entry.previous;
+        }
+        while (entry.next != entry.head) {
+          entry = entry.next;
+          return {done:false, value:func(entry)};
+        }
+        entry = null;
+      }
+      return {done:true, value:void 0};
+    });
+  };
+  var createHead = function() {
+    var head = {};
+    head.previous = head.next = head.head = head;
+    return head;
+  };
+  var mapIndex = 0;
+  var getId = function(obj) {
+    var type = obj && typeof obj;
+    if (type == 'object' || type == 'function') {
+      obj = obj;
+      if (!idMap.has(obj)) {
+        var id = '' + ++mapIndex;
+        idMap.set(obj, id);
+        return id;
+      }
+      return idMap.get(obj);
+    }
+    return 'p_' + obj;
+  };
+  return PolyfillMap;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.acosh', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    return Math.log(x + Math.sqrt(x * x - 1));
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.asinh', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    if (x === 0) {
+      return x;
+    }
+    var y = Math.log(Math.abs(x) + Math.sqrt(x * x + 1));
+    return x < 0 ? -y : y;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.log1p', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    if (x < 0.25 && x > -0.25) {
+      var y = x;
+      var d = 1;
+      var z = x;
+      var zPrev = 0;
+      var s = 1;
+      while (zPrev != z) {
+        y *= x;
+        s *= -1;
+        z = (zPrev = z) + s * y / ++d;
+      }
+      return z;
+    }
+    return Math.log(1 + x);
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.atanh', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var log1p = Math.log1p;
+  var polyfill = function(x) {
+    x = Number(x);
+    return (log1p(x) - log1p(-x)) / 2;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.cbrt', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    if (x === 0) {
+      return x;
+    }
+    x = Number(x);
+    var y = Math.pow(Math.abs(x), 1 / 3);
+    return x < 0 ? -y : y;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.clz32', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x) >>> 0;
+    if (x === 0) {
+      return 32;
+    }
+    var result = 0;
+    if ((x & 4294901760) === 0) {
+      x <<= 16;
+      result += 16;
+    }
+    if ((x & 4278190080) === 0) {
+      x <<= 8;
+      result += 8;
+    }
+    if ((x & 4026531840) === 0) {
+      x <<= 4;
+      result += 4;
+    }
+    if ((x & 3221225472) === 0) {
+      x <<= 2;
+      result += 2;
+    }
+    if ((x & 2147483648) === 0) {
+      result++;
+    }
+    return result;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.cosh', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var exp = Math.exp;
+  var polyfill = function(x) {
+    x = Number(x);
+    return (exp(x) + exp(-x)) / 2;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.expm1', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    if (x < .25 && x > -.25) {
+      var y = x;
+      var d = 1;
+      var z = x;
+      var zPrev = 0;
+      while (zPrev != z) {
+        y *= x / ++d;
+        z = (zPrev = z) + y;
+      }
+      return z;
+    }
+    return Math.exp(x) - 1;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.hypot', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x, y, var_args) {
+    x = Number(x);
+    y = Number(y);
+    var i, z, sum;
+    var max = Math.max(Math.abs(x), Math.abs(y));
+    for (i = 2; i < arguments.length; i++) {
+      max = Math.max(max, Math.abs(arguments[i]));
+    }
+    if (max > 1e100 || max < 1e-100) {
+      x = x / max;
+      y = y / max;
+      sum = x * x + y * y;
+      for (i = 2; i < arguments.length; i++) {
+        z = Number(arguments[i]) / max;
+        sum += z * z;
+      }
+      return Math.sqrt(sum) * max;
+    } else {
+      sum = x * x + y * y;
+      for (i = 2; i < arguments.length; i++) {
+        z = Number(arguments[i]);
+        sum += z * z;
+      }
+      return Math.sqrt(sum);
+    }
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.imul', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(a, b) {
+    a = Number(a);
+    b = Number(b);
+    var ah = a >>> 16 & 65535;
+    var al = a & 65535;
+    var bh = b >>> 16 & 65535;
+    var bl = b & 65535;
+    var lh = ah * bl + al * bh << 16 >>> 0;
+    return al * bl + lh | 0;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.log10', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    return Math.log(x) / Math.LN10;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.log2', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    return Math.log(x) / Math.LN2;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.sign', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    return x === 0 || isNaN(x) ? x : x > 0 ? 1 : -1;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.sinh', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var exp = Math.exp;
+  var polyfill = function(x) {
+    x = Number(x);
+    if (x === 0) {
+      return x;
+    }
+    return (exp(x) - exp(-x)) / 2;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.tanh', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    if (x === 0) {
+      return x;
+    }
+    var y = Math.exp(-2 * Math.abs(x));
+    var z = (1 - y) / (1 + y);
+    return x < 0 ? -z : z;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Math.trunc', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    x = Number(x);
+    if (isNaN(x) || x === Infinity || x === -Infinity || x === 0) {
+      return x;
+    }
+    var y = Math.floor(Math.abs(x));
+    return x < 0 ? -y : y;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.EPSILON', function(orig) {
+  return Math.pow(2, -52);
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.MAX_SAFE_INTEGER', function() {
+  return 9007199254740991;
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.MIN_SAFE_INTEGER', function() {
+  return -9007199254740991;
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.isFinite', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    if (typeof x !== 'number') {
+      return false;
+    }
+    return !isNaN(x) && x !== Infinity && x !== -Infinity;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.isInteger', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    if (!Number.isFinite(x)) {
+      return false;
+    }
+    return x === Math.floor(x);
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.isNaN', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    return typeof x === 'number' && isNaN(x);
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Number.isSafeInteger', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(x) {
+    return Number.isInteger(x) && Math.abs(x) <= Number.MAX_SAFE_INTEGER;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Object.assign', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, var_args) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      if (!source) {
+        continue;
+      }
+      for (var key in source) {
+        if ($jscomp.owns(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Object.entries', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var entries = function(obj) {
+    var result = [];
+    for (var key in obj) {
+      if ($jscomp.owns(obj, key)) {
+        result.push([key, obj[key]]);
+      }
+    }
+    return result;
+  };
+  return entries;
+}, 'es8', 'es3');
+$jscomp.polyfill('Object.getOwnPropertySymbols', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  return function() {
+    return [];
+  };
+}, 'es6', 'es5');
+$jscomp.polyfill('Reflect.ownKeys', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var symbolPrefix = 'jscomp_symbol_';
+  function isSymbol(key) {
+    return key.substring(0, symbolPrefix.length) == symbolPrefix;
+  }
+  var polyfill = function(target) {
+    var keys = [];
+    var names = Object.getOwnPropertyNames(target);
+    var symbols = Object.getOwnPropertySymbols(target);
+    for (var i = 0; i < names.length; i++) {
+      (isSymbol(names[i]) ? symbols : keys).push(names[i]);
+    }
+    return keys.concat(symbols);
+  };
+  return polyfill;
+}, 'es6', 'es5');
+$jscomp.polyfill('Object.getOwnPropertyDescriptors', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var getOwnPropertyDescriptors = function(obj) {
+    var result = {};
+    var keys = Reflect.ownKeys(obj);
+    for (var i = 0; i < keys.length; i++) {
+      result[keys[i]] = Object.getOwnPropertyDescriptor(obj, keys[i]);
+    }
+    return result;
+  };
+  return getOwnPropertyDescriptors;
+}, 'es8', 'es5');
+$jscomp.underscoreProtoCanBeSet = function() {
+  var x = {a:true};
+  var y = {};
+  try {
+    y.__proto__ = x;
+    return y.a;
+  } catch (e) {
+  }
+  return false;
+};
+$jscomp.setPrototypeOf = typeof Object.setPrototypeOf == 'function' ? Object.setPrototypeOf : $jscomp.underscoreProtoCanBeSet() ? function(target, proto) {
+  target.__proto__ = proto;
+  if (target.__proto__ !== proto) {
+    throw new TypeError(target + ' is not extensible');
+  }
+  return target;
+} : null;
+$jscomp.polyfill('Object.setPrototypeOf', function(orig) {
+  return orig || $jscomp.setPrototypeOf;
+}, 'es6', 'es5');
+$jscomp.polyfill('Object.values', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var values = function(obj) {
+    var result = [];
+    for (var key in obj) {
+      if ($jscomp.owns(obj, key)) {
+        result.push(obj[key]);
+      }
+    }
+    return result;
+  };
+  return values;
+}, 'es8', 'es3');
+$jscomp.polyfill('Reflect.apply', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var apply = Function.prototype.apply;
+  var polyfill = function(target, thisArg, argList) {
+    return apply.call(target, thisArg, argList);
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.objectCreate = $jscomp.ASSUME_ES5 || typeof Object.create == 'function' ? Object.create : function(prototype) {
+  var ctor = function() {
+  };
+  ctor.prototype = prototype;
+  return new ctor;
+};
+$jscomp.construct = function() {
+  function reflectConstructWorks() {
+    function Base() {
+    }
+    function Derived() {
+    }
+    new Base;
+    Reflect.construct(Base, [], Derived);
+    return new Base instanceof Base;
+  }
+  if (typeof Reflect != 'undefined' && Reflect.construct) {
+    if (reflectConstructWorks()) {
+      return Reflect.construct;
+    }
+    var brokenConstruct = Reflect.construct;
+    var patchedConstruct = function(target, argList, opt_newTarget) {
+      var out = brokenConstruct(target, argList);
+      if (opt_newTarget) {
+        Reflect.setPrototypeOf(out, opt_newTarget.prototype);
+      }
+      return out;
+    };
+    return patchedConstruct;
+  }
+  function construct(target, argList, opt_newTarget) {
+    if (opt_newTarget === undefined) {
+      opt_newTarget = target;
+    }
+    var proto = opt_newTarget.prototype || Object.prototype;
+    var obj = $jscomp.objectCreate(proto);
+    var apply = Function.prototype.apply;
+    var out = apply.call(target, obj, argList);
+    return out || obj;
+  }
+  return construct;
+}();
+$jscomp.polyfill('Reflect.construct', function(orig) {
+  return $jscomp.construct;
+}, 'es6', 'es3');
+$jscomp.polyfill('Reflect.defineProperty', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, propertyKey, attributes) {
+    try {
+      Object.defineProperty(target, propertyKey, attributes);
+      var desc = Object.getOwnPropertyDescriptor(target, propertyKey);
+      if (!desc) {
+        return false;
+      }
+      return desc.configurable === (attributes.configurable || false) && desc.enumerable === (attributes.enumerable || false) && ('value' in desc ? desc.value === attributes.value && desc.writable === (attributes.writable || false) : desc.get === attributes.get && desc.set === attributes.set);
+    } catch (err) {
+      return false;
+    }
+  };
+  return polyfill;
+}, 'es6', 'es5');
+$jscomp.polyfill('Reflect.deleteProperty', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, propertyKey) {
+    if (!$jscomp.owns(target, propertyKey)) {
+      return true;
+    }
+    try {
+      return delete target[propertyKey];
+    } catch (err) {
+      return false;
+    }
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Reflect.getOwnPropertyDescriptor', function(orig) {
+  return orig || Object.getOwnPropertyDescriptor;
+}, 'es6', 'es5');
+$jscomp.polyfill('Reflect.getPrototypeOf', function(orig) {
+  return orig || Object.getPrototypeOf;
+}, 'es6', 'es5');
+$jscomp.findDescriptor = function(target, propertyKey) {
+  var obj = target;
+  while (obj) {
+    var property = Reflect.getOwnPropertyDescriptor(obj, propertyKey);
+    if (property) {
+      return property;
+    }
+    obj = Reflect.getPrototypeOf(obj);
+  }
+  return undefined;
+};
+$jscomp.polyfill('Reflect.get', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, propertyKey, opt_receiver) {
+    if (arguments.length <= 2) {
+      return target[propertyKey];
+    }
+    var property = $jscomp.findDescriptor(target, propertyKey);
+    if (property) {
+      return property.get ? property.get.call(opt_receiver) : property.value;
+    }
+    return undefined;
+  };
+  return polyfill;
+}, 'es6', 'es5');
+$jscomp.polyfill('Reflect.has', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, propertyKey) {
+    return propertyKey in target;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Reflect.isExtensible', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  if ($jscomp.ASSUME_ES5 || typeof Object.isExtensible == 'function') {
+    return Object.isExtensible;
+  }
+  return function() {
+    return true;
+  };
+}, 'es6', 'es3');
+$jscomp.polyfill('Reflect.preventExtensions', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  if (!($jscomp.ASSUME_ES5 || typeof Object.preventExtensions == 'function')) {
+    return function() {
+      return false;
+    };
+  }
+  var polyfill = function(target) {
+    Object.preventExtensions(target);
+    return !Object.isExtensible(target);
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('Reflect.set', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(target, propertyKey, value, opt_receiver) {
+    var property = $jscomp.findDescriptor(target, propertyKey);
+    if (!property) {
+      if (Reflect.isExtensible(target)) {
+        target[propertyKey] = value;
+        return true;
+      }
+      return false;
+    }
+    if (property.set) {
+      property.set.call(arguments.length > 3 ? opt_receiver : target, value);
+      return true;
+    } else {
+      if (property.writable && !Object.isFrozen(target)) {
+        target[propertyKey] = value;
+        return true;
+      }
+    }
+    return false;
+  };
+  return polyfill;
+}, 'es6', 'es5');
+$jscomp.polyfill('Reflect.setPrototypeOf', function(orig) {
+  if (orig) {
+    return orig;
+  } else {
+    if ($jscomp.setPrototypeOf) {
+      var setPrototypeOf = $jscomp.setPrototypeOf;
+      var polyfill = function(target, proto) {
+        try {
+          setPrototypeOf(target, proto);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      };
+      return polyfill;
+    } else {
+      return null;
+    }
+  }
+}, 'es6', 'es5');
+$jscomp.polyfill('Set', function(NativeSet) {
+  var isConformant = !$jscomp.ASSUME_NO_NATIVE_SET && function() {
+    if (!NativeSet || !NativeSet.prototype.entries || typeof Object.seal != 'function') {
+      return false;
+    }
+    try {
+      NativeSet = NativeSet;
+      var value = Object.seal({x:4});
+      var set = new NativeSet($jscomp.makeIterator([value]));
+      if (!set.has(value) || set.size != 1 || set.add(value) != set || set.size != 1 || set.add({x:4}) != set || set.size != 2) {
+        return false;
+      }
+      var iter = set.entries();
+      var item = iter.next();
+      if (item.done || item.value[0] != value || item.value[1] != value) {
+        return false;
+      }
+      item = iter.next();
+      if (item.done || item.value[0] == value || item.value[0].x != 4 || item.value[1] != item.value[0]) {
+        return false;
+      }
+      return iter.next().done;
+    } catch (err) {
+      return false;
+    }
+  }();
+  if (isConformant) {
+    return NativeSet;
+  }
+  $jscomp.initSymbol();
+  $jscomp.initSymbolIterator();
+  var PolyfillSet = function(opt_iterable) {
+    this.map_ = new Map;
+    if (opt_iterable) {
+      var iter = $jscomp.makeIterator(opt_iterable);
+      var entry;
+      while (!(entry = iter.next()).done) {
+        var item = entry.value;
+        this.add(item);
+      }
+    }
+    this.size = this.map_.size;
+  };
+  PolyfillSet.prototype.add = function(value) {
+    this.map_.set(value, value);
+    this.size = this.map_.size;
+    return this;
+  };
+  PolyfillSet.prototype['delete'] = function(value) {
+    var result = this.map_['delete'](value);
+    this.size = this.map_.size;
+    return result;
+  };
+  PolyfillSet.prototype.clear = function() {
+    this.map_.clear();
+    this.size = 0;
+  };
+  PolyfillSet.prototype.has = function(value) {
+    return this.map_.has(value);
+  };
+  PolyfillSet.prototype.entries = function() {
+    return this.map_.entries();
+  };
+  PolyfillSet.prototype.values = function() {
+    return this.map_.values();
+  };
+  PolyfillSet.prototype.keys = PolyfillSet.prototype.values;
+  PolyfillSet.prototype[Symbol.iterator] = PolyfillSet.prototype.values;
+  PolyfillSet.prototype.forEach = function(callback, opt_thisArg) {
+    var set = this;
+    this.map_.forEach(function(value) {
+      return callback.call(opt_thisArg, value, value, set);
+    });
+  };
+  return PolyfillSet;
+}, 'es6', 'es3');
+$jscomp.checkStringArgs = function(thisArg, arg, func) {
+  if (thisArg == null) {
+    throw new TypeError("The 'this' value for String.prototype." + func + ' must not be null or undefined');
+  }
+  if (arg instanceof RegExp) {
+    throw new TypeError('First argument to String.prototype.' + func + ' must not be a regular expression');
+  }
+  return thisArg + '';
+};
+$jscomp.polyfill('String.prototype.codePointAt', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(position) {
+    var string = $jscomp.checkStringArgs(this, null, 'codePointAt');
+    var size = string.length;
+    position = Number(position) || 0;
+    if (!(position >= 0 && position < size)) {
+      return void 0;
+    }
+    position = position | 0;
+    var first = string.charCodeAt(position);
+    if (first < 55296 || first > 56319 || position + 1 === size) {
+      return first;
+    }
+    var second = string.charCodeAt(position + 1);
+    if (second < 56320 || second > 57343) {
+      return first;
+    }
+    return (first - 55296) * 1024 + second + 9216;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('String.prototype.endsWith', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(searchString, opt_position) {
+    var string = $jscomp.checkStringArgs(this, searchString, 'endsWith');
+    searchString = searchString + '';
+    if (opt_position === void 0) {
+      opt_position = string.length;
+    }
+    var i = Math.max(0, Math.min(opt_position | 0, string.length));
+    var j = searchString.length;
+    while (j > 0 && i > 0) {
+      if (string[--i] != searchString[--j]) {
+        return false;
+      }
+    }
+    return j <= 0;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('String.fromCodePoint', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(var_args) {
+    var result = '';
+    for (var i = 0; i < arguments.length; i++) {
+      var code = Number(arguments[i]);
+      if (code < 0 || code > 1114111 || code !== Math.floor(code)) {
+        throw new RangeError('invalid_code_point ' + code);
+      }
+      if (code <= 65535) {
+        result += String.fromCharCode(code);
+      } else {
+        code -= 65536;
+        result += String.fromCharCode(code >>> 10 & 1023 | 55296);
+        result += String.fromCharCode(code & 1023 | 56320);
+      }
+    }
+    return result;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('String.prototype.includes', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(searchString, opt_position) {
+    var string = $jscomp.checkStringArgs(this, searchString, 'includes');
+    return string.indexOf(searchString, opt_position || 0) !== -1;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.polyfill('String.prototype.repeat', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(copies) {
+    var string = $jscomp.checkStringArgs(this, null, 'repeat');
+    if (copies < 0 || copies > 1342177279) {
+      throw new RangeError('Invalid count value');
+    }
+    copies = copies | 0;
+    var result = '';
+    while (copies) {
+      if (copies & 1) {
+        result += string;
+      }
+      if (copies >>>= 1) {
+        string += string;
+      }
+    }
+    return result;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.stringPadding = function(padString, padLength) {
+  var padding = padString !== undefined ? String(padString) : ' ';
+  if (!(padLength > 0) || !padding) {
+    return '';
+  }
+  var repeats = Math.ceil(padLength / padding.length);
+  return padding.repeat(repeats).substring(0, padLength);
+};
+$jscomp.polyfill('String.prototype.padEnd', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var padEnd = function(targetLength, opt_padString) {
+    var string = $jscomp.checkStringArgs(this, null, 'padStart');
+    var padLength = targetLength - string.length;
+    return string + $jscomp.stringPadding(opt_padString, padLength);
+  };
+  return padEnd;
+}, 'es8', 'es3');
+$jscomp.polyfill('String.prototype.padStart', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var padStart = function(targetLength, opt_padString) {
+    var string = $jscomp.checkStringArgs(this, null, 'padStart');
+    var padLength = targetLength - string.length;
+    return $jscomp.stringPadding(opt_padString, padLength) + string;
+  };
+  return padStart;
+}, 'es8', 'es3');
+$jscomp.polyfill('String.prototype.startsWith', function(orig) {
+  if (orig) {
+    return orig;
+  }
+  var polyfill = function(searchString, opt_position) {
+    var string = $jscomp.checkStringArgs(this, searchString, 'startsWith');
+    searchString = searchString + '';
+    var strLen = string.length;
+    var searchLen = searchString.length;
+    var i = Math.max(0, Math.min(opt_position | 0, string.length));
+    var j = 0;
+    while (j < searchLen && i < strLen) {
+      if (string[i++] != searchString[j++]) {
+        return false;
+      }
+    }
+    return j >= searchLen;
+  };
+  return polyfill;
+}, 'es6', 'es3');
+$jscomp.arrayFromIterator = function(iterator) {
+  var i;
+  var arr = [];
+  while (!(i = iterator.next()).done) {
+    arr.push(i.value);
+  }
+  return arr;
+};
+$jscomp.arrayFromIterable = function(iterable) {
+  if (iterable instanceof Array) {
+    return iterable;
+  } else {
+    return $jscomp.arrayFromIterator($jscomp.makeIterator(iterable));
+  }
+};
+$jscomp.inherits = function(childCtor, parentCtor) {
+  childCtor.prototype = $jscomp.objectCreate(parentCtor.prototype);
+  childCtor.prototype.constructor = childCtor;
+  if ($jscomp.setPrototypeOf) {
+    var setPrototypeOf = $jscomp.setPrototypeOf;
+    setPrototypeOf(childCtor, parentCtor);
+  } else {
+    for (var p in parentCtor) {
+      if (p == 'prototype') {
+        continue;
+      }
+      if (Object.defineProperties) {
+        var descriptor = Object.getOwnPropertyDescriptor(parentCtor, p);
+        if (descriptor) {
+          Object.defineProperty(childCtor, p, descriptor);
+        }
+      } else {
+        childCtor[p] = parentCtor[p];
+      }
+    }
+  }
+  childCtor.superClass_ = parentCtor.prototype;
+};
+$jscomp.polyfill('WeakSet', function(NativeWeakSet) {
+  function isConformant() {
+    if (!NativeWeakSet || !Object.seal) {
+      return false;
+    }
+    try {
+      var x = Object.seal({});
+      var y = Object.seal({});
+      var set = new NativeWeakSet([x]);
+      if (!set.has(x) || set.has(y)) {
+        return false;
+      }
+      set['delete'](x);
+      set.add(y);
+      return !set.has(x) && set.has(y);
+    } catch (err) {
+      return false;
+    }
+  }
+  if (isConformant()) {
+    return NativeWeakSet;
+  }
+  var PolyfillWeakSet = function(opt_iterable) {
+    this.map_ = new WeakMap;
+    if (opt_iterable) {
+      $jscomp.initSymbol();
+      $jscomp.initSymbolIterator();
+      var iter = $jscomp.makeIterator(opt_iterable);
+      var entry;
+      while (!(entry = iter.next()).done) {
+        var item = entry.value;
+        this.add(item);
+      }
+    }
+  };
+  PolyfillWeakSet.prototype.add = function(elem) {
+    this.map_.set(elem, true);
+    return this;
+  };
+  PolyfillWeakSet.prototype.has = function(elem) {
+    return this.map_.has(elem);
+  };
+  PolyfillWeakSet.prototype['delete'] = function(elem) {
+    return this.map_['delete'](elem);
+  };
+  return PolyfillWeakSet;
+}, 'es6', 'es3');
+try {
+  if (Array.prototype.values.toString().indexOf('[native code]') == -1) {
+    delete Array.prototype.values;
+  }
+} catch (e) {
+}
+Ext.define('Slate.sbg.overrides.SectionTermReport', {override:'Slate.model.progress.SectionTermReport'}, function(Report) {
+  Report.addFields([{name:'SbgWorksheet', convert:function(v) {
+    return typeof v == 'string' ? Ext.decode(v, true) || null : v;
+  }}]);
 });
-
+Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {extend:'Ext.data.Store', config:{fields:['id', 'text'], data:[{id:0, text:'N/A'}, {id:1, text:'1'}, {id:2, text:'2'}, {id:3, text:'3'}, {id:4, text:'4'}]}});
+Ext.define('Slate.sbg.widget.WorksheetPrompt', {extend:'Ext.container.Container', xtype:'sbg-worksheets-prompt', requires:['Ext.form.field.ComboBox'], config:{prompt:null, grade:null}, layout:'hbox', items:[{xtype:'combobox', width:60, submitValue:false, store:{xclass:'Slate.sbg.store.StandardsWorksheetPromptOptions'}, valueField:'id', displayField:'text', queryMode:'local', forceSelection:true, autoSelect:true, matchFieldWidth:false}, {itemId:'promptCmp', flex:1, xtype:'component', tpl:'{Prompt}'}], 
+initComponent:function() {
+  var me = this, combo, promptCmp, prompt, grade;
+  me.callParent(arguments);
+  combo = me.combo = me.down('combobox');
+  promptCmp = me.promptCmp = me.down('#promptCmp');
+  if (prompt = me.getPrompt()) {
+    promptCmp.update(prompt.getData());
+  }
+  combo.setValue(grade || null);
+}, getGrade:function() {
+  return this.combo ? this.combo.getValue() : this.callParent();
+}, setGrade:function(grade) {
+  var combo = this.combo;
+  if (combo) {
+    combo.setValue(grade);
+    combo.resetOriginalValue();
+  }
+}});
+Ext.define('Slate.sbg.overrides.SectionTermReportEditorForm', {override:'SlateAdmin.view.progress.terms.EditorForm', requires:['Ext.form.FieldSet', 'Slate.sbg.widget.WorksheetPrompt'], initComponent:function() {
+  var me = this;
+  me.items = Ext.Array.insert(Ext.Array.clone(me.items), 1, [{itemId:'sbgPromptsFieldset', xtype:'fieldset', title:'Standards-based grading worksheet', defaultType:'sbg-worksheets-prompt', hidden:true}]);
+  me.callParent(arguments);
+  me.sbgPromptsFieldset = me.down('#sbgPromptsFieldset');
+}, getSbgGrades:function() {
+  var promptComponents = this.sbgPromptsFieldset.items.getRange(), len = promptComponents.length, i = 0, promptComponent, gradesData = {};
+  for (; i < len; i++) {
+    promptComponent = promptComponents[i];
+    if (promptComponent.isXType('sbg-worksheets-prompt')) {
+      gradesData[promptComponent.getPrompt().getId()] = promptComponent.getGrade();
+    }
+  }
+  return gradesData;
+}, setSbgGrades:function(gradesData) {
+  var promptComponents = this.sbgPromptsFieldset.items.getRange(), len = promptComponents.length, i = 0, promptComponent;
+  gradesData = gradesData || {};
+  for (; i < len; i++) {
+    promptComponent = promptComponents[i];
+    if (promptComponent.isXType('sbg-worksheets-prompt')) {
+      promptComponent.setGrade(gradesData[promptComponent.getPrompt().getId()]);
+    }
+  }
+}});
+Ext.define('Slate.sbg.view.worksheets.Grid', {extend:'Ext.grid.Panel', xtype:'sbg-worksheets-grid', requires:['Ext.grid.plugin.CellEditing', 'Ext.form.field.Text', 'Ext.grid.column.Action'], title:'Available Worksheets', componentCls:'sbg-worksheets-grid', bbar:[{flex:1, itemId:'createWorksheetBtn', xtype:'button', text:'Create Worksheet', glyph:61525}], hideHeaders:true, store:'StandardsWorksheets', columns:[{flex:1, text:'Title', dataIndex:'Title', emptyCellText:'Untitled worksheet'}, {xtype:'actioncolumn', 
+width:20, items:[{action:'delete', iconCls:'prompt-delete glyph-danger', glyph:61526, tooltip:'Delete prompt'}]}]});
+Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {extend:'Ext.grid.Panel', xtype:'sbg-worksheets-promptsgrid', requires:['Ext.grid.plugin.CellEditing', 'Ext.form.field.TextArea', 'Ext.grid.column.Action'], title:'Prompts', componentCls:'sbg-worksheets-promptsgrid', plugins:[{ptype:'cellediting', pluginId:'cellediting', clicksToEdit:1}], hideHeaders:true, store:'StandardsWorksheetPrompts', columns:[{text:'Position', width:40, dataIndex:'Position'}, {flex:1, text:'Prompt', dataIndex:'Prompt', editor:{xtype:'textarea', 
+allowBlank:false, maxLength:500, enforceMaxLength:true, enterIsSpecial:true}}, {xtype:'actioncolumn', width:50, items:[{action:'up', glyph:61538, tooltip:'Move prompt up'}, {action:'down', glyph:61539, tooltip:'Move prompt down'}, {action:'delete', iconCls:'prompt-delete glyph-danger', glyph:61526, tooltip:'Delete prompt'}]}]});
+Ext.define('Slate.sbg.view.worksheets.Form', {extend:'Ext.form.Panel', xtype:'sbg-worksheets-form', requires:['Ext.form.field.Text', 'Ext.form.field.TextArea', 'Slate.sbg.view.worksheets.PromptsGrid'], disabled:true, title:'Selected Worksheet', componentCls:'sbg-standards-worksheets-editor', bodyPadding:10, scrollable:'vertical', trackResetOnLoad:true, defaults:{labelWidth:70, labelAlign:'right', anchor:'100%'}, items:[{xtype:'textfield', name:'Title', fieldLabel:'Title', allowBlank:false}, {xtype:'textareafield', 
+name:'Description', fieldLabel:'Description', emptyText:'Optional explanation of worksheet for parents and students', grow:true}, {xtype:'sbg-worksheets-promptsgrid'}], buttons:[{itemId:'revertBtn', text:'Revert Changes', cls:'glyph-danger', glyph:61527}, {xtype:'tbfill'}, {itemId:'addPromptBtn', text:'Add Prompt', glyph:61525}, {itemId:'saveBtn', text:'Save Changes', cls:'glyph-success', glyph:61528}]});
+Ext.define('Slate.sbg.view.worksheets.Manager', {extend:'Ext.Container', xtype:'sbg-worksheets-manager', requires:['Slate.sbg.view.worksheets.Grid', 'Slate.sbg.view.worksheets.Form'], componentCls:'sbg-worksheets-manager', layout:'border', items:[{region:'west', split:true, xtype:'sbg-worksheets-grid', autoScroll:true, width:500}, {region:'center', xtype:'sbg-worksheets-form', flex:1}]});
+Ext.define('Slate.sbg.model.StandardsWorksheet', {extend:'Ext.data.Model', requires:['Slate.proxy.Records', 'Ext.data.validator.Presence', 'Ext.data.identifier.Negative'], idProperty:'ID', identifier:'negative', fields:[{name:'ID', type:'int', allowNull:true}, {name:'Class', type:'string', defaultValue:'Slate\\SBG\\Worksheet'}, {name:'Created', type:'date', dateFormat:'timestamp', allowNull:true}, {name:'CreatorID', type:'int', allowNull:true}, {name:'Title', type:'string'}, {name:'Handle', type:'string'}, 
+{name:'Status', type:'string', defaultValue:'published'}, {name:'Description', type:'string'}], validators:{Title:'presence'}, proxy:{type:'slate-records', url:'/sbg/worksheets', limitParam:null, startParam:null}});
+Ext.define('Slate.sbg.store.StandardsWorksheets', {extend:'Ext.data.Store', model:'Slate.sbg.model.StandardsWorksheet', config:{pageSize:false, autoSync:false}});
+Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {extend:'Ext.data.Model', requires:['Slate.proxy.Records', 'Ext.data.identifier.Negative'], idProperty:'ID', identifier:'negative', fields:[{name:'ID', type:'int', allowNull:true}, {name:'Class', type:'string', defaultValue:'Slate\\SBG\\WorksheetPrompt'}, {name:'Created', type:'date', dateFormat:'timestamp', allowNull:true}, {name:'CreatorID', type:'int', allowNull:true}, {name:'WorksheetID', type:'int'}, {name:'Position', type:'int', defaultValue:1}, 
+{name:'Prompt', type:'string'}, {name:'Status', type:'string', defaultValue:'published'}], validators:{Prompt:'presence'}, proxy:{type:'slate-records', url:'/sbg/worksheet-prompts', limitParam:null, startParam:null}});
+Ext.define('Slate.sbg.store.StandardsWorksheetPrompts', {extend:'Ext.data.Store', model:'Slate.sbg.model.StandardsWorksheetPrompt', config:{pageSize:false, autoSync:false, sorters:[{property:'Position'}]}});
+Ext.define('Slate.sbg.controller.Worksheets', {extend:'Ext.app.Controller', routes:{'settings/standards-worksheets':'showWorksheetSettings'}, views:['worksheets.Manager@Slate.sbg.view'], stores:['StandardsWorksheets@Slate.sbg.store', 'StandardsWorksheetPrompts@Slate.sbg.store'], refs:{settingsNavPanel:'settings-navpanel', managerCt:{selector:'sbg-worksheets-manager', autoCreate:true, xtype:'sbg-worksheets-manager'}, grid:'sbg-worksheets-grid', form:'sbg-worksheets-form', titleField:'sbg-worksheets-form field[name\x3dTitle]', 
+promptsGrid:'sbg-worksheets-promptsgrid', revertBtn:'sbg-worksheets-form button#revertBtn', saveBtn:'sbg-worksheets-form button#saveBtn'}, control:{managerCt:{activate:'onManagerCtActivate'}, 'sbg-worksheets-manager button#createWorksheetBtn':{click:'onCreateWorksheetBtnClick'}, grid:{beforeselect:'onGridBeforeSelect', select:'onGridSelect', deleteclick:'onWorksheetDeleteClick'}, 'sbg-worksheets-form field':{dirtychange:'onFieldDirtyChange'}, promptsGrid:{upclick:'onPromptGridUpClick', downclick:'onPromptGridDownClick', 
+deleteclick:'onPromptDeleteClick'}, revertBtn:{click:'onRevertBtnClick'}, saveBtn:{click:'onSaveBtnClick'}, 'sbg-worksheets-manager button#addPromptBtn':{click:'onAddPromptBtnClick'}}, listen:{store:{'#StandardsWorksheets':{update:'onWorksheetUpdate'}, '#StandardsWorksheetPrompts':{add:'onWorksheetPromptAdd', update:'onWorksheetPromptUpdate', remove:'onWorksheetPromptRemove', write:'onWorksheetPromptsStoreWrite'}}}, init:function() {
+  SlateAdmin.view.settings.NavPanel.prototype.config.data.push({href:'#settings/standards-worksheets', text:'Standards Worksheets'});
+}, onLaunch:function() {
+  console.warn('SBG controller launched');
+}, showWorksheetSettings:function() {
+  var me = this, navPanel = me.getSettingsNavPanel();
+  Ext.suspendLayouts();
+  Ext.util.History.suspendState();
+  navPanel.setActiveLink('settings/standards-worksheets');
+  navPanel.expand(false);
+  Ext.util.History.resumeState(false);
+  me.application.getController('Viewport').loadCard(me.getManagerCt());
+  Ext.resumeLayouts(true);
+}, onManagerCtActivate:function() {
+  this.getStandardsWorksheetsStore().load();
+}, onCreateWorksheetBtnClick:function() {
+  var grid = this.getGrid(), worksheet = grid.getStore().add({})[0];
+  grid.setSelection(worksheet);
+  this.getTitleField().focus();
+}, onGridBeforeSelect:function(selModel, worksheet) {
+  var me = this, form = me.getForm(), loadedWorksheet = form.getRecord();
+  if (loadedWorksheet && (form.isDirty() || me.isPromptsStoreDirty())) {
+    Ext.Msg.confirm('Unsaved Changes', 'You have unsaved changes to this worksheet.\x3cbr/\x3e\x3cbr/\x3eDo you want to continue without saving them?', function(btn) {
+      if (btn != 'yes') {
+        return;
+      }
+      me.revertChanges();
+      selModel.select([worksheet]);
+    });
+    return false;
+  }
+}, onGridSelect:function(selModel, worksheet) {
+  var me = this, form = me.getForm(), promptsStore = me.getStandardsWorksheetPromptsStore();
+  form.enable();
+  form.loadRecord(worksheet);
+  if (worksheet.phantom) {
+    promptsStore.loadRecords([]);
+  } else {
+    promptsStore.load({params:{worksheet:worksheet.getId()}});
+  }
+  me.syncFormButtons();
+}, onWorksheetDeleteClick:function(grid, worksheet) {
+  Ext.Msg.confirm('Delete Worksheet', Ext.String.format('Are you sure you want to delete the worksheet \x3cstrong\x3e"{0}"\x3c/strong\x3e and all of its prompts?', worksheet.get('Title')), function(btn) {
+    if (btn != 'yes') {
+      return;
+    }
+    worksheet.erase();
+  });
+}, onFieldDirtyChange:function(field, dirty) {
+  this.syncFormButtons();
+}, onPromptGridUpClick:function(promptsGrid, prompt, item, rowIndex) {
+  var promptsStore = promptsGrid.getStore(), previousPrompt = promptsStore.getAt(rowIndex - 1);
+  if (!previousPrompt) {
+    return;
+  }
+  promptsStore.beginUpdate();
+  previousPrompt.set('Position', rowIndex + 1);
+  prompt.set('Position', rowIndex);
+  promptsStore.endUpdate();
+}, onPromptGridDownClick:function(promptsGrid, prompt, item, rowIndex) {
+  var promptsStore = promptsGrid.getStore(), nextPrompt = promptsStore.getAt(rowIndex + 1);
+  if (!nextPrompt) {
+    return;
+  }
+  promptsStore.beginUpdate();
+  prompt.set('Position', rowIndex + 2);
+  nextPrompt.set('Position', rowIndex + 1);
+  promptsStore.endUpdate();
+}, onPromptDeleteClick:function(promptsGrid, prompt, item, rowIndex) {
+  var promptsStore = promptsGrid.getStore();
+  promptsStore.remove(prompt);
+  promptsStore.each(function(otherPrompt, otherRowIndex) {
+    if (otherRowIndex >= rowIndex) {
+      otherPrompt.set('Position', otherRowIndex + 1);
+    }
+  });
+}, onWorksheetUpdate:function(worksheetsStore, worksheet, operation) {
+  var form = this.getForm();
+  if (operation == 'commit' && form.getRecord() === worksheet) {
+    form.loadRecord(worksheet);
+  }
+}, onWorksheetPromptAdd:function() {
+  this.syncFormButtons();
+}, onWorksheetPromptUpdate:function() {
+  this.syncFormButtons();
+}, onWorksheetPromptRemove:function() {
+  this.syncFormButtons();
+}, onWorksheetPromptsStoreWrite:function() {
+  this.syncFormButtons();
+}, onRevertBtnClick:function() {
+  var me = this, grid = me.getGrid(), form = me.getForm(), worksheet = form.getRecord();
+  Ext.Msg.confirm('Discard Changes', 'Are you sure you want to discard all changes to this worksheet?', function(btn) {
+    if (btn != 'yes') {
+      return;
+    }
+    me.revertChanges();
+    if (worksheet.phantom) {
+      form.disable();
+      grid.getStore().remove(worksheet);
+    }
+  });
+}, onSaveBtnClick:function() {
+  var me = this, managerCt = me.getManagerCt(), form = me.getForm(), worksheet = form.getRecord(), worksheetWasPhantom = worksheet.phantom, promptsStore = me.getStandardsWorksheetPromptsStore(), isPromptsStoreDirty = me.isPromptsStoreDirty(), doSavePrompts = function() {
+    var worksheetId = worksheet.getId();
+    if (worksheetWasPhantom) {
+      promptsStore.each(function(prompt) {
+        prompt.set('WorksheetID', worksheetId);
+      });
+    }
+    if (isPromptsStoreDirty) {
+      promptsStore.sync({callback:function(batch, options) {
+        managerCt.setLoading(false);
+      }});
+    } else {
+      managerCt.setLoading(false);
+    }
+  };
+  form.updateRecord(worksheet);
+  if (!worksheet.dirty && !isPromptsStoreDirty) {
+    return;
+  }
+  managerCt.setLoading('Saving worksheet\x26hellip;');
+  if (worksheet.dirty) {
+    worksheet.save({callback:function(report, operation, success) {
+      if (success) {
+        doSavePrompts();
+      } else {
+        managerCt.setLoading(false);
+        Ext.Msg.alert('Failed to save worksheet', 'This worksheet failed to save to the server:\x3cbr\x3e\x3cbr\x3e' + (operation.getError() || 'Unknown reason, try again or contact support'));
+      }
+    }});
+  } else {
+    doSavePrompts();
+  }
+}, onAddPromptBtnClick:function() {
+  var promptsGrid = this.getPromptsGrid(), promptsStore = promptsGrid.getStore(), prompt = promptsStore.add({WorksheetID:this.getForm().getRecord().getId(), Position:promptsStore.getCount() + 1})[0];
+  promptsGrid.getPlugin('cellediting').startEdit(prompt, 1);
+}, syncFormButtons:function() {
+  var me = this, form = me.getForm(), formDirty = form.isDirty(), promptsDirty = me.isPromptsStoreDirty();
+  me.getRevertBtn().setDisabled(!formDirty && !form.getRecord().phantom && !promptsDirty);
+  me.getSaveBtn().setDisabled(!formDirty && !promptsDirty || !form.isValid() || !me.isPromptsStoreValid());
+}, revertChanges:function() {
+  this.getForm().reset();
+  this.getStandardsWorksheetPromptsStore().rejectChanges();
+}, isPromptsStoreValid:function() {
+  var isValid = true;
+  this.getStandardsWorksheetPromptsStore().each(function(prompt) {
+    if (!prompt.isValid()) {
+      isValid = false;
+      return false;
+    }
+  });
+  return isValid;
+}, isPromptsStoreDirty:function() {
+  var promptsStore = this.getStandardsWorksheetPromptsStore();
+  return promptsStore.getNewRecords().length || promptsStore.getUpdatedRecords().length || promptsStore.getRemovedRecords().length;
+}});
+Ext.define('Slate.sbg.model.StandardsWorksheetAssignment', {extend:'Ext.data.Model', requires:['Slate.proxy.Records', 'Ext.data.identifier.Negative'], idProperty:'ID', identifier:'negative', fields:[{name:'ID', type:'int', allowNull:true}, {name:'Class', type:'string', defaultValue:'Slate\\SBG\\WorksheetAssignment'}, {name:'Created', type:'date', dateFormat:'timestamp', allowNull:true}, {name:'CreatorID', type:'int', allowNull:true}, {name:'TermID', type:'int'}, {name:'CourseSectionID', type:'int'}, 
+{name:'WorksheetID', type:'int', allowNull:true}], proxy:{type:'slate-records', url:'/sbg/worksheet-assignments', limitParam:null, startParam:null}});
+Ext.define('Slate.sbg.store.StandardsWorksheetAssignments', {extend:'Ext.data.Store', model:'Slate.sbg.model.StandardsWorksheetAssignment', config:{pageSize:false, autoSync:false}});
+Ext.define('Slate.sbg.controller.SectionTermReports', {extend:'Ext.app.Controller', config:{worksheet:null}, stores:['StandardsWorksheets@Slate.sbg.store', 'StandardsWorksheetAssignments@Slate.sbg.store', 'StandardsWorksheetPrompts@Slate.sbg.store', 'StandardsWorksheetPromptOptions@Slate.sbg.store'], views:['WorksheetPrompt@Slate.sbg.widget'], refs:{sectionsGrid:'progress-terms-sectionsgrid', termSelector:'progress-terms-sectionsgrid #termSelector', editorForm:'progress-terms-editorform', promptsFieldset:'progress-terms-editorform #sbgPromptsFieldset'}, 
+control:{sectionsGrid:{boxready:'onSectionsGridBoxReady', select:'onSectionsGridSelect'}}, listen:{store:{'#progress.terms.Sections':{load:'onSectionsLoad', update:'onSectionUpdate'}}, controller:{'#progress.terms.Report':{reportload:'onReportLoad', beforereportsave:'onBeforeReportSave', reportsave:'onReportSave'}}}, updateWorksheet:function(worksheetId) {
+  var me = this, promptsFieldset = me.getPromptsFieldset(), promptsStore = me.getStandardsWorksheetPromptsStore();
+  promptsFieldset.hide();
+  if (worksheetId) {
+    promptsStore.getProxy().setExtraParam('worksheet', worksheetId);
+    promptsStore.load({callback:function(prompts) {
+      var len = prompts.length, i = 0, prompt, promptComponents = [];
+      for (; i < len; i++) {
+        prompt = prompts[i];
+        promptComponents.push({prompt:prompt});
+      }
+      if (!promptComponents.length) {
+        promptComponents.push({xtype:'component', html:'Selected worksheet contains no prompts'});
+      }
+      Ext.suspendLayouts();
+      promptsFieldset.removeAll();
+      promptsFieldset.add(promptComponents);
+      promptsFieldset.show();
+      Ext.resumeLayouts(true);
+    }});
+  } else {
+    promptsStore.loadRecords([]);
+  }
+}, onSectionsGridBoxReady:function(sectionsGrid) {
+  var worksheetsStore = this.getStandardsWorksheetsStore();
+  this.setWorksheet(null);
+  if (!worksheetsStore.isLoaded()) {
+    worksheetsStore.load();
+  }
+}, onSectionsGridSelect:function(sectionsGrid, section) {
+  this.setWorksheet(section.get('WorksheetID'));
+}, onSectionsLoad:function(sectionsStore) {
+  var me = this, sectionsView = me.getSectionsGrid().getView(), worksheetsStore = me.getStandardsWorksheetsStore(), assignmentsStore = me.getStandardsWorksheetAssignmentsStore(), finishLoadAssignments = function() {
+    var assignments = assignmentsStore.getRange(), len = assignments.length, i = 0, assignment, worksheetId, section;
+    sectionsStore.beginUpdate();
+    for (; i < len; i++) {
+      assignment = assignments[i];
+      worksheetId = assignment.get('WorksheetID');
+      if (section = sectionsStore.getById(assignment.get('CourseSectionID'))) {
+        section.set({WorksheetID:worksheetId, worksheet:worksheetsStore.getById(worksheetId), worksheetAssignment:assignment}, {dirty:false});
+      }
+    }
+    sectionsStore.endUpdate();
+    sectionsView.setLoading(false);
+    sectionsView.loadMask.msg = sectionsView.loadingText;
+  };
+  assignmentsStore.getProxy().setExtraParams(sectionsStore.getProxy().getExtraParams());
+  sectionsView.setLoading('Loading SBG assignments\x26hellip;');
+  assignmentsStore.load({callback:function() {
+    if (worksheetsStore.isLoading()) {
+      worksheetsStore.on('load', finishLoadAssignments, me, {single:true});
+    } else {
+      finishLoadAssignments();
+    }
+  }});
+}, onSectionUpdate:function(sectionsStore, section, operation, modifiedFieldNames) {
+  if (operation != 'edit' || modifiedFieldNames.indexOf('WorksheetID') == -1) {
+    return;
+  }
+  var me = this, assignment = section.get('worksheetAssignment'), worksheetId = section.get('WorksheetID');
+  if (assignment) {
+    assignment.set('WorksheetID', worksheetId);
+  } else {
+    assignment = me.getStandardsWorksheetAssignmentsStore().add({TermID:me.getTermSelector().getSelection().getId(), CourseSectionID:section.getId(), WorksheetID:worksheetId})[0];
+  }
+  if (!assignment.dirty && !assignment.phantom) {
+    return;
+  }
+  assignment.save({success:function() {
+    section.set({WorksheetID:worksheetId, worksheet:me.getStandardsWorksheetsStore().getById(worksheetId), worksheetAssignment:assignment}, {dirty:false});
+    section.commit();
+    me.setWorksheet(worksheetId);
+  }});
+}, onReportLoad:function(report) {
+  var worksheetData = report.get('SbgWorksheet');
+  this.getEditorForm().setSbgGrades(worksheetData && worksheetData.worksheet_id == this.getWorksheet() && worksheetData.grades);
+}, onBeforeReportSave:function(report) {
+  report.set('SbgWorksheet', {worksheet_id:this.getWorksheet(), grades:this.getEditorForm().getSbgGrades()});
+}, onReportSave:function(report) {
+  var worksheetData = report.get('SbgWorksheet');
+  this.getEditorForm().setSbgGrades(worksheetData && worksheetData.worksheet_id == this.getWorksheet() && worksheetData.grades);
+}});
+Ext.define('Slate.sbg.overrides.SlateAdmin', {override:'SlateAdmin.Application', requires:['Slate.sbg.controller.Worksheets', 'Slate.sbg.controller.SectionTermReports'], initControllers:function() {
+  this.callParent();
+  this.getController('Slate.sbg.controller.Worksheets');
+  this.getController('Slate.sbg.controller.SectionTermReports');
+}});
+Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {override:'SlateAdmin.view.progress.terms.SectionsGrid', requires:['Ext.grid.plugin.CellEditing', 'Ext.form.field.ComboBox'], width:300, worksheetColumnTitle:'Worksheet', emptyWorksheetText:'\x3cem\x3eDouble-click to select\x3c/em\x3e', initComponent:function() {
+  var me = this;
+  me.columns = me.columns.concat({text:me.worksheetColumnTitle, dataIndex:'WorksheetID', emptyCellText:me.emptyWorksheetText, width:200, editor:{xtype:'combo', allowBlank:true, emptyText:'Select worksheet', store:'StandardsWorksheets', displayField:'Title', valueField:'ID', queryMode:'local', triggerAction:'all', typeAhead:true, forceSelection:true, selectOnFocus:true}, renderer:function(worksheetId, metaData, section) {
+    if (!worksheetId) {
+      return null;
+    }
+    var worksheet = section.get('worksheet');
+    if (!worksheet) {
+      return '[Deleted Worksheet]';
+    }
+    return worksheet.get('Title');
+  }});
+  me.plugins = (me.plugins || []).concat({ptype:'cellediting', clicksToEdit:2});
+  me.callParent(arguments);
+}});
