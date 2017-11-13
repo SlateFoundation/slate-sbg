@@ -22,6 +22,7 @@ Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {
                 xtype: 'combo',
                 allowBlank: true,
                 emptyText: 'Select worksheet',
+                matchFieldWidth: false,
 
                 store: 'StandardsWorksheets',
                 displayField: 'Title',
