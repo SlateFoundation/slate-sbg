@@ -13,10 +13,11 @@ Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {
         var me = this;
 
         me.columns = me.columns.concat({
+            flex: 1,
+
             text: me.worksheetColumnTitle,
             dataIndex: 'WorksheetID',
             emptyCellText: me.emptyWorksheetText,
-            width: 200,
             editor: {
                 xtype: 'combo',
                 allowBlank: true,
