@@ -18,7 +18,7 @@
         {$standardsGrades = array()}
     {/if}
 
-    {if $worksheet && count($standardsGrades)}
+    {if $.get.print.sbg_worksheet != 'no' && $worksheet && count($standardsGrades)}
         <div class="dli">
             <dt class="standards">Standards</dt>
             <dd class="standards">
