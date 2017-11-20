@@ -2072,6 +2072,11 @@ Ext.define('Slate.sbg.overrides.SlateAdmin', {override:'SlateAdmin.Application',
   this.getController('Slate.sbg.controller.Worksheets');
   this.getController('Slate.sbg.controller.SectionTermReports');
 }});
+Ext.define('Slate.sbg.overrides.TermReportPrintContainer', {override:'SlateAdmin.view.progress.terms.print.Container', config:{standardsWorksheetTitle:'Standards Worksheet'}, initComponent:function() {
+  var me = this;
+  me.callParent(arguments);
+  me.down('fieldset#includeFieldset').add({boxLabel:me.getStandardsWorksheetTitle(), name:'print[sbg_worksheet]', checked:true});
+}});
 Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {override:'SlateAdmin.view.progress.terms.SectionsGrid', requires:['Ext.grid.plugin.CellEditing', 'Ext.form.field.ComboBox'], width:300, worksheetColumnTitle:'Worksheet', emptyWorksheetText:'\x3cem\x3eDouble-click to select\x3c/em\x3e', initComponent:function() {
   var me = this;
   me.columns = me.columns.concat({flex:1, text:me.worksheetColumnTitle, dataIndex:'WorksheetID', emptyCellText:me.emptyWorksheetText, editor:{xtype:'combo', allowBlank:true, emptyText:'Select worksheet', matchFieldWidth:false, store:'StandardsWorksheets', displayField:'Title', valueField:'ID', queryMode:'local', triggerAction:'all', typeAhead:true, forceSelection:true, selectOnFocus:true}, renderer:function(worksheetId, metaData, section) {
