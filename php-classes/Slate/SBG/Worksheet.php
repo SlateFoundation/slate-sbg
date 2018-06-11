@@ -135,4 +135,17 @@ class Worksheet extends \VersionedRecord
 
         return $grades;
     }
+
+    public function getGradedStandardsGrades(SectionTermReport $Report)
+    {
+        $graded = [];
+
+        foreach ($this->getStandardsGrades($Report) as &$grade) {
+            if ($grade['Grade']) {
+                $graded = &$grade;
+            }
+        }
+
+        return $graded;
+    }
 }
