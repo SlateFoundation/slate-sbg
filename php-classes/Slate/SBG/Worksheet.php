@@ -142,7 +142,7 @@ class Worksheet extends \VersionedRecord
 
         foreach ($this->getStandardsGrades($Report) as &$grade) {
             if ($grade['Grade']) {
-                $graded = &$grade;
+                $graded[] = &$grade;
             }
         }
 
