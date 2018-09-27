@@ -81,19 +81,21 @@
     /**
      * Additional resources used during theme slicing operations
      */
-    "slicer": {
-        "js": [
-            {
-                "path": "${package.dir}/sass/example/custom.js",
-                "isWidgetManifest": true
-            }
-        ]
-    },
+    "slicer": null,
 
     /**
      * Controls the output directory.
      */
-    "output": "${package.dir}/build",
+    "output": {
+        "base": "${package.dir}/build",
+        "js": {
+            "version": "ES6"
+        }
+    },
+
+    "compressor": {
+        "polyfills": "none"
+    },
 
     /**
      * Indicates whether this is a locally developed package or downloaded form a repository.
@@ -201,25 +203,7 @@
      */
     "overrides": "${package.dir}/overrides,${package.dir}/${toolkit.name}/overrides",
 
-    "example": {
-        /**
-         * One or more folders that contain example applications for this package.
-         */
-        "path": [
-            "${package.dir}/examples"
-        ]
-
-        /**
-         * You can list apps specifically.
-         *
-         *      "apps": [
-         *          "demo1",
-         *          "demo2"
-         *      ]
-         *
-         * By default, all subfolders in the path are considered example applications.
-         */
-    },
+    "example": null,
 
     /**
      * The framework this package will use (i.e., "ext" or "touch").
