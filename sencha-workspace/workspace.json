@@ -26,6 +26,6 @@
         /**
          * This folder contains all extracted (remote) packages.
          */
-        "extract": "${workspace.dir}/packages/remote"
+        "extract": "${workspace.dir}/packages.remote"
     }
 }
