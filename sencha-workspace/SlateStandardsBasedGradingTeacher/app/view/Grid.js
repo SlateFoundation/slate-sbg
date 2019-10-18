@@ -2,7 +2,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
     extend: 'Ext.Component',
     xtype: 'slate-standardsbasedgradingteacher-grid',
 
-    renderTpl: [
+    tpl: [
         // TODO: declare sub-tpls within the template object?
         '{% var baseCls = values.baseCls %}',
         '{% var totalColumns = 6 + values.terms.getCount() * 4 %}',
