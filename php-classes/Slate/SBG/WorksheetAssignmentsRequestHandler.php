@@ -20,25 +20,12 @@ class WorksheetAssignmentsRequestHandler extends \RecordsRequestHandler
         $Terms = static::_getRequestedTerms($requestData);
         $Teacher = static::_getRequestedTeacher($requestData);
         $EnrolledUser = static::_getRequestedEnrolledUser($requestData);
-
-
-        if (!empty($Terms)) {
-            if (count($Terms) === 1) {
-                $firstTerm = array_shift($Terms);
-                $conditions['TermID'] = $firstTerm->ID;
-            } else {
-                $conditions['TermID'] = [
-                    'operator' => 'IN',
-                    'values' => array_keys($Terms)
-                ];
-            }
-        }
-
+        $Term = null;
 
         if (count($Terms) === 1 && $Teacher) {
-            $firstTerm = array_shift($Terms);
-            $worksheetAssignmentIds = DB::getValues(
-                'WorksheetAssignment.ID',
+            $Term = array_shift($Terms);
+            $worksheetAssignmentIds = DB::allValues(
+                'ID',
 
                 'SELECT'
                 .'  WorksheetAssignment.ID'
@@ -51,7 +38,7 @@ class WorksheetAssignmentsRequestHandler extends \RecordsRequestHandler
 
                 ,[
                     WorksheetAssignment::$tableName,
-                    implode(',', $firstTerm->getRelatedTermIDs()),
+                    implode(',', $Term->getRelatedTermIDs()),
                     SectionParticipant::$tableName,
                     $Teacher->ID
                 ]
@@ -61,18 +48,35 @@ class WorksheetAssignmentsRequestHandler extends \RecordsRequestHandler
                 'operator' => 'IN',
                 'values' => $worksheetAssignmentIds
             ];
+            unset($conditions['TermID']);
 
-        } elseif ($EnrolledUser) {
-            $enrolledSectionIds = DB::allValues(
-                'CourseSectionID',
-                'SELECT CourseSectionID FROM `%s` WHERE PersonID = %u',
-                [
-                    SectionParticipant::$tableName,
-                    $EnrolledUser->ID
-                ]
-            );
+        } else {
 
-            $conditions[] = sprintf('CourseSectionID IN (%s)', count($enrolledSectionIds) ? join(',', $enrolledSectionIds) : '0');
+            if (!empty($Terms)) {
+                if (count($Terms) === 1) {
+                    $Term = array_shift($Terms);
+                    $conditions['TermID'] = $Term->ID;
+                } else {
+                    $conditions['TermID'] = [
+                        'operator' => 'IN',
+                        'values' => array_keys($Terms)
+                    ];
+                }
+            }
+
+
+            if ($EnrolledUser) {
+                $enrolledSectionIds = DB::allValues(
+                    'CourseSectionID',
+                    'SELECT CourseSectionID FROM `%s` WHERE PersonID = %u',
+                    [
+                        SectionParticipant::$tableName,
+                        $EnrolledUser->ID
+                    ]
+                );
+
+                $conditions[] = sprintf('CourseSectionID IN (%s)', count($enrolledSectionIds) ? join(',', $enrolledSectionIds) : '0');
+            }
         }
 
         return parent::handleBrowseRequest($options, $conditions, $responseID, $responseData);
