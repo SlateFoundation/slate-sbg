@@ -15,8 +15,8 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
         'Teachers',
         'Terms',
         'MasterTerms',
+        'SectionTermReports',
 
-        'SectionTermReports@Slate.store.progress',
         'StandardsWorksheets@Slate.sbg.store',
         'StandardsWorksheetAssignments@Slate.sbg.store'
     ],
@@ -33,18 +33,14 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
 
                 xtype: 'slate-standardsbasedgradingteacher-container'
             },
-            // standardsGrid: {
-            //     selector: 'slate-standardsbasedgradingteacher-grid',
-            //     autoCreate: true,
-
-            //     xtype: 'slate-standardsbasedgradingteacher-grid'
-            // },
             standardsGrid: 'slate-standardsbasedgradingteacher-container slate-standardsbasedgradingteacher-grid',
             termSelector: 'slate-standardsbasedgradingteacher-container combo[fieldLabel=Term]',
             teacherSelector: 'slate-standardsbasedgradingteacher-container combo[fieldLabel=Teacher]'
         },
 
         term: null,
+        teacher: null,
+
         baseCls: 'standards-grid'
     },
 
@@ -62,9 +58,6 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
 
         me.loadBootstrapData(function() {
             me.renderCt();
-            // me.prepareGrid();
-            // me.renderGrid();
-            // me.renderCt().render('standardsCt');
         });
     },
 
@@ -75,14 +68,17 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
             parentTermId = termCombo.getValue();
 
         if (!parentTermId) {
+            teacherCombo.setDisabled(true);
             return;
         }
 
         if (combo === termCombo) {
-            teacherCombo.getStore().getProxy().setExtraParam('term', termCombo.getValue());
-            teacherCombo.getStore().load();
-        } else if (combo === teacherCombo) {
-            this.renderGrid();
+            teacherCombo.getStore().getProxy().setExtraParam('term', combo.getValue());
+            teacherCombo.getStore().load(() => teacherCombo.setDisabled(false));
+        }
+
+        if (termCombo.getValue() && teacherCombo.getValue()) {
+            me.renderGrid();
         }
     },
 
@@ -93,43 +89,10 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
     loadBootstrapData: function(callback) {
         var me = this,
             termsStore = me.getTermsStore();
-            // reportsStore = me.getSectionTermReportsStore(),
-            // assignmentsStore = me.getStandardsWorksheetAssignmentsStore(),
-            // assignmentProxy = assignmentsStore.getProxy();
-
 
         termsStore.load(function() {
             Ext.callback(callback);
         });
-        // assignmentProxy.setRelatedTable([
-        //     'CourseSection',
-        //     'Term',
-        //     'Worksheet'
-        // ]);
-
-        // assignmentsStore.load(function(response) {
-        //     var sections = response.data.related.Sections
-        //         terms = response.data.related.Terms,
-        //         worksheets = response.data.related.Worksheets;
-
-        //     courseSectionsStore.setData(sections);
-        //     termsStore.setData(terms);
-        //     worksheetsStore.setData(worksheets);
-
-        //     sectionIds = sections.map(s => s.ID);
-        //     termIds = terms.map(t => t.ID);
-
-        //     // loop "resopnse.terms, response.coursesections, response.worksheets for unique values"
-        //     // load section term reports with TermIDs, SectionIDs filters
-        //     reportsStore.setParams({
-        //         'SectionID': sectionIds,
-        //         'TermID': termIds
-        //     }).load(function() {
-        //         return Ext.callback(callback);
-        //     });
-        // });
-
-
     },
 
     prepareGrid: function() {
@@ -170,43 +133,143 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
     },
 
     renderCt: function() {
-        this.getStandardsCt().render('standardsCt');
+        var container = this.getStandardsCt(),
+            containerEl = Ext.get('standardsCt');
+
+        containerEl.empty();
+        container.render(containerEl);
     },
 
     renderGrid: function() {
         var me = this,
+            container = me.getStandardsCt(),
             grid = me.getStandardsGrid(),
+
+            courseSectionsStore = me.getCourseSectionsStore(),
+            standardsWorksheetsStore = me.getStandardsWorksheetsStore(),
+            sectionTermReportsStore = me.getSectionTermReportsStore(),
+            termsStore = me.getTermsStore(),
             childTermsStore = me.getChildTermsStore(),
-            termsStore = me.getChildTermsStore(),
-            parentTerm = me.getTermSelector().getSelectedRecord(),
-            firstTerm, lastTerm, changeUnit;
+
+            selectedTerm = me.getTermSelector().getSelectedRecord(),
+            selectedTeacher = me.getTeacherSelector().getSelectedRecord(),
+
+            changeUnit = grid.el.selectNode('select[name=change-unit]', true),
+            firstTerm = grid.el.selectNode('select[name=term-first]', true),
+            lastTerm = grid.el.selectNode('select[name=term-last]', true),
+
+            _finishRender = (setDefaultTerms = false) => {
+                grid.update({
+                    baseCls: me.getBaseCls(),
+                    terms: childTermsStore,
+                    courseSections: courseSectionsStore,
+                    worksheets: standardsWorksheetsStore,
+                    reports: sectionTermReportsStore,
+
+                    termFirst: setDefaultTerms === false && firstTerm ? termsStore.findRecord('ID', firstTerm.value) : childTermsStore.first(),
+                    termLast: setDefaultTerms === false && lastTerm ? termsStore.findRecord('ID', lastTerm.value) :  childTermsStore.last(),
+                    changeUnit: changeUnit ? changeUnit.value : 'percent'
+                });
+                container.el.select('select', true).on('change', 'onSelectFieldChange', me);
+            };
+
 
         if (grid) {
-            // container.query('select', true).un('change', 'onSelectFieldChange', this);
-            // firstTerm = grid.down('select[name=term-first]');
-            // lastTerm = grid.down('select[name=term-last]');
-            // changeUnit = grid.down('select[name=change-unit]');
-            // todo: load all children terms via server
+            container.el.select('select', true).un('change', 'onSelectFieldChange', me);
+
+            if (
+                (!me.getTeacher() || selectedTeacher.getId() != me.getTeacher().getId()) ||
+                (!me.getTerm() || selectedTerm.getId() != me.getTerm().getId())
+            ) {
+                me.loadStandardsWorksheetAssignments(() => {
+                    _finishRender(true);
+                });
+            } else {
+                _finishRender();
+            }
+        }
+
+        return grid;
+    },
+
+    loadStandardsWorksheetAssignments: function(callback) {
+        var me = this,
+            childTermsStore = me.getChildTermsStore(),
+            courseSectionsStore = me.getCourseSectionsStore(),
+            standardsWorksheetAssignmentsStore = me.getStandardsWorksheetAssignmentsStore(),
+            standardsWorksheetsStore = me.getStandardsWorksheetsStore(),
+            sectionTermReportsStore = me.getSectionTermReportsStore(),
+
+            selectedTeacher = me.getTeacherSelector().getSelectedRecord(),
+            selectedTerm = me.getTermSelector().getSelectedRecord();
+
+        me.setTerm(selectedTerm);
+        me.setTeacher(selectedTeacher);
+
+        standardsWorksheetAssignmentsStore.getProxy().setExtraParams({
+            teacher: selectedTeacher.get('Username'),
+            term: selectedTerm.get('Handle'),
+            'include[]': [
+                'CourseSection',
+                'Worksheet.Prompts'
+            ]
+        });
+
+        standardsWorksheetAssignmentsStore.load((records) => {
+            let worksheetTermIds = [],
+                worksheets = [],
+                courseSections = [],
+                i = 0;
+
+            for (; i < records.length; i++) {
+                if (worksheetTermIds.indexOf(records[i].get('TermID')) === -1) {
+                    worksheetTermIds.push(records[i].get('TermID'));
+                }
+
+                if (records[i].get('WorksheetID') && worksheets.find(w => w.ID === records[i].get('WorksheetID')) === undefined) {
+                    worksheets.push(records[i].get('Worksheet'));
+                }
+
+                if (!courseSections.find(cs => cs.ID === records[i].get('CourseSectionID'))) {
+                    courseSections.push(records[i].get('CourseSection'));
+                }
+
+            }
+
+            childTermsStore.clearData();
             childTermsStore.setData(
                 me.getTermsStore().queryBy(
-                    r => r.get('Left') > parentTerm.get('Left') && r.get('Right') < parentTerm.get('Right')
+                    r => worksheetTermIds.indexOf(r.getId()) !== -1
                 )
             );
-            debugger;
 
-            grid.update({
-                baseCls: me.getBaseCls(),
-                terms: childTermsStore,
-                courseSections: me.getCourseSectionsStore(),
-                worksheets: me.getStandardsWorksheetsStore(),
-                reports: me.getSectionTermReportsStore(),
+            standardsWorksheetsStore.clearData();
+            standardsWorksheetsStore.setData(worksheets);
 
-                termFirst: firstTerm ? firstTerm.getValue() : termsStore.first(),
-                termLast: lastTerm ? lastTerm.getValue() : termsStore.last(),
-                changeUnit: changeUnit ? changeUnit.getValue() : 'percent'
+            courseSectionsStore.clearData();
+            courseSectionsStore.setData(courseSections);
+
+            // compile cross-references
+            standardsWorksheetsStore.each(worksheet => {
+                let assignments = standardsWorksheetAssignmentsStore.query('WorksheetID', worksheet.getId()),
+                    courseSectionIds = assignments.collect('CourseSectionID', 'data');
+
+                worksheet.set('Assignments', assignments);
+                worksheet.set('CourseSections', courseSectionsStore.queryBy(courseSection => {
+                    return Ext.Array.contains(courseSectionIds, courseSection.getId());
+                }));
             });
-            // container.query('select', true).on('change', 'onSelectFieldChange', this);
-        }
-        return grid;
+
+
+            sectionTermReportsStore.getProxy().setExtraParams({
+                'term': selectedTerm.get('Handle'),
+                'course_section[]': courseSections.map(cs => cs.Code)
+            });
+
+            sectionTermReportsStore.load(() => {
+                Ext.callback(callback);
+            });
+
+        });
     }
 });
