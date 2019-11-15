@@ -1,0 +1,21 @@
+[hololens]
+package = "holo/lens-sencha-app"
+
+[hololens.sencha]
+app = "SlateStandardsBasedGradingTeacher"
+
+[hololens.input]
+root = "sencha-workspace"
+files = [
+    "SlateStandardsBasedGradingTeacher/**",
+    "packages/slate-sbg/**",
+    "packages/slate-core-data/**",
+    "packages/emergence-apikit/**",
+    "packages/jarvus-apikit/**",
+    "ext/**",
+    "workspace.json"
+]
+
+[hololens.output]
+root = "webapp-builds/SlateStandardsBasedGradingTeacher"
+merge = "replace"
