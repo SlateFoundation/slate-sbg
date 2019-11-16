@@ -6,6 +6,6 @@ Ext.define('SlateStandardsBasedGradingTeacher.store.MasterTerms', {
 
     source: 'Terms',
     filters: [
-        ({data: {ParentID}}) => ParentID === 0 || ParentID === null
+        term => term.data.ParentID === 0 || term.data.ParentID === null
     ]
 });
