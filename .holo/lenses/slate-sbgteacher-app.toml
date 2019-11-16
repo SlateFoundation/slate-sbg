@@ -12,6 +12,7 @@ files = [
     "packages/slate-core-data/**",
     "packages/emergence-apikit/**",
     "packages/jarvus-apikit/**",
+    "packages/jarvus-hotfixes/**",
     "ext/**",
     "workspace.json"
 ]

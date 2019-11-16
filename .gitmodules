@@ -11,3 +11,6 @@
 [submodule "sencha-workspace/packages.remote/emergence-apikit"]
 	path = sencha-workspace/packages.remote/emergence-apikit
 	url = https://github.com/JarvusInnovations/emergence-apikit.git
+[submodule "sencha-workspace/packages.remote/sencha-hotfixes"]
+	path = sencha-workspace/packages.remote/sencha-hotfixes
+	url = https://github.com/JarvusInnovations/sencha-hotfixes.git
