@@ -17,7 +17,8 @@
      */
     "requires": [
         "font-awesome",
-        "slate-sbg"
+        "slate-sbg",
+        "jarvus-hotfixes"
     ],
 
     /**
