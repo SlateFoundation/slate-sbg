@@ -6,7 +6,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
         'Ext.layout.container.Column',
         'SlateStandardsBasedGradingTeacher.view.Grid',
         'SlateStandardsBasedGradingTeacher.store.Teachers',
-        'SlateStandardsBasedGradingTeacher.store.MasterTerms'
+        'SlateStandardsBasedGradingTeacher.store.ParentTerms'
     ],
 
     items: [{
@@ -16,7 +16,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
         items: [{
             xtype: 'combobox',
             fieldLabel: 'Term',
-            store: 'MasterTerms',
+            store: 'ParentTerms',
             displayField: 'Title',
             valueField: 'Handle',
             allowBlank: false,

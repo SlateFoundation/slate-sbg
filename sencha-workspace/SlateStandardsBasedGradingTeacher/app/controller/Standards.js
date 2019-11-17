@@ -14,7 +14,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
         'CourseSections',
         'Teachers',
         'Terms',
-        'MasterTerms',
+        'ParentTerms',
         'SectionTermReports',
 
         'StandardsWorksheets@Slate.sbg.store',

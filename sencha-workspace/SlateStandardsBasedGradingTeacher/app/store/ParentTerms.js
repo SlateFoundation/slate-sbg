@@ -1,4 +1,4 @@
-Ext.define('SlateStandardsBasedGradingTeacher.store.MasterTerms', {
+Ext.define('SlateStandardsBasedGradingTeacher.store.ParentTerms', {
     extend: 'Ext.data.ChainedStore',
     requires: [
         'SlateStandardsBasedGradingTeacher.store.Terms'
