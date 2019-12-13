@@ -6,8 +6,8 @@ source "$(hab pkg path chakijs/studio)/studio.sh"
 
 
 # declare shortcuts for this repository's applications
-echo "    * Use 'build-sbg-analyzer' to build SlateStandardsBasedGradingTeacher for testing"
-build-sbg-analyzer() {
+echo "    * Use 'build-sbg-teacher' to build SlateStandardsBasedGradingTeacher for testing"
+build-sbg-teacher() {
     build-app SlateStandardsBasedGradingTeacher
 }
 
