@@ -10,6 +10,7 @@ files = [
     "SlateStandardsBasedGradingTeacher/**",
     "packages/slate-sbg/**",
     "packages/slate-core-data/**",
+    "packages/slate-theme/**",
     "packages/emergence-apikit/**",
     "packages/jarvus-apikit/**",
     "packages/jarvus-hotfixes/**",

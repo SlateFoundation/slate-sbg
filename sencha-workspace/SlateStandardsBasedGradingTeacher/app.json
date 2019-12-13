@@ -4,7 +4,7 @@
     "version": "1.0.0.0",
     "framework": "ext",
     "toolkit": "classic",
-    "theme": "theme-triton",
+    "theme": "slate-theme",
 
     /**
      * The list of required packages (with optional versions; default is "latest").
@@ -139,7 +139,8 @@
          */
         "var": [
             "sass/var/all.scss",
-            "sass/var"
+            "sass/var",
+            "resources/slate-frame/sass/_variables-all.scss"
         ],
 
         /**
