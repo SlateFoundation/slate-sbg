@@ -10,35 +10,36 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
     ],
 
     config: {
-        fullWidth: true
+        fullWidth: true,
+        header: {
+            title: 'Standards Based Grading Teacher',
+
+            items: [{
+                xtype: 'combobox',
+                fieldLabel: 'Term',
+                store: 'ParentTerms',
+                displayField: 'Title',
+                valueField: 'Handle',
+                allowBlank: false,
+                editable: false,
+                queryMode: 'local',
+                columnWidth: 0.5
+            },{
+                xtype: 'combobox',
+                fieldLabel: 'Teacher',
+                store: 'Teachers',
+                displayField: 'SortName',
+                valueField: 'Username',
+                allowBlank: false,
+                editable: false,
+                disabled: true,
+                columnWidth: 0.5
+            }]
+        },
+        placeholderItem: 'Select a section to load tasks dashboard'
     },
 
     items: [{
-        xtype: 'container',
-        layout: 'column',
-
-        items: [{
-            xtype: 'combobox',
-            fieldLabel: 'Term',
-            store: 'ParentTerms',
-            displayField: 'Title',
-            valueField: 'Handle',
-            allowBlank: false,
-            editable: false,
-            queryMode: 'local',
-            columnWidth: 0.5
-        },{
-            xtype: 'combobox',
-            fieldLabel: 'Teacher',
-            store: 'Teachers',
-            displayField: 'SortName',
-            valueField: 'Username',
-            allowBlank: false,
-            editable: false,
-            disabled: true,
-            columnWidth: 0.5
-        }]
-    },{
         xtype: 'slate-standardsbasedgradingteacher-grid',
         flex: 1
     }]

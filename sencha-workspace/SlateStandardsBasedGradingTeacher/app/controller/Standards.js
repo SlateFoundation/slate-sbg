@@ -45,10 +45,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
     },
 
     control: {
-        // 'slate-standardsbasedgradingteacher-container select': {
-        //     change: 'onSelectFieldChange'
-        // }
-        'slate-standardsbasedgradingteacher-container combobox': {
+        'slate-standardsbasedgradingteacher-container slate-appheader combobox': {
             change: 'onContainerComboChange'
         }
     },
