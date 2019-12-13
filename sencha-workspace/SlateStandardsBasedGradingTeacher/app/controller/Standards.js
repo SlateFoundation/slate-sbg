@@ -158,7 +158,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
             firstTerm = grid.el.selectNode('select[name=term-first]', true),
             lastTerm = grid.el.selectNode('select[name=term-last]', true),
 
-            _finishRender = (setDefaultTerms = false) => {
+            _finishRender = (setDefaultTerms) => {
                 grid.update({
                     baseCls: me.getBaseCls(),
                     terms: childTermsStore,
@@ -185,7 +185,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                     _finishRender(true);
                 });
             } else {
-                _finishRender();
+                _finishRender(false);
             }
         }
 
