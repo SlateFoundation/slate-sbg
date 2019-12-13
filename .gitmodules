@@ -15,3 +15,7 @@
 [submodule "sencha-workspace/packages.remote/sencha-hotfixes"]
 	path = sencha-workspace/packages.remote/sencha-hotfixes
 	url = https://github.com/JarvusInnovations/sencha-hotfixes.git
+[submodule "sencha-workspace/packages.remote/slate"]
+	path = sencha-workspace/packages.remote/slate
+	url = https://github.com/SlateFoundation/slate.git
+	branch = develop

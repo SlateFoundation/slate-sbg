@@ -11,6 +11,7 @@ files = [
     "packages/slate-sbg/**",
     "packages/slate-core-data/**",
     "packages/slate-theme/**",
+    "packages/slate-ui-classic/**",
     "packages/emergence-apikit/**",
     "packages/jarvus-apikit/**",
     "packages/jarvus-hotfixes/**",

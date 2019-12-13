@@ -1,5 +1,5 @@
 Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
-    extend: 'Ext.container.Container',
+    extend: 'Slate.ui.app.Container',
     xtype: 'slate-standardsbasedgradingteacher-container',
     requires: [
         'Ext.form.field.ComboBox',
@@ -8,6 +8,10 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
         'SlateStandardsBasedGradingTeacher.store.Teachers',
         'SlateStandardsBasedGradingTeacher.store.ParentTerms'
     ],
+
+    config: {
+        fullWidth: true
+    },
 
     items: [{
         xtype: 'container',

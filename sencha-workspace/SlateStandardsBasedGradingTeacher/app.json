@@ -18,7 +18,8 @@
     "requires": [
         "font-awesome",
         "slate-sbg",
-        "jarvus-hotfixes"
+        "jarvus-hotfixes",
+        "slate-ui-classic"
     ],
 
     /**
