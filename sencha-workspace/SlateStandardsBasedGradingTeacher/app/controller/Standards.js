@@ -62,7 +62,8 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
         var me = this,
             termCombo = me.getTermSelector(),
             teacherCombo = me.getTeacherSelector(),
-            parentTermId = termCombo.getValue();
+            parentTermId = termCombo.getValue(),
+            currentTeacher, loadedTeacher;
 
         if (!parentTermId) {
             teacherCombo.setDisabled(true);
@@ -70,13 +71,24 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
         }
 
         if (combo === termCombo) {
+            currentTeacher = teacherCombo.getSelectedRecord();
             teacherCombo.getStore().getProxy().setExtraParam('term', combo.getValue());
-            teacherCombo.getStore().load(() => teacherCombo.setDisabled(false));
+            teacherCombo.getStore().load(() => {
+                teacherCombo.setDisabled(false);
+                if (currentTeacher) {
+                    loadedTeacher = teacherCombo.getStore().findRecord('ID', currentTeacher && currentTeacher.getId());
+
+                    if (!loadedTeacher) {
+                        teacherCombo.reset();
+                    } else {
+                        me.renderGrid();
+                    }
+                }
+            });
+            return;
         }
 
-        if (termCombo.getValue() && teacherCombo.getValue()) {
-            me.renderGrid();
-        }
+        me.renderGrid();
     },
 
     onSelectFieldChange: function() {
@@ -165,23 +177,34 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
 
                     termFirst: setDefaultTerms === false && firstTerm ? termsStore.findRecord('ID', firstTerm.value) : childTermsStore.first(),
                     termLast: setDefaultTerms === false && lastTerm ? termsStore.findRecord('ID', lastTerm.value) :  childTermsStore.last(),
-                    changeUnit: changeUnit ? changeUnit.value : 'percent'
+                    changeUnit: changeUnit ? changeUnit.value : 'percent',
+                    hide: !selectedTerm || !selectedTeacher
                 });
                 container.el.select('select', true).on('change', 'onSelectFieldChange', me);
             };
-
 
         if (grid) {
             container.el.select('select', true).un('change', 'onSelectFieldChange', me);
 
             if (
-                (!me.getTeacher() || selectedTeacher.getId() != me.getTeacher().getId()) ||
-                (!me.getTerm() || selectedTerm.getId() != me.getTerm().getId())
+                selectedTeacher &&
+                selectedTerm &&
+                (
+                    selectedTeacher != me.getTeacher() ||
+                    selectedTerm != me.getTerm()
+                )
             ) {
+                me.setTerm(selectedTerm);
+                me.setTeacher(selectedTeacher);
+                container.setPlaceholderItem(false);
+
                 me.loadStandardsWorksheetAssignments(() => {
                     _finishRender(true);
                 });
             } else {
+                if (!selectedTerm || !selectedTeacher) {
+                    container.setPlaceholderItem(true);
+                }
                 _finishRender(false);
             }
         }
@@ -191,17 +214,16 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
 
     loadStandardsWorksheetAssignments: function(callback) {
         var me = this,
+            grid = me.getStandardsGrid(),
             childTermsStore = me.getChildTermsStore(),
             courseSectionsStore = me.getCourseSectionsStore(),
             standardsWorksheetAssignmentsStore = me.getStandardsWorksheetAssignmentsStore(),
             standardsWorksheetsStore = me.getStandardsWorksheetsStore(),
             sectionTermReportsStore = me.getSectionTermReportsStore(),
+            selectedTeacher = me.getTeacher(),
+            selectedTerm = me.getTerm();
 
-            selectedTeacher = me.getTeacherSelector().getSelectedRecord(),
-            selectedTerm = me.getTermSelector().getSelectedRecord();
-
-        me.setTerm(selectedTerm);
-        me.setTeacher(selectedTeacher);
+        grid.setLoading();
 
         standardsWorksheetAssignmentsStore.getProxy().setExtraParams({
             teacher: selectedTeacher.get('Username'),
@@ -264,6 +286,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
             });
 
             sectionTermReportsStore.load(() => {
+                grid.setLoading(false);
                 Ext.callback(callback);
             });
 

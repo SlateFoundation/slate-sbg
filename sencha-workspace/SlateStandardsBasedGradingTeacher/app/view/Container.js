@@ -36,7 +36,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
                 columnWidth: 0.5
             }]
         },
-        placeholderItem: 'Select a section to load tasks dashboard'
+        placeholderItem: 'Select a term and teacher to view Standards Grid'
     },
 
     items: [{
