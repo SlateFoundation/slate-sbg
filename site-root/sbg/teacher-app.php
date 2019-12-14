@@ -1,3 +1,0 @@
-<?php
-
-\SlateSBGTeacher\RequestHandler::handleRequest();

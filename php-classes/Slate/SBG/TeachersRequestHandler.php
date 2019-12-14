@@ -29,31 +29,38 @@ class TeachersRequestHandler extends \RequestHandler
             return static::handleTeacherRequest($Teacher);
         }
 
-        $Term = static::_getRequestedTerm();
+        if ($Term = static::_getRequestedTerm()) {
+            return static::respond('teachers', [
+                'data' => User::getAllByQuery(
+                    'SELECT DISTINCT'
+                    .'  Person.*'
+                    .' FROM'
+                    .'  ('
+                    .'    SELECT DISTINCT CourseSectionID FROM `%s` WHERE TermID IN (%s)'
+                    .'  ) WorksheetAssignment'
+                    .' JOIN `%s` Participant'
+                    .'   ON (Participant.CourseSectionID = WorksheetAssignment.CourseSectionID AND Participant.Role = "Teacher")'
+                    .' JOIN `%s` Person'
+                    .'   ON (Person.ID = Participant.PersonID)'
+                    .' ORDER BY Person.LastName, Person.FirstName',
+                    [
+                        WorksheetAssignment::$tableName,
+                        implode(',', $Term->getRelatedTermIDs()),
+                        SectionParticipant::$tableName,
+                        User::$tableName
+                    ]
+                ),
+                'Term' => $Term
+            ]);
+        }
 
+        return static::handleTeacherAppRequest();
+    }
 
-        return static::respond('teachers', [
-            'data' => User::getAllByQuery(
-                'SELECT DISTINCT'
-                .'  Person.*'
-                .' FROM'
-                .'  ('
-                .'    SELECT DISTINCT CourseSectionID FROM `%s` WHERE TermID IN (%s)'
-                .'  ) WorksheetAssignment'
-                .' JOIN `%s` Participant'
-                .'   ON (Participant.CourseSectionID = WorksheetAssignment.CourseSectionID AND Participant.Role = "Teacher")'
-                .' JOIN `%s` Person'
-                .'   ON (Person.ID = Participant.PersonID)'
-                .' ORDER BY Person.LastName, Person.FirstName',
-                [
-                    WorksheetAssignment::$tableName,
-                    implode(',', $Term->getRelatedTermIDs()),
-                    SectionParticipant::$tableName,
-                    User::$tableName
-                ]
-            ),
-            'Term' => $Term
-        ]);
+    public static function handleTeacherAppRequest()
+    {
+        $GLOBALS['Session']->requireAccountLevel('Staff');
+        return static::sendResponse(TeacherApp::load()->render());
     }
 
     public static function handleTeacherRequest(User $Teacher)
