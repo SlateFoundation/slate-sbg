@@ -1,9 +1,8 @@
 <?php
 
-namespace SlateSBGTeacher;
+namespace Slate\SBG;
 
-
-class WebApp extends \Emergence\WebApps\SenchaApp
+class TeacherApp extends \Emergence\WebApps\SenchaApp
 {
     public static $plugins = [];
 

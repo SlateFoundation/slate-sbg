@@ -20,16 +20,17 @@ class TeachersRequestHandler extends \RequestHandler
     {
         $GLOBALS['Session']->requireAccountLevel('Staff');
 
+        $path = static::shiftPath();
 
-        if ($teacherHandle = static::shiftPath()) {
-            if (!$Teacher = User::getByHandle($teacherHandle)) {
+        if ($path === 'app') {
+            return static::handleTeacherAppRequest();
+        } else if ($path) {
+            if (!$Teacher = User::getByHandle($path)) {
                 return static::throwNotFoundError('Teacher not found');
             }
-
             return static::handleTeacherRequest($Teacher);
-        }
-
-        if ($Term = static::_getRequestedTerm()) {
+        } else {
+            $Term = static::_getRequestedTerm();
             return static::respond('teachers', [
                 'data' => User::getAllByQuery(
                     'SELECT DISTINCT'
@@ -53,14 +54,12 @@ class TeachersRequestHandler extends \RequestHandler
                 'Term' => $Term
             ]);
         }
-
-        return static::handleTeacherAppRequest();
     }
 
     public static function handleTeacherAppRequest()
     {
         $GLOBALS['Session']->requireAccountLevel('Staff');
-        return static::sendResponse(TeacherApp::load()->render());
+        return \Emergence\Site\RequestHandler::sendResponse(TeacherApp::load()->render());
     }
 
     public static function handleTeacherRequest(User $Teacher)
