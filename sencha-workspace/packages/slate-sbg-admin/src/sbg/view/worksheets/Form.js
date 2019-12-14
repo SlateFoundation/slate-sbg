@@ -1,11 +1,11 @@
 /*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.Form', {
+Ext.define('Slate.sbg.admin.view.worksheets.Form', {
     extend: 'Ext.form.Panel',
     xtype: 'sbg-worksheets-form',
     requires: [
         'Ext.form.field.Text',
         'Ext.form.field.TextArea',
-        'Slate.sbg.view.worksheets.PromptsGrid'
+        'Slate.sbg.admin.view.worksheets.PromptsGrid'
     ],
 
     disabled: true,

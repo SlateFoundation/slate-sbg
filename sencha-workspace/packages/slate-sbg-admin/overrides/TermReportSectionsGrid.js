@@ -1,4 +1,4 @@
-Ext.define('Slate.sbg.overrides.TermReportSectionsGrid', {
+Ext.define('Slate.sbg.admin.overrides.TermReportSectionsGrid', {
     override: 'SlateAdmin.view.progress.terms.SectionsGrid',
     requires: [
         'Ext.grid.plugin.CellEditing',

@@ -1,5 +1,5 @@
 /*jslint browser: true, undef: true *//*global Ext*/
-Ext.define('Slate.sbg.model.StandardsWorksheetPrompt', {
+Ext.define('Slate.sbg.admin.model.StandardsWorksheetPrompt', {
     extend: 'Ext.data.Model',
     requires: [
         'Slate.proxy.Records',

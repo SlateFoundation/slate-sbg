@@ -1,4 +1,4 @@
-Ext.define('Slate.sbg.controller.Worksheets', {
+Ext.define('Slate.sbg.admin.controller.Worksheets', {
     extend: 'Ext.app.Controller',
 
 
@@ -8,12 +8,12 @@ Ext.define('Slate.sbg.controller.Worksheets', {
     },
 
     views: [
-        'worksheets.Manager@Slate.sbg.view'
+        'worksheets.Manager@Slate.sbg.admin.view'
     ],
 
     stores: [
         'StandardsWorksheets@Slate.sbg.store',
-        'StandardsWorksheetPrompts@Slate.sbg.store'
+        'StandardsWorksheetPrompts@Slate.sbg.admin.store'
     ],
 
     refs: {

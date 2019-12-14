@@ -1,4 +1,4 @@
-Ext.define('Slate.sbg.overrides.TermReportPrintContainer', {
+Ext.define('Slate.sbg.admin.overrides.TermReportPrintContainer', {
     override: 'SlateAdmin.view.progress.terms.print.Container',
 
 

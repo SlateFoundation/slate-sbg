@@ -1,5 +1,5 @@
 /*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.PromptsGrid', {
+Ext.define('Slate.sbg.admin.view.worksheets.PromptsGrid', {
     extend: 'Ext.grid.Panel',
     xtype: 'sbg-worksheets-promptsgrid',
     requires: [

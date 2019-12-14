@@ -1,10 +1,10 @@
 /*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.Manager', {
+Ext.define('Slate.sbg.admin.view.worksheets.Manager', {
     extend: 'Ext.Container',
     xtype: 'sbg-worksheets-manager',
     requires: [
-        'Slate.sbg.view.worksheets.Grid',
-        'Slate.sbg.view.worksheets.Form'
+        'Slate.sbg.admin.view.worksheets.Grid',
+        'Slate.sbg.admin.view.worksheets.Form'
     ],
 
 

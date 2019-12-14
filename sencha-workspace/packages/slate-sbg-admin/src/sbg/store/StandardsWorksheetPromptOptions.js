@@ -1,5 +1,5 @@
 /*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext*/
-Ext.define('Slate.sbg.store.StandardsWorksheetPromptOptions', {
+Ext.define('Slate.sbg.admin.store.StandardsWorksheetPromptOptions', {
     extend: 'Ext.data.Store',
 
 

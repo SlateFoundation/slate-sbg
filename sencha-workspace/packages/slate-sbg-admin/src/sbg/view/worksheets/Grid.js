@@ -1,5 +1,5 @@
 /*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.view.worksheets.Grid', {
+Ext.define('Slate.sbg.admin.view.worksheets.Grid', {
     extend: 'Ext.grid.Panel',
     xtype: 'sbg-worksheets-grid',
     requires: [

@@ -1,5 +1,5 @@
 /*jslint browser: true, undef: true, white: false, laxbreak: true *//*global Ext,SlateAdmin*/
-Ext.define('Slate.sbg.widget.WorksheetPrompt', {
+Ext.define('Slate.sbg.admin.widget.WorksheetPrompt', {
     extend: 'Ext.container.Container',
     xtype: 'sbg-worksheets-prompt',
     requires: [
@@ -18,7 +18,7 @@ Ext.define('Slate.sbg.widget.WorksheetPrompt', {
             width: 60,
 
             submitValue: false,
-            store: {xclass: 'Slate.sbg.store.StandardsWorksheetPromptOptions'},
+            store: {xclass: 'Slate.sbg.admin.store.StandardsWorksheetPromptOptions'},
             valueField: 'id',
             displayField: 'text',
             queryMode: 'local',

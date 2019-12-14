@@ -1,5 +1,5 @@
 /* global Ext */
-Ext.define('Slate.sbg.controller.SectionTermReports', {
+Ext.define('Slate.sbg.admin.controller.SectionTermReports', {
     extend: 'Ext.app.Controller',
 
 
@@ -11,12 +11,12 @@ Ext.define('Slate.sbg.controller.SectionTermReports', {
     stores: [
         'StandardsWorksheets@Slate.sbg.store',
         'StandardsWorksheetAssignments@Slate.sbg.store',
-        'StandardsWorksheetPrompts@Slate.sbg.store',
-        'StandardsWorksheetPromptOptions@Slate.sbg.store'
+        'StandardsWorksheetPrompts@Slate.sbg.admin.store',
+        'StandardsWorksheetPromptOptions@Slate.sbg.admin.store'
     ],
 
     views: [
-        'WorksheetPrompt@Slate.sbg.widget'
+        'WorksheetPrompt@Slate.sbg.admin.widget'
     ],
 
     refs: {

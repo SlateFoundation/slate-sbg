@@ -8,7 +8,7 @@
         "toolkit": "classic",
         "theme": "theme-neptune",
         "requires": [
-            // "slate-core-data"
+            "slate-sbg"
         ],
         "classpath": [
             "${package.dir}/src"

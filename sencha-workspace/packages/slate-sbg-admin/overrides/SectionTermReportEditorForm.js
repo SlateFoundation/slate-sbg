@@ -1,8 +1,8 @@
-Ext.define('Slate.sbg.overrides.SectionTermReportEditorForm', {
+Ext.define('Slate.sbg.admin.overrides.SectionTermReportEditorForm', {
     override: 'SlateAdmin.view.progress.terms.EditorForm',
     requires: [
         'Ext.form.FieldSet',
-        'Slate.sbg.widget.WorksheetPrompt'
+        'Slate.sbg.admin.widget.WorksheetPrompt'
     ],
 
     initComponent: function() {
