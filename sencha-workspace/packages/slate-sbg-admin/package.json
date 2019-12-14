@@ -1,0 +1,35 @@
+{
+    "name": "slate-sbg-admin",
+    "sencha": {
+        "version": "1.4.0",
+        "namespace": "Slate.sbg.admin",
+        "type": "code",
+        "framework": "ext",
+        "toolkit": "classic",
+        "theme": "theme-neptune",
+        "requires": [
+            // "slate-core-data"
+        ],
+        "classpath": [
+            "${package.dir}/src"
+        ],
+        "overrides": [
+            "${package.dir}/overrides"
+        ],
+        "sass": {
+            "namespace": "Slate.sbg.admin",
+            "etc": [
+                "${package.dir}/sass/etc/all.scss"
+            ]
+        },
+        "compressor": {
+            "polyfills": "none"
+        },
+        "output": {
+            "base": "${package.dir}/build",
+            "js": {
+                "version": "ES6"
+            }
+        }
+    }
+}
