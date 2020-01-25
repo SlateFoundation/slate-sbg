@@ -47,7 +47,8 @@ Ext.define('Slate.sbg.admin.view.worksheets.PromptsGrid', {
         }
     },{
         xtype: 'actioncolumn',
-        width: 50,
+        width: 65, // n*15+20
+        align: 'end',
         items: [{
             action: 'up',
             glyph: 0xf062, // fa-arrow-up

@@ -29,7 +29,8 @@ Ext.define('Slate.sbg.admin.view.worksheets.Grid', {
         emptyCellText: 'Untitled worksheet'
     },{
         xtype: 'actioncolumn',
-        width: 20,
+        width: 35, // n*15+20
+        align: 'end',
         items: [{
             action: 'delete',
             iconCls: 'prompt-delete glyph-danger',
