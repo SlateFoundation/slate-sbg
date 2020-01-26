@@ -4,4 +4,4 @@ Ext.define('SlateStandardsBasedGradingTeacher.store.Terms', {
     config: {
         proxy: 'slate-terms'
     }
-  });
+});

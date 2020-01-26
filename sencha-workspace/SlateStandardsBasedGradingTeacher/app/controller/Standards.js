@@ -10,11 +10,12 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
     ],
 
     stores: [
+        'Terms',
         'ChildTerms',
+        'ParentTerms',
+
         'CourseSections',
         'Teachers',
-        'Terms',
-        'ParentTerms',
         'SectionTermReports',
 
         'StandardsWorksheets@Slate.sbg.store',
@@ -235,38 +236,24 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
         });
 
         standardsWorksheetAssignmentsStore.load((records) => {
-            let worksheetTermIds = [],
-                worksheets = [],
-                courseSections = [],
-                i = 0;
+            const worksheetTermIds = new Set(),
+                worksheets = new Map(),
+                courseSections = new Map();
 
-            for (; i < records.length; i++) {
-                if (worksheetTermIds.indexOf(records[i].get('TermID')) === -1) {
-                    worksheetTermIds.push(records[i].get('TermID'));
-                }
-
-                if (records[i].get('WorksheetID') && worksheets.find(w => w.ID === records[i].get('WorksheetID')) === undefined) {
-                    worksheets.push(records[i].get('Worksheet'));
-                }
-
-                if (!courseSections.find(cs => cs.ID === records[i].get('CourseSectionID'))) {
-                    courseSections.push(records[i].get('CourseSection'));
-                }
-
+            for (const record of records) {
+                worksheetTermIds.add(record.get('TermID'));
+                worksheets.set(record.get('WorksheetID'), record.get('Worksheet'));
+                courseSections.set(record.get('CourseSectionID'), record.get('CourseSection'));
             }
 
-            childTermsStore.clearData();
-            childTermsStore.setData(
-                me.getTermsStore().queryBy(
-                    r => worksheetTermIds.indexOf(r.getId()) !== -1
-                )
-            );
-
-            standardsWorksheetsStore.clearData();
-            standardsWorksheetsStore.setData(worksheets);
-
-            courseSectionsStore.clearData();
-            courseSectionsStore.setData(courseSections);
+            childTermsStore.filter({
+                id: 'available-terms',
+                property: 'ID',
+                operator: 'in',
+                value: [...worksheetTermIds]
+            });
+            standardsWorksheetsStore.loadRawData([...worksheets.values()])
+            courseSectionsStore.loadRawData([...courseSections.values()])
 
             // compile cross-references
             standardsWorksheetsStore.each(worksheet => {
@@ -279,10 +266,9 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                 }));
             });
 
-
             sectionTermReportsStore.getProxy().setExtraParams({
                 'term': selectedTerm.get('Handle'),
-                'course_section[]': courseSections.map(cs => cs.Code)
+                'course_section[]': Array.from(courseSections.values(), courseSection => courseSection.Code)
             });
 
             sectionTermReportsStore.load(() => {
