@@ -176,8 +176,16 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                     worksheets: standardsWorksheetsStore,
                     reports: sectionTermReportsStore,
 
-                    termFirst: setDefaultTerms === false && firstTerm ? termsStore.findRecord('ID', firstTerm.value) : childTermsStore.first(),
-                    termLast: setDefaultTerms === false && lastTerm ? termsStore.findRecord('ID', lastTerm.value) :  childTermsStore.last(),
+                    termFirst:
+                        setDefaultTerms === false && firstTerm
+                        ? termsStore.getAt(termsStore.findExact('ID', parseInt(firstTerm.value)))
+                        : childTermsStore.first(),
+
+                    termLast:
+                        setDefaultTerms === false && lastTerm
+                        ? termsStore.getAt(termsStore.findExact('ID', parseInt(lastTerm.value)))
+                        : childTermsStore.last(),
+
                     changeUnit: changeUnit ? changeUnit.value : 'percent',
                     hide: !selectedTerm || !selectedTeacher
                 });
