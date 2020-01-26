@@ -3,9 +3,6 @@
 	url = https://github.com/JarvusInnovations/extjs.git
 	branch = workspace/6.2
 
-[submodule "sencha-workspace/packages.remote/slate-core-data"]
-	path = sencha-workspace/packages.remote/slate-core-data
-	url = https://github.com/SlateFoundation/slate-core-data
 [submodule "sencha-workspace/packages.remote/jarvus-apikit"]
 	path = sencha-workspace/packages.remote/jarvus-apikit
 	url = https://github.com/JarvusInnovations/jarvus-apikit.git
