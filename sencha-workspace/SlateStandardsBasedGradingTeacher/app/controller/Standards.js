@@ -249,6 +249,10 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                 courseSections = new Map();
 
             for (const record of records) {
+                if (!record.get('WorksheetID')) {
+                    continue;
+                }
+
                 worksheetTermIds.add(record.get('TermID'));
                 worksheets.set(record.get('WorksheetID'), record.get('Worksheet'));
                 courseSections.set(record.get('CourseSectionID'), record.get('CourseSection'));
