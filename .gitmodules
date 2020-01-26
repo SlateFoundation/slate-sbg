@@ -1,4 +1,18 @@
-[submodule "ext-6.0.1.250"]
-	path = sencha-workspace/ext-6.0.1.250
+[submodule "sencha-workspace/ext"]
+	path = sencha-workspace/ext
 	url = https://github.com/JarvusInnovations/extjs.git
-	branch = 6.0.1.250
+	branch = workspace/6.2
+
+[submodule "sencha-workspace/packages.remote/jarvus-apikit"]
+	path = sencha-workspace/packages.remote/jarvus-apikit
+	url = https://github.com/JarvusInnovations/jarvus-apikit.git
+[submodule "sencha-workspace/packages.remote/emergence-apikit"]
+	path = sencha-workspace/packages.remote/emergence-apikit
+	url = https://github.com/JarvusInnovations/emergence-apikit.git
+[submodule "sencha-workspace/packages.remote/sencha-hotfixes"]
+	path = sencha-workspace/packages.remote/sencha-hotfixes
+	url = https://github.com/JarvusInnovations/sencha-hotfixes.git
+[submodule "sencha-workspace/packages.remote/slate"]
+	path = sencha-workspace/packages.remote/slate
+	url = https://github.com/SlateFoundation/slate.git
+	branch = develop

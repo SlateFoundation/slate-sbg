@@ -1,14 +1,14 @@
 {
-    "name": "slate-sbg",
+    "name": "slate-sbg-admin",
     "sencha": {
         "version": "1.4.0",
-        "namespace": "Slate.sbg",
+        "namespace": "Slate.sbg.admin",
         "type": "code",
         "framework": "ext",
         "toolkit": "classic",
         "theme": "theme-neptune",
         "requires": [
-            "slate-core-data"
+            "slate-sbg"
         ],
         "classpath": [
             "${package.dir}/src"
@@ -17,7 +17,7 @@
             "${package.dir}/overrides"
         ],
         "sass": {
-            "namespace": "Slate.sbg",
+            "namespace": "Slate.sbg.admin",
             "etc": [
                 "${package.dir}/sass/etc/all.scss"
             ]
