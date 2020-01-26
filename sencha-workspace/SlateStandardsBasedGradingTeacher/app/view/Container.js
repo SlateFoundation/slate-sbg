@@ -24,7 +24,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
                 editable: false,
                 queryMode: 'local',
                 columnWidth: 0.5
-            },{
+            }, {
                 xtype: 'combobox',
                 fieldLabel: 'Teacher',
                 store: 'Teachers',

@@ -4,4 +4,4 @@ Ext.define('SlateStandardsBasedGradingTeacher.store.CourseSections', {
     config: {
         proxy: 'slate-courses-sections'
     }
-  });
+});

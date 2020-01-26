@@ -261,11 +261,11 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
                     grades = (report.get('SbgWorksheet') || {}).grades;
 
                     if (
-                        grades &&
-                        (prompt in grades) &&
-                        (!grade || grades[prompt] == grade) &&
-                        report.get('TermID') == term &&
-                        Ext.Array.contains(sections, report.get('SectionID'))
+                        grades
+                        && prompt in grades
+                        && (!grade || grades[prompt] == grade)
+                        && report.get('TermID') == term
+                        && Ext.Array.contains(sections, report.get('SectionID'))
                     ) {
                         count++;
                     }
@@ -275,7 +275,6 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
             },
             calculateDelta: function(grade, prompt, section) {
                 var me = this,
-                    terms = me.terms,
                     termFirst = me.termFirst.getId(),
                     countFirst = me.countGrades(grade, termFirst, prompt, section),
                     totalFirst = me.countGrades(null, termFirst, prompt, section),
@@ -288,7 +287,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
                 }
 
                 if (me.changeUnit == 'percent') {
-                    return ((countLast / totalLast) - (countFirst / totalFirst)) * 100;
+                    return (countLast / totalLast - countFirst / totalFirst) * 100;
                 }
 
                 return countLast - countFirst;
@@ -317,8 +316,8 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
                     reportGrades = (report.get('SbgWorksheet') || {}).grades;
 
                     if (
-                        !reportGrades ||
-                        !(promptGrade = reportGrades[prompt])
+                        !reportGrades
+                        || !(promptGrade = reportGrades[prompt])
                     ) {
                         continue;
                     }
@@ -340,7 +339,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
                 }
 
                 // second loop: tally total students with 2 points (or with any points??) and ones with growth
-                for (studentId in students) {
+                for (studentId in students) { // eslint-disable-line guard-for-in
                     student = students[studentId];
                     first = student.first;
                     last = student.last;
@@ -355,12 +354,11 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
 
                     // count growth if student ended at level 3 or 4 or improved a level
                     if (
-                        lastGrade == 3 ||
-                        lastGrade== 4 ||
-                        (
-                            firstGrade && lastGrade &&
-                            lastGrade > firstGrade
-                        )
+                        lastGrade == 3
+                        || lastGrade== 4
+                        || firstGrade && lastGrade
+                            && lastGrade > firstGrade
+
                     ) {
                         studentsGrown++;
                     }
@@ -370,7 +368,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Grid', {
                     return null;
                 }
 
-                return (studentsGrown / studentsTotal) * 100;
+                return studentsGrown / studentsTotal * 100;
             }
         }
     ],

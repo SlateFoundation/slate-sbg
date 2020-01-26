@@ -79,10 +79,10 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                 if (currentTeacher) {
                     loadedTeacher = teacherCombo.getStore().findRecord('ID', currentTeacher && currentTeacher.getId());
 
-                    if (!loadedTeacher) {
-                        teacherCombo.reset();
-                    } else {
+                    if (loadedTeacher) {
                         me.renderGrid();
+                    } else {
+                        teacherCombo.reset();
                     }
                 }
             });
@@ -168,7 +168,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
             firstTerm = grid.el.selectNode('select[name=term-first]', true),
             lastTerm = grid.el.selectNode('select[name=term-last]', true),
 
-            _finishRender = (setDefaultTerms) => {
+            finishRender = (setDefaultTerms) => {
                 grid.update({
                     baseCls: me.getBaseCls(),
                     terms: childTermsStore,
@@ -178,13 +178,13 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
 
                     termFirst:
                         setDefaultTerms === false && firstTerm
-                        ? termsStore.getAt(termsStore.findExact('ID', parseInt(firstTerm.value)))
-                        : childTermsStore.first(),
+                            ? termsStore.getAt(termsStore.findExact('ID', parseInt(firstTerm.value, 10)))
+                            : childTermsStore.first(),
 
                     termLast:
                         setDefaultTerms === false && lastTerm
-                        ? termsStore.getAt(termsStore.findExact('ID', parseInt(lastTerm.value)))
-                        : childTermsStore.last(),
+                            ? termsStore.getAt(termsStore.findExact('ID', parseInt(lastTerm.value, 10)))
+                            : childTermsStore.last(),
 
                     changeUnit: changeUnit ? changeUnit.value : 'percent',
                     hide: !selectedTerm || !selectedTeacher
@@ -196,11 +196,11 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
             container.el.select('select', true).un('change', 'onSelectFieldChange', me);
 
             if (
-                selectedTeacher &&
-                selectedTerm &&
-                (
-                    selectedTeacher != me.getTeacher() ||
-                    selectedTerm != me.getTerm()
+                selectedTeacher
+                && selectedTerm
+                && (
+                    selectedTeacher != me.getTeacher()
+                    || selectedTerm != me.getTerm()
                 )
             ) {
                 me.setTerm(selectedTerm);
@@ -208,13 +208,13 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                 container.setPlaceholderItem(false);
 
                 me.loadStandardsWorksheetAssignments(() => {
-                    _finishRender(true);
+                    finishRender(true);
                 });
             } else {
                 if (!selectedTerm || !selectedTeacher) {
                     container.setPlaceholderItem(true);
                 }
-                _finishRender(false);
+                finishRender(false);
             }
         }
 
@@ -260,18 +260,16 @@ Ext.define('SlateStandardsBasedGradingTeacher.controller.Standards', {
                 operator: 'in',
                 value: [...worksheetTermIds]
             });
-            standardsWorksheetsStore.loadRawData([...worksheets.values()])
-            courseSectionsStore.loadRawData([...courseSections.values()])
+            standardsWorksheetsStore.loadRawData([...worksheets.values()]);
+            courseSectionsStore.loadRawData([...courseSections.values()]);
 
             // compile cross-references
             standardsWorksheetsStore.each(worksheet => {
-                let assignments = standardsWorksheetAssignmentsStore.query('WorksheetID', worksheet.getId()),
+                const assignments = standardsWorksheetAssignmentsStore.query('WorksheetID', worksheet.getId()),
                     courseSectionIds = assignments.collect('CourseSectionID', 'data');
 
                 worksheet.set('Assignments', assignments);
-                worksheet.set('CourseSections', courseSectionsStore.queryBy(courseSection => {
-                    return Ext.Array.contains(courseSectionIds, courseSection.getId());
-                }));
+                worksheet.set('CourseSections', courseSectionsStore.queryBy(courseSection => Ext.Array.contains(courseSectionIds, courseSection.getId())));
             });
 
             sectionTermReportsStore.getProxy().setExtraParams({
