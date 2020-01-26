@@ -4,7 +4,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.store.ChildTerms', {
     source: 'Terms',
     sorters: [{
         property: 'Left',
-        direction: 'DESC'
+        direction: 'ASC'
     }],
     filters: [{
         id: 'available-terms',
