@@ -1,8 +1,5 @@
 Ext.define('SlateStandardsBasedGradingTeacher.store.Teachers', {
-    extend: 'Slate.store.people.Advisors',
-    requires: [
-        'Slate.proxy.people.People'
-    ],
+    extend: 'Slate.store.people.People',
 
     config: {
         proxy: {
