@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="b21-5portfolios" default=".help">
+<project name="SlateStandardsBasedGradingTeacher" default=".help">
 
+    <!-- Find and load Sencha Cmd ant tasks -->
     <script language="javascript">
         <![CDATA[
             var dir = project.getProperty("basedir"),
@@ -51,7 +52,7 @@
 
             if (cmdDir && !project.getTargets().containsKey("init-cmd")) {
                 var importDir = project.getProperty("build-impl.dir") ||
-                                (cmdDir + "/ant/build/package/build-impl.xml");
+                                (cmdDir + "/ant/build/app/build-impl.xml");
                 var importTask = project.createTask("import");
 
                 importTask.setOwningTarget(self.getOwningTarget());
@@ -83,10 +84,29 @@
             <target name="-before-init"/>
             <target name="-after-init"/>
 
+        The "page" target performs the call to Sencha Cmd to build the 'all-classes.js' file.
+
+            <target name="-before-page"/>
+            <target name="-after-page"/>
+
         The "build" target performs the call to Sencha Cmd to build the application.
 
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
+
+
+    <target name="docs" depends="init" description="Builds docs for the app">
+        <property name="docs.build.dir" value="${workspace.build.dir}/docs/${app.name}" />
+        <mkdir dir="${docs.build.dir}/docs"/>
+        <exec executable="jsduck">
+            <arg value="--output=${docs.build.dir}"/>
+            <arg value="--config=${app.dir}/docs/config.json"/>
+        </exec>
+
+        <copy todir="${docs.build.dir}/resources">
+        <fileset dir="${app.dir}/docs/resources"></fileset>
+        </copy>
+    </target>
 
 </project>
