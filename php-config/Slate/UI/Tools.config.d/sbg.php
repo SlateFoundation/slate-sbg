@@ -5,6 +5,6 @@ if (empty($GLOBALS['Session']) || !$GLOBALS['Session']->hasAccountLevel('Staff')
 }
 
 Slate\UI\Tools::$tools['Standards-Based Grading']['Growth Dashboard'] = [
-    '_href' => '/sbg/teachers/app',
+    '_href' => '/sbg/teacher-dashboard',
     '_icon' => 'area-chart'
 ];
