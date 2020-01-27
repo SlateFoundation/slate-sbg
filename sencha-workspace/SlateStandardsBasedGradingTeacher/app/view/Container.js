@@ -32,6 +32,7 @@ Ext.define('SlateStandardsBasedGradingTeacher.view.Container', {
                 valueField: 'Username',
                 allowBlank: false,
                 editable: false,
+                queryMode: 'local',
                 disabled: true,
                 columnWidth: 0.5
             }]

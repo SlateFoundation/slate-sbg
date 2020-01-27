@@ -2,7 +2,7 @@
 
 namespace Slate\SBG;
 
-class TeacherApp extends \Emergence\WebApps\SenchaApp
+class TeacherDashboardApp extends \Emergence\WebApps\SenchaApp
 {
     public static $plugins = [];
 
